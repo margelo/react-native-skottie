@@ -20,7 +20,7 @@ public class SkiaSkottieModule extends SkiaSkottieSpec {
   }
 
   static {
-    System.loadLibrary("cpp");
+    System.loadLibrary("react-native-skia-skottie");
   }
 
   public static native double nativeMultiply(double a, double b);

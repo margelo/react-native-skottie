@@ -5,7 +5,7 @@ buildscript {
   }
 
   dependencies {
-    classpath "com.android.tools.build:gradle:7.2.1"
+    classpath "com.android.tools.build:gradle:7.2.2"
   }
 }
 
@@ -13,8 +13,28 @@ def isNewArchitectureEnabled() {
   return rootProject.hasProperty("newArchEnabled") && rootProject.getProperty("newArchEnabled") == "true"
 }
 
+apply plugin: 'com.facebook.react'
 apply plugin: "com.android.library"
 
+import java.nio.file.Paths
+
+static def findNodeModules(baseDir) {
+  def basePath = baseDir.toPath().normalize()
+  // Node's module resolution algorithm searches up to the root directory,
+  // after which the base path will be null
+  while (basePath) {
+    def nodeModulesPath = Paths.get(basePath.toString(), "node_modules")
+    def reactNativePath = Paths.get(nodeModulesPath.toString(), "react-native")
+    if (nodeModulesPath.toFile().exists() && reactNativePath.toFile().exists()) {
+      return nodeModulesPath.toString()
+    }
+    basePath = basePath.getParent()
+  }
+  throw new GradleException("React-Native-Skia: Failed to find node_modules/ path!")
+}
+
+def nodeModules = findNodeModules(projectDir)
+logger.warn("react-native-skia: node_modules/ found at: ${nodeModules}")
 
 def appProject = rootProject.allprojects.find { it.plugins.hasPlugin('com.android.application') }
 
@@ -29,10 +49,28 @@ def getExtOrDefault(name) {
 def getExtOrIntegerDefault(name) {
   return rootProject.ext.has(name) ? rootProject.ext.get(name) : (project.properties["SkiaSkottie_" + name]).toInteger()
 }
+// Load react native version
+def reactProperties = new Properties()
+file("$nodeModules/react-native/ReactAndroid/gradle.properties").withInputStream { reactProperties.load(it) }
+def FULL_RN_VERSION =  (System.getenv("REACT_NATIVE_OVERRIDE_VERSION") ?: reactProperties.getProperty("VERSION_NAME"))
+def REACT_NATIVE_VERSION = FULL_RN_VERSION.split("\\.")[1].toInteger()
+def ENABLE_PREFAB = REACT_NATIVE_VERSION > 68
+
+logger.warn("react-native-skia: react-native version: ${FULL_RN_VERSION}")
+logger.warn("react-native-skia: react-native prefab enabled: ${ENABLE_PREFAB}")
+
+// Only needed for rn 0.66-0.70
+def prebuiltDir = "$buildDir/react-native-0*/jni"
 
 android {
   ndkVersion getExtOrDefault("ndkVersion")
   compileSdkVersion getExtOrIntegerDefault("compileSdkVersion")
+
+  if (ENABLE_PREFAB) {
+    buildFeatures {
+      prefab true
+    }
+  }
 
   defaultConfig {
     minSdkVersion getExtOrIntegerDefault("minSdkVersion")
@@ -40,8 +78,12 @@ android {
     buildConfigField "boolean", "IS_NEW_ARCHITECTURE_ENABLED", isNewArchitectureEnabled().toString()
     externalNativeBuild {
       cmake {
-        cppFlags "-O2 -frtti -fexceptions -Wall -fstack-protector-all"
+        cppFlags "-O2 -frtti -fexceptions -Wall -fstack-protector-all -DONANDROID -DANDROID"
         abiFilters "x86", "x86_64", "armeabi-v7a", "arm64-v8a"
+        arguments "-DNODE_MODULES_DIR=${nodeModules}",
+          // Only needed for rn 0.66-0.70
+          "-DREACT_NATIVE_VERSION=${REACT_NATIVE_VERSION}",
+          "-DPREBUILT_DIR=${prebuiltDir}"
       }
     }
   }
@@ -90,7 +132,13 @@ dependencies {
   // For < 0.71, this will be from the local maven repo
   // For > 0.71, this will be replaced by `com.facebook.react:react-android:$version` by react gradle plugin
   //noinspection GradleDynamicVersion
-  implementation "com.facebook.react:react-native:+"
+  if (REACT_NATIVE_VERSION >= 71) {
+    implementation "com.facebook.react:react-android:"
+    implementation "com.facebook.react:hermes-android:"
+  } else {
+    // noinspection GradleDynamicVersion
+    implementation 'com.facebook.react:react-native:+'
+  }
 }
 
 if (isNewArchitectureEnabled()) {

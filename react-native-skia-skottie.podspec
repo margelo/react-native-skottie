@@ -14,7 +14,13 @@ Pod::Spec.new do |s|
   s.platforms    = { :ios => "11.0" }
   s.source       = { :git => "https://github.com/margelo/react-native-skia-skottie.git", :tag => "#{s.version}" }
 
+  s.ios.vendored_frameworks = [
+    '../node_modules/@shopify/react-native-skia/libs/ios/libskottie.xcframework', 
+  ]
+
   s.source_files = "ios/**/*.{h,m,mm}", "cpp/**/*.{h,cpp}"
+
+  s.public_header_files = "../node_modules/@shopify/react-native-skia/cpp/skia/*.h"
 
   s.dependency "React-Core"
 
