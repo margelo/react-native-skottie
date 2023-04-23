@@ -24,6 +24,6 @@ const SkiaSkottie = SkiaSkottieModule
       }
     );
 
-export function multiply(a: number, b: number): Promise<number> {
-  return SkiaSkottie.multiply(a, b);
+export function install(): boolean {
+  return SkiaSkottie.install();
 }

@@ -1,20 +1,34 @@
 buildscript {
   repositories {
-    google()
+    maven {
+      url "https://plugins.gradle.org/m2/"
+    }
     mavenCentral()
+    google()
   }
 
   dependencies {
-    classpath "com.android.tools.build:gradle:7.2.2"
+    classpath("com.android.tools.build:gradle:7.2.2")
   }
 }
 
+def resolveBuildType() {
+  Gradle gradle = getGradle()
+  String tskReqStr = gradle.getStartParameter().getTaskRequests()['args'].toString()
+  return tskReqStr.contains('Release') ? 'release' : 'debug'
+}
+
+
 def isNewArchitectureEnabled() {
-  return rootProject.hasProperty("newArchEnabled") && rootProject.getProperty("newArchEnabled") == "true"
+  // To opt-in for the New Architecture, you can either:
+  // - Set `newArchEnabled` to true inside the `gradle.properties` file
+  // - Invoke gradle with `-newArchEnabled=true`
+  // - Set an environment variable `ORG_GRADLE_PROJECT_newArchEnabled=true`
+  return project.hasProperty("newArchEnabled") && project.newArchEnabled == "true"
 }
 
 apply plugin: 'com.facebook.react'
-apply plugin: "com.android.library"
+apply plugin: 'com.android.library'
 
 import java.nio.file.Paths
 
@@ -23,67 +37,68 @@ static def findNodeModules(baseDir) {
   // Node's module resolution algorithm searches up to the root directory,
   // after which the base path will be null
   while (basePath) {
-    def nodeModulesPath = Paths.get(basePath.toString(), "node_modules")
+    // TODO: remove the example/ here
+    def nodeModulesPath = Paths.get(basePath.toString(), "example/node_modules")
     def reactNativePath = Paths.get(nodeModulesPath.toString(), "react-native")
     if (nodeModulesPath.toFile().exists() && reactNativePath.toFile().exists()) {
       return nodeModulesPath.toString()
     }
     basePath = basePath.getParent()
   }
-  throw new GradleException("React-Native-Skia: Failed to find node_modules/ path!")
+  throw new GradleException("React-Native-Skia-Skottie: Failed to find node_modules/ path!")
 }
 
 def nodeModules = findNodeModules(projectDir)
-logger.warn("react-native-skia: node_modules/ found at: ${nodeModules}")
+logger.warn("react-native-skia-skottie: node_modules/ found at: ${nodeModules}")
 
-def appProject = rootProject.allprojects.find { it.plugins.hasPlugin('com.android.application') }
+def buildType = "debug"
+tasks.all({ task ->
+  if (task.name == "buildCMakeRelease") {
+    buildType = "release"
+  }
+})
 
-if (isNewArchitectureEnabled()) {
-  apply plugin: "com.facebook.react"
+def safeExtGet(prop, fallback) {
+  rootProject.ext.has(prop) ? rootProject.ext.get(prop) : fallback
 }
 
-def getExtOrDefault(name) {
-  return rootProject.ext.has(name) ? rootProject.ext.get(name) : project.properties["SkiaSkottie_" + name]
+def reactNativeArchitectures() {
+  def value = project.getProperties().get("reactNativeArchitectures")
+  return value ? value.split(",") : ["armeabi-v7a", "x86", "x86_64", "arm64-v8a"]
 }
 
-def getExtOrIntegerDefault(name) {
-  return rootProject.ext.has(name) ? rootProject.ext.get(name) : (project.properties["SkiaSkottie_" + name]).toInteger()
+repositories {
+  mavenCentral()
 }
-// Load react native version
-def reactProperties = new Properties()
-file("$nodeModules/react-native/ReactAndroid/gradle.properties").withInputStream { reactProperties.load(it) }
-def FULL_RN_VERSION =  (System.getenv("REACT_NATIVE_OVERRIDE_VERSION") ?: reactProperties.getProperty("VERSION_NAME"))
-def REACT_NATIVE_VERSION = FULL_RN_VERSION.split("\\.")[1].toInteger()
-def ENABLE_PREFAB = REACT_NATIVE_VERSION > 68
-
-logger.warn("react-native-skia: react-native version: ${FULL_RN_VERSION}")
-logger.warn("react-native-skia: react-native prefab enabled: ${ENABLE_PREFAB}")
-
-// Only needed for rn 0.66-0.70
-def prebuiltDir = "$buildDir/react-native-0*/jni"
 
 android {
-  ndkVersion getExtOrDefault("ndkVersion")
-  compileSdkVersion getExtOrIntegerDefault("compileSdkVersion")
+  compileSdkVersion safeExtGet("compileSdkVersion", 28)
+  // Used to override the NDK path/version on internal CI or by allowing
+  // users to customize the NDK path/version from their root project (e.g. for M1 support)
+  if (rootProject.hasProperty("ndkPath")) {
+    ndkPath rootProject.ext.ndkPath
+  }
+  if (rootProject.hasProperty("ndkVersion")) {
+    ndkVersion rootProject.ext.ndkVersion
+  }
 
-  if (ENABLE_PREFAB) {
-    buildFeatures {
-      prefab true
-    }
+  buildFeatures {
+    prefab true
   }
 
   defaultConfig {
-    minSdkVersion getExtOrIntegerDefault("minSdkVersion")
-    targetSdkVersion getExtOrIntegerDefault("targetSdkVersion")
+    minSdkVersion safeExtGet('minSdkVersion', 16)
+    targetSdkVersion safeExtGet('targetSdkVersion', 28)
+    versionCode 1
+    versionName "1.0"
     buildConfigField "boolean", "IS_NEW_ARCHITECTURE_ENABLED", isNewArchitectureEnabled().toString()
     externalNativeBuild {
       cmake {
-        cppFlags "-O2 -frtti -fexceptions -Wall -fstack-protector-all -DONANDROID -DANDROID"
-        abiFilters "x86", "x86_64", "armeabi-v7a", "arm64-v8a"
-        arguments "-DNODE_MODULES_DIR=${nodeModules}",
-          // Only needed for rn 0.66-0.70
-          "-DREACT_NATIVE_VERSION=${REACT_NATIVE_VERSION}",
-          "-DPREBUILT_DIR=${prebuiltDir}"
+        cppFlags "-O2 -frtti -fexceptions -Wall -Wno-unused-variable -fstack-protector-all"
+        arguments "-DANDROID_STL=c++_shared",
+          "-DNODE_MODULES_DIR=${nodeModules}",
+          "-DBUILD_TYPE=${buildType}"
+        abiFilters (*reactNativeArchitectures())
       }
     }
   }
@@ -92,52 +107,47 @@ android {
       path "CMakeLists.txt"
     }
   }
-  buildTypes {
-    release {
-      minifyEnabled false
-    }
-  }
 
-  lintOptions {
-    disable "GradleCompatible"
-  }
-
-  compileOptions {
-    sourceCompatibility JavaVersion.VERSION_1_8
-    targetCompatibility JavaVersion.VERSION_1_8
-  }
-
-  sourceSets {
-    main {
-      if (isNewArchitectureEnabled()) {
-        java.srcDirs += [
-          "src/newarch",
-          // This is needed to build Kotlin project with NewArch enabled
-          "${project.buildDir}/generated/source/codegen/java"
-        ]
-      } else {
-        java.srcDirs += ["src/oldarch"]
+  packagingOptions {
+    doNotStrip resolveBuildType() == 'debug' ? "**/**/*.so" : ''
+    excludes = [
+      "META-INF",
+      "META-INF/**",
+      "**/libjsi.so",
+    ]
+    sourceSets {
+      main {
+        if (isNewArchitectureEnabled()) {
+          java.srcDirs += [
+            "src/newarch",
+            // This is needed to build Kotlin project with NewArch enabled
+            "${project.buildDir}/generated/source/codegen/java"
+          ]
+        } else {
+          java.srcDirs += ["src/oldarch"]
+        }
       }
     }
   }
 }
 
-repositories {
-  mavenCentral()
-  google()
-}
-
 
 dependencies {
-  // For < 0.71, this will be from the local maven repo
-  // For > 0.71, this will be replaced by `com.facebook.react:react-android:$version` by react gradle plugin
-  //noinspection GradleDynamicVersion
-  if (REACT_NATIVE_VERSION >= 71) {
-    implementation "com.facebook.react:react-android:"
-    implementation "com.facebook.react:hermes-android:"
-  } else {
-    // noinspection GradleDynamicVersion
-    implementation 'com.facebook.react:react-native:+'
+  implementation 'com.facebook.react:react-android:+'
+}
+
+// Resolves "LOCAL_SRC_FILES points to a missing file, Check that libfb.so exists or that its path is correct".
+tasks.whenTaskAdded { task ->
+  if (task.name.contains("configureCMakeDebug")) {
+    rootProject.getTasksByName("packageReactNdkDebugLibs", true).forEach {
+      task.dependsOn(it)
+    }
+  }
+
+  if (task.name.contains("configureCMakeRel")) {
+    rootProject.getTasksByName("packageReactNdkReleaseLibs", true).forEach {
+      task.dependsOn(it)
+    }
   }
 }
 

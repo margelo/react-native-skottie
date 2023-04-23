@@ -1,12 +1,16 @@
 package com.skiaskottie;
 
+import android.util.Log;
+
 import androidx.annotation.NonNull;
 
+import com.facebook.fbreact.specs.NativeSkiaSkottieSpec;
 import com.facebook.react.bridge.Promise;
 import com.facebook.react.bridge.ReactApplicationContext;
+import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.bridge.ReactMethod;
 
-public class SkiaSkottieModule extends SkiaSkottieSpec {
+public class SkiaSkottieModule extends NativeSkiaSkottieSpec {
   public static final String NAME = "SkiaSkottie";
 
   SkiaSkottieModule(ReactApplicationContext context) {
@@ -14,21 +18,35 @@ public class SkiaSkottieModule extends SkiaSkottieSpec {
   }
 
   @Override
+  @ReactMethod(isBlockingSynchronousMethod = true)
+  public boolean install() {
+    try {
+      System.loadLibrary("react-native-skia-skottie");
+      ReactApplicationContext context = getReactApplicationContext();
+
+      initialize(
+        context.getJavaScriptContextHolder().get(),
+        // TODO: yeah, here we'd need to map to PlatformContext, which only exists in RNSkia java code
+        context
+      );
+
+      Log.i(NAME, "Initialized skia skottie!");
+      return true;
+    } catch (Exception exception) {
+      Log.e(NAME, "Failed to initialize skia skottie!", exception);
+      return false;
+    }
+  }
+
+  @Override
   @NonNull
   public String getName() {
     return NAME;
   }
+//
+//  static {
+//    System.loadLibrary("");
+//  }
 
-  static {
-    System.loadLibrary("react-native-skia-skottie");
-  }
-
-  public static native double nativeMultiply(double a, double b);
-
-  // Example method
-  // See https://reactnative.dev/docs/native-modules-android
-  @ReactMethod
-  public void multiply(double a, double b, Promise promise) {
-    promise.resolve(nativeMultiply(a, b));
-  }
+  public static native void initialize(long jsiPtr, ReactContext context);
 }

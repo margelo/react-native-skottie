@@ -6,22 +6,27 @@ set (CMAKE_VERBOSE_MAKEFILE ON)
 set (CMAKE_CXX_STANDARD 17)
 
 set(build_DIR ${CMAKE_SOURCE_DIR}/build)
-
-if(${REACT_NATIVE_VERSION} GREATER_EQUAL 71)
-  # Consume shared libraries and headers from prefabs
-  find_package(fbjni REQUIRED CONFIG)
-  find_package(ReactAndroid REQUIRED CONFIG)
-endif()
+# Consume shared libraries and headers from prefabs
+find_package(fbjni REQUIRED CONFIG)
+find_package(ReactAndroid REQUIRED CONFIG)
 
 add_library(${PACKAGE_NAME}
             SHARED
             ../cpp/react-native-skia-skottie.cpp
+            ../cpp/JsiSkSkottie.h
             cpp-adapter.cpp
 )
 
 # Specifies a path to native header files.
 include_directories(
             ../cpp
+
+            # React native
+            "${NODE_MODULES_DIR}/react-native/ReactCommon/callinvoker"
+            "${NODE_MODULES_DIR}/react-native/ReactCommon/jsi"
+            "${NODE_MODULES_DIR}/react-native/ReactCommon"
+            "${NODE_MODULES_DIR}/react-native/ReactCommon/react/nativemodule/core"
+            "${NODE_MODULES_DIR}/react-native/ReactAndroid/src/main/java/com/facebook/react/turbomodule/core/jni"
 
             # include all rn-skia headers
             "${NODE_MODULES_DIR}/@shopify/react-native-skia/android/cpp/skia/include/config/"
@@ -48,30 +53,47 @@ set(SKIA_MODULE_SKOTTIE_LIB "skottie")
 add_library(skottie STATIC IMPORTED)
 set_property(TARGET skottie PROPERTY IMPORTED_LOCATION "${SKIA_LIBS_PATH}/libskottie.a")
 
+set(RNSKIA_LIB "rnskia")
+add_library(rnskia SHARED IMPORTED)
+# FIXME: this depends on a intermediate build output. Thats just bad and unreliable. You need to comment
+# out ${RNSKIA_LIB} in the link libraries on the first build and then uncomment it on the second build.
+set_property(TARGET rnskia PROPERTY IMPORTED_LOCATION "${NODE_MODULES_DIR}/@shopify/react-native-skia/android/build/intermediates/merged_native_libs/${BUILD_TYPE}/out/lib/${ANDROID_ABI}/librnskia.so")
+
+set(SKIA_LIB "skia")
+set(SKIA_SKSHAPER_LIB "skshaper")
+set(SKIA_MODULE_SKSG_LIB "sksg")
+
+add_library(skia STATIC IMPORTED)
+set_property(TARGET skia PROPERTY IMPORTED_LOCATION "${SKIA_LIBS_PATH}/libskia.a")
+
+add_library(skshaper STATIC IMPORTED)
+set_property(TARGET skshaper PROPERTY IMPORTED_LOCATION "${SKIA_LIBS_PATH}/libskshaper.a")
+
+add_library(sksg STATIC IMPORTED)
+set_property(TARGET sksg PROPERTY IMPORTED_LOCATION "${SKIA_LIBS_PATH}/libsksg.a")
+
 ## Import react native JSI
-# Then, import JSI
-if(${REACT_NATIVE_VERSION} LESS 66)
-  # JSI lib didn't exist on RN 0.65 and before. Simply omit it.
-  set (JSI_LIB "")
-elseif(${REACT_NATIVE_VERSION} GREATER_EQUAL 71)
-  # RN 0.71 distributes prebuilt binaries.
-  set (JSI_LIB ReactAndroid::jsi)
-else()
-  file(GLOB LIBRN_DIR "${PREBUILT_DIR}/${ANDROID_ABI}")
-  # RN 0.66 distributes libjsi.so, can be used instead of compiling jsi.cpp manually.
-  find_library(
-          JSI_LIB
-          jsi
-          PATHS ${LIBRN_DIR}
-          NO_CMAKE_FIND_ROOT_PATH
-  )
-endif()
+set (JSI_LIB ReactAndroid::jsi)
 message("-- JSI     : " ${JSI_LIB})
+
+# Log lib
+find_library(
+        LOG_LIB
+        log
+)
 
 # Link
 target_link_libraries(
         ${PACKAGE_NAME}
+        ${LOG_LIB}
         ${JSI_LIB}
         ${SKIA_MODULE_SKOTTIE_LIB}
-        android
+        ${SKIA_SKSHAPER_LIB}
+        ${SKIA_MODULE_SKSG_LIB}
+        ${SKIA_LIB}
+        ${RNSKIA_LIB}
+        -ljnigraphics
+        -lGLESv2
+        -lEGL
+        -landroid
 )

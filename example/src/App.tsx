@@ -1,14 +1,17 @@
 import * as React from 'react';
 
 import { StyleSheet, View, Text } from 'react-native';
-import { multiply } from 'react-native-skia-skottie';
+import { install } from 'react-native-skia-skottie';
 
 export default function App() {
-  const [result, setResult] = React.useState<number | undefined>();
+  const [result, setResult] = React.useState<boolean | undefined>();
 
   React.useEffect(() => {
-    multiply(3, 7).then(setResult);
+    const res = install();
+    setResult(res);
   }, []);
+
+  // console.log(global.SkiaApi_SkottieCtor());
 
   return (
     <View style={styles.container}>
