@@ -1,0 +1,4 @@
+[submodule "externals/skia"]
+	path = externals/skia
+	url = https://chromium.googlesource.com/skia/
+	branch = chrome/m101

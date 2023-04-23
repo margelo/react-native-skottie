@@ -9,6 +9,7 @@
     "pods": "pod-install --quiet"
   },
   "dependencies": {
+    "@shopify/react-native-skia": "^0.1.185",
     "react": "18.2.0",
     "react-native": "0.71.7"
   },
@@ -16,7 +17,7 @@
     "@babel/core": "^7.20.0",
     "@babel/preset-env": "^7.20.0",
     "@babel/runtime": "^7.20.0",
-    "metro-react-native-babel-preset": "0.73.9",
-    "babel-plugin-module-resolver": "^4.1.0"
+    "babel-plugin-module-resolver": "^4.1.0",
+    "metro-react-native-babel-preset": "0.73.9"
   }
 }

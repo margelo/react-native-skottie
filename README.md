@@ -8,6 +8,12 @@ Skottie module for react-native-skia
 npm install react-native-skia-skottie
 ```
 
+or
+
+```sh
+yarn add react-native-skia-skottie
+```
+
 ## Usage
 
 ```js
