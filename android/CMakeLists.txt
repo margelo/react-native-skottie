@@ -9,6 +9,7 @@ set(build_DIR ${CMAKE_SOURCE_DIR}/build)
 # Consume shared libraries and headers from prefabs
 find_package(fbjni REQUIRED CONFIG)
 find_package(ReactAndroid REQUIRED CONFIG)
+find_package(shopify_react-native-skia REQUIRED CONFIG)
 
 add_library(${PACKAGE_NAME}
             SHARED
@@ -28,23 +29,8 @@ include_directories(
             "${NODE_MODULES_DIR}/react-native/ReactCommon/react/nativemodule/core"
             "${NODE_MODULES_DIR}/react-native/ReactAndroid/src/main/java/com/facebook/react/turbomodule/core/jni"
 
-            # include all rn-skia headers
-            "${NODE_MODULES_DIR}/@shopify/react-native-skia/android/cpp/skia/include/config/"
-            "${NODE_MODULES_DIR}/@shopify/react-native-skia/android/cpp/skia/include/core/"
-            "${NODE_MODULES_DIR}/@shopify/react-native-skia/android/cpp/skia/include/effects/"
-            "${NODE_MODULES_DIR}/@shopify/react-native-skia/android/cpp/skia/include/utils/"
-            "${NODE_MODULES_DIR}/@shopify/react-native-skia/android/cpp/skia/include/pathops/"
-            "${NODE_MODULES_DIR}/@shopify/react-native-skia/android/cpp/skia/modules/"
-            "${NODE_MODULES_DIR}/@shopify/react-native-skia/android/cpp/skia/include/"
-            "${NODE_MODULES_DIR}/@shopify/react-native-skia/android/cpp/skia/"
-
-            "${NODE_MODULES_DIR}/@shopify/react-native-skia/android/cpp/api/"
-            "${NODE_MODULES_DIR}/@shopify/react-native-skia/android/cpp/jsi/"
-            "${NODE_MODULES_DIR}/@shopify/react-native-skia/android/cpp/jni/include/"
-            "${NODE_MODULES_DIR}/@shopify/react-native-skia/android/cpp/rnskia-android/"
-            "${NODE_MODULES_DIR}/@shopify/react-native-skia/android/cpp/rnskia/"
-            "${NODE_MODULES_DIR}/@shopify/react-native-skia/android/cpp/rnskia/values/"
-            "${NODE_MODULES_DIR}/@shopify/react-native-skia/android/cpp/utils/"
+            # include skia headers
+            "${NODE_MODULES_DIR}/@shopify/react-native-skia/cpp/skia"
 )
 
 # Import prebuilt skia skottie library
@@ -53,18 +39,8 @@ set(SKIA_MODULE_SKOTTIE_LIB "skottie")
 add_library(skottie STATIC IMPORTED)
 set_property(TARGET skottie PROPERTY IMPORTED_LOCATION "${SKIA_LIBS_PATH}/libskottie.a")
 
-set(RNSKIA_LIB "rnskia")
-add_library(rnskia SHARED IMPORTED)
-# FIXME: this depends on a intermediate build output. Thats just bad and unreliable. You need to comment
-# out ${RNSKIA_LIB} in the link libraries on the first build and then uncomment it on the second build.
-set_property(TARGET rnskia PROPERTY IMPORTED_LOCATION "${NODE_MODULES_DIR}/@shopify/react-native-skia/android/build/intermediates/merged_native_libs/${BUILD_TYPE}/out/lib/${ANDROID_ABI}/librnskia.so")
-
-set(SKIA_LIB "skia")
 set(SKIA_SKSHAPER_LIB "skshaper")
 set(SKIA_MODULE_SKSG_LIB "sksg")
-
-add_library(skia STATIC IMPORTED)
-set_property(TARGET skia PROPERTY IMPORTED_LOCATION "${SKIA_LIBS_PATH}/libskia.a")
 
 add_library(skshaper STATIC IMPORTED)
 set_property(TARGET skshaper PROPERTY IMPORTED_LOCATION "${SKIA_LIBS_PATH}/libskshaper.a")
@@ -92,6 +68,7 @@ target_link_libraries(
         ${SKIA_MODULE_SKSG_LIB}
         ${SKIA_LIB}
         ${RNSKIA_LIB}
+        shopify_react-native-skia::rnskia   # <-- RN Skia
         -ljnigraphics
         -lGLESv2
         -lEGL

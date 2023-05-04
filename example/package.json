@@ -9,7 +9,7 @@
     "pods": "pod-install --quiet"
   },
   "dependencies": {
-    "@shopify/react-native-skia": "^0.1.185",
+    "@shopify/react-native-skia": "^0.1.187",
     "react": "18.2.0",
     "react-native": "0.71.7"
   },
