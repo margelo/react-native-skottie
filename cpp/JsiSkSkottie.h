@@ -1,5 +1,7 @@
 #pragma once
 
+#include <jsi/jsi.h>
+
 #include <JsiSkHostObjects.h>
 #include <JsiSkCanvas.h>
 
@@ -9,8 +11,6 @@
 #include <modules/skottie/include/Skottie.h>
 
 #pragma clang diagnostic pop
-
-#include <jsi/jsi.h>
 
 namespace RNSkia {
     using namespace facebook;
@@ -37,13 +37,14 @@ namespace RNSkia {
 
         JSI_HOST_FUNCTION(render) {
                 auto canvas = arguments[0]
-                .asObject(runtime)
-                .asHostObject<JsiSkCanvas>(runtime)
-                ->getCanvas();
+                    .asObject(runtime)
+                    .asHostObject<JsiSkCanvas>(runtime)
+                    ->getCanvas();
 
                 auto rect = JsiSkRect::fromValue(runtime, arguments[1]);
-                if (canvas != nullptr && rect != nullptr)
-                getObject()->render(canvas, rect.get());
+                if (canvas != nullptr && rect != nullptr) {
+                    getObject()->render(canvas, rect.get());
+                }
 
                 return jsi::Value::undefined();
         }
@@ -57,8 +58,7 @@ namespace RNSkia {
         /**
           Constructor
         */
-        JsiSkSkottie(std::shared_ptr<RNSkPlatformContext> context,
-                     const sk_sp<skottie::Animation> animation)
+        JsiSkSkottie(std::shared_ptr<RNSkPlatformContext> context, const sk_sp<skottie::Animation> animation)
                 : JsiSkWrappingSkPtrHostObject<skottie::Animation>(std::move(context), std::move(animation)){}
 
         /**
@@ -82,7 +82,7 @@ namespace RNSkia {
             return JSI_HOST_FUNCTION_LAMBDA {
                     auto jsonStr = arguments[0].asString(runtime).utf8(runtime);
                     auto animation = skottie::Animation::Builder()
-                    .make(jsonStr.c_str(), jsonStr.size());
+                        .make(jsonStr.c_str(), jsonStr.size());
 
                     // Return the newly constructed object
                     return jsi::Object::createFromHostObject(

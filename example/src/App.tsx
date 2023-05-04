@@ -31,7 +31,11 @@ export default function App() {
 
   const onDraw = useDrawCallback((canvas, info) => {
     skottie.seek(progress.current);
-    skottie.render(canvas, Skia.XYWHRect(0, 0, info.width, info.height));
+    const rect = Skia.XYWHRect(0, 0, info.width, info.height);
+    // const paint = Skia.Paint();
+    // paint.setColor(Skia.Color('#000000'));
+    // canvas.drawRect(rect, paint);
+    skottie.render(canvas, rect);
   });
 
   const skRef = React.useRef<SkiaView>(null);

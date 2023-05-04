@@ -72,7 +72,7 @@ target_link_libraries(
         ${SKIA_SKSHAPER_LIB}
         ${SKIA_MODULE_SKSG_LIB}
         ${SKIA_LIB}
-        shopify_react-native-skia::rnskia   # <-- RN Skia
+        shopify_react-native-skia::rnskia
         -ljnigraphics
         -lGLESv2
         -lEGL

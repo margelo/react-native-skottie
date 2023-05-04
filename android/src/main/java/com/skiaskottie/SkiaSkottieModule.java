@@ -5,10 +5,9 @@ import android.util.Log;
 import androidx.annotation.NonNull;
 
 import com.facebook.fbreact.specs.NativeSkiaSkottieSpec;
-import com.facebook.react.bridge.Promise;
 import com.facebook.react.bridge.ReactApplicationContext;
-import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.bridge.ReactMethod;
+import com.shopify.reactnative.skia.PlatformContext;
 
 public class SkiaSkottieModule extends NativeSkiaSkottieSpec {
   public static final String NAME = "SkiaSkottie";
@@ -26,8 +25,7 @@ public class SkiaSkottieModule extends NativeSkiaSkottieSpec {
 
       initialize(
         context.getJavaScriptContextHolder().get(),
-        // TODO: yeah, here we'd need to map to PlatformContext, which only exists in RNSkia java code
-        context
+        new PlatformContext(context)
       );
 
       Log.i(NAME, "Initialized skia skottie!");
@@ -43,10 +41,6 @@ public class SkiaSkottieModule extends NativeSkiaSkottieSpec {
   public String getName() {
     return NAME;
   }
-//
-//  static {
-//    System.loadLibrary("");
-//  }
 
-  public static native void initialize(long jsiPtr, ReactContext context);
+  public static native void initialize(long jsiPtr, PlatformContext context);
 }
