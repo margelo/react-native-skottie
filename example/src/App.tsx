@@ -1,34 +1,54 @@
 import * as React from 'react';
 
-import { StyleSheet, View, Text } from 'react-native';
-import { install } from 'react-native-skia-skottie';
+import { StyleSheet, SafeAreaView } from 'react-native';
+// import { makeSkSkottieFromString } from 'react-native-skia-skottie';
+import HandsLottie from './Hands.json';
+// import {
+//   Skia,
+//   SkiaView,
+//   useDrawCallback,
+//   useTiming,
+//   Easing,
+// } from '@shopify/react-native-skia';
 
 export default function App() {
-  const [result, setResult] = React.useState<boolean | undefined>();
+  // const skottie = React.useMemo(
+  //   () => makeSkSkottieFromString(JSON.stringify(HandsLottie)),
+  //   []
+  // );
 
-  React.useEffect(() => {
-    const res = install();
-    setResult(res);
-  }, []);
+  // const progress = useTiming(
+  //   {
+  //     from: 0,
+  //     to: 1,
+  //     loop: true,
+  //   },
+  //   {
+  //     duration: skottie.duration * 1000,
+  //     easing: Easing.linear,
+  //   }
+  // );
 
-  // console.log(global.SkiaApi_SkottieCtor());
+  // const onDraw = useDrawCallback((canvas, info) => {
+  //   skottie.seek(progress.current);
+  //   skottie.render(canvas, Skia.XYWHRect(0, 0, info.width, info.height));
+  // });
 
-  return (
-    <View style={styles.container}>
-      <Text>Result: {result}</Text>
-    </View>
-  );
+  // const skRef = React.useRef<SkiaView>(null);
+  // React.useEffect(() => {
+  //   skRef.current?.registerValues([progress]);
+  // }, [progress]);
+
+  return null;
+  // return (
+  //   <SafeAreaView style={styles.flex1}>
+  //     <SkiaView ref={skRef} style={styles.flex1} onDraw={onDraw} />
+  //   </SafeAreaView>
+  // );
 }
 
 const styles = StyleSheet.create({
-  container: {
+  flex1: {
     flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  box: {
-    width: 60,
-    height: 60,
-    marginVertical: 20,
   },
 });

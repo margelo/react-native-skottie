@@ -1,3 +1,4 @@
+import type { SkCanvas, SkRect } from '@shopify/react-native-skia';
 import { NativeModules, Platform } from 'react-native';
 
 const LINKING_ERROR =
@@ -24,6 +25,22 @@ const SkiaSkottie = SkiaSkottieModule
       }
     );
 
-export function install(): boolean {
-  return SkiaSkottie.install();
+if (typeof SkiaSkottie.install === 'function') {
+  SkiaSkottie.install();
+} else {
+  throw new Error(
+    "Couldn't call SkiaModule.install! Is the native library installed?"
+  );
 }
+
+export type SkSkottie = {
+  duration: number;
+  fps: number;
+  render: (canvas: SkCanvas, rect: SkRect) => void;
+  seek: (progress: number) => void;
+};
+declare global {
+  var SkiaApi_SkottieCtor: (jsonString: string) => SkSkottie;
+}
+
+export const makeSkSkottieFromString = global.SkiaApi_SkottieCtor;
