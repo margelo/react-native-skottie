@@ -1,3 +1,4 @@
+project(react-native-skia-skottie)
 cmake_minimum_required(VERSION 3.4.1)
 
 set(PACKAGE_NAME "react-native-skia-skottie")
@@ -35,16 +36,20 @@ include_directories(
 
 # Import prebuilt skia skottie library
 set(SKIA_LIBS_PATH "${NODE_MODULES_DIR}/@shopify/react-native-skia/libs/android/${ANDROID_ABI}")
+
+set(SKIA_LIB "skia")
+add_library(skia STATIC IMPORTED)
+set_property(TARGET skia PROPERTY IMPORTED_LOCATION "${SKIA_LIBS_PATH}/libskia.a")
+
 set(SKIA_MODULE_SKOTTIE_LIB "skottie")
 add_library(skottie STATIC IMPORTED)
 set_property(TARGET skottie PROPERTY IMPORTED_LOCATION "${SKIA_LIBS_PATH}/libskottie.a")
 
 set(SKIA_SKSHAPER_LIB "skshaper")
-set(SKIA_MODULE_SKSG_LIB "sksg")
-
 add_library(skshaper STATIC IMPORTED)
 set_property(TARGET skshaper PROPERTY IMPORTED_LOCATION "${SKIA_LIBS_PATH}/libskshaper.a")
 
+set(SKIA_MODULE_SKSG_LIB "sksg")
 add_library(sksg STATIC IMPORTED)
 set_property(TARGET sksg PROPERTY IMPORTED_LOCATION "${SKIA_LIBS_PATH}/libsksg.a")
 
@@ -67,7 +72,6 @@ target_link_libraries(
         ${SKIA_SKSHAPER_LIB}
         ${SKIA_MODULE_SKSG_LIB}
         ${SKIA_LIB}
-        ${RNSKIA_LIB}
         shopify_react-native-skia::rnskia   # <-- RN Skia
         -ljnigraphics
         -lGLESv2

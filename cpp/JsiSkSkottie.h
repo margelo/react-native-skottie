@@ -22,8 +22,10 @@ namespace RNSkia {
         JSI_PROPERTY_GET(duration) { return static_cast<double>(getObject()->duration()); }
         JSI_PROPERTY_GET(fps) { return static_cast<double>(getObject()->fps()); }
 
-        JSI_EXPORT_PROPERTY_GETTERS(JSI_EXPORT_PROP_GET(JsiSkSkottie, duration),
-                JSI_EXPORT_PROP_GET(JsiSkSkottie, fps))
+        JSI_EXPORT_PROPERTY_GETTERS(
+                JSI_EXPORT_PROP_GET(JsiSkSkottie, duration),
+                JSI_EXPORT_PROP_GET(JsiSkSkottie, fps)
+        )
         //#endregion
 
 
@@ -46,8 +48,10 @@ namespace RNSkia {
                 return jsi::Value::undefined();
         }
 
-        JSI_EXPORT_FUNCTIONS(JSI_EXPORT_FUNC(JsiSkSkottie, seek),
-                JSI_EXPORT_FUNC(JsiSkSkottie, render), )
+        JSI_EXPORT_FUNCTIONS(
+                JSI_EXPORT_FUNC(JsiSkSkottie, seek),
+                JSI_EXPORT_FUNC(JsiSkSkottie, render),
+        )
         //#endregion
 
         /**

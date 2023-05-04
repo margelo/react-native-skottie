@@ -166,6 +166,6 @@
     "jsSrcsDir": "src"
   },
   "dependencies": {
-    "@shopify/react-native-skia": "^0.1.185"
+    "@shopify/react-native-skia": "^0.1.188"
   }
 }
