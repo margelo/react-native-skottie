@@ -11,9 +11,9 @@ namespace RNSkia {
     ) {
         // Install bindings
         auto createSkottie = JsiSkSkottie::createCtor(std::move(platformContext));
-        // TODO: fix me - what to fix here?
         jsRuntime->global().setProperty(
                 *jsRuntime, "SkiaApi_SkottieCtor",
+                // TODO: Note, do we need to move the host function?
                 jsi::Function::createFromHostFunction(
                         *jsRuntime,
                         jsi::PropNameID::forAscii(*jsRuntime, "SkottieCtor"),

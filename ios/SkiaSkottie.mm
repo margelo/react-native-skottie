@@ -1,18 +1,38 @@
 #import "SkiaSkottie.h"
 
+#import <React/RCTBridge+Private.h>
+#import <React/RCTUtils.h>
+#import <ReactCommon/RCTTurboModule.h>
+#import <jsi/jsi.h>
+
 @implementation SkiaSkottie
-RCT_EXPORT_MODULE()
+RCT_EXPORT_MODULE() //TODO: include package name here?
 
-// Example method
-// See // https://reactnative.dev/docs/native-modules-ios
-RCT_REMAP_METHOD(multiply,
-                 multiplyWithA:(double)a withB:(double)b
-                 withResolver:(RCTPromiseResolveBlock)resolve
-                 withRejecter:(RCTPromiseRejectBlock)reject)
+RCT_EXPORT_BLOCKING_SYNCHRONOUS_METHOD(install)
 {
-    NSNumber *result = @(skiaskottie::multiply(a, b));
+  NSLog(@"Installing JSI bindings for react-native-skia-skottie...");
+  RCTBridge* bridge = [RCTBridge currentBridge];
+  RCTCxxBridge* cxxBridge = (RCTCxxBridge*)bridge;
+  if (cxxBridge == nil) {
+    return @false;
+  }
 
-    resolve(result);
+  using namespace facebook;
+
+  auto jsiRuntime = (jsi::Runtime*) cxxBridge.runtime;
+  if (jsiRuntime == nil) {
+    return @false;
+  }
+  auto& runtime = *jsiRuntime;
+  auto callInvoker = bridge.jsCallInvoker;
+
+  // TODO: pass correct reference to RNSKPlatformContext
+  // Note: I am wondering if for skottie we really need the platform context
+  //       or could just do the JSI ourselves?
+  RNSkia::RNSkModuleManager::installBindings(jsiRuntime, nullptr);
+
+  NSLog(@"Successfully installed JSI bindings for react-native-skia-skottie!");
+  return @true;
 }
 
 // Don't compile this code when we build for the old architecture.

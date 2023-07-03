@@ -78,7 +78,7 @@
     "@types/react": "17.0.21"
   },
   "peerDependencies": {
-    "@shopify/react-native-skia": "*",
+    "@shopify/react-native-skia": ">= 0.1.197",
     "react": "*",
     "react-native": "*"
   },
