@@ -1,7 +1,10 @@
 import * as React from 'react';
 
 import { StyleSheet, SafeAreaView } from 'react-native';
-import { makeSkSkottieFromString } from 'react-native-skia-skottie';
+import {
+  makeSkSkottieFromString,
+  SkiaSkottieView,
+} from 'react-native-skia-skottie';
 import HandsLottie from './Hands.json';
 import {
   Skia,
@@ -12,6 +15,14 @@ import {
 } from '@shopify/react-native-skia';
 
 export default function App() {
+  return (
+    <SafeAreaView style={styles.flex1}>
+      <SkiaSkottieView style={styles.flex1} src={JSON.stringify(HandsLottie)} />
+    </SafeAreaView>
+  );
+}
+
+function SimpleExample() {
   const skottie = React.useMemo(
     () => makeSkSkottieFromString(JSON.stringify(HandsLottie)),
     []

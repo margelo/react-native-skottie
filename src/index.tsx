@@ -44,3 +44,6 @@ declare global {
 }
 
 export const makeSkSkottieFromString = global.SkiaApi_SkottieCtor;
+
+import { SkiaSkottieView } from './SkiaSkottieView';
+export { SkiaSkottieView };
