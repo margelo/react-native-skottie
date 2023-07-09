@@ -6,8 +6,10 @@ import androidx.annotation.NonNull;
 
 import com.facebook.fbreact.specs.NativeSkiaSkottieSpec;
 import com.facebook.react.bridge.ReactApplicationContext;
+import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.bridge.ReactMethod;
 import com.shopify.reactnative.skia.PlatformContext;
+import com.shopify.reactnative.skia.RNSkiaModule;
 
 public class SkiaSkottieModule extends NativeSkiaSkottieSpec {
   public static final String NAME = "SkiaSkottie";
@@ -23,9 +25,10 @@ public class SkiaSkottieModule extends NativeSkiaSkottieSpec {
       System.loadLibrary("react-native-skia-skottie");
       ReactApplicationContext context = getReactApplicationContext();
 
+      RNSkiaModule skiaModule = context.getNativeModule(RNSkiaModule.class);
       initialize(
         context.getJavaScriptContextHolder().get(),
-        new PlatformContext(context)
+        skiaModule.getSkiaManager().getPlatformContext()
       );
 
       Log.i(NAME, "Initialized skia skottie!");
