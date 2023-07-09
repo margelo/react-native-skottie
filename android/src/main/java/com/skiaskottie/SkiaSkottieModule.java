@@ -4,21 +4,21 @@ import android.util.Log;
 
 import androidx.annotation.NonNull;
 
-import com.facebook.fbreact.specs.NativeSkiaSkottieSpec;
 import com.facebook.react.bridge.ReactApplicationContext;
-import com.facebook.react.bridge.ReactContext;
+import com.facebook.react.bridge.ReactContextBaseJavaModule;
 import com.facebook.react.bridge.ReactMethod;
+import com.facebook.react.module.annotations.ReactModule;
 import com.shopify.reactnative.skia.PlatformContext;
 import com.shopify.reactnative.skia.RNSkiaModule;
 
-public class SkiaSkottieModule extends NativeSkiaSkottieSpec {
+@ReactModule(name = SkiaSkottieModule.NAME)
+public class SkiaSkottieModule extends ReactContextBaseJavaModule {
   public static final String NAME = "SkiaSkottie";
 
-  SkiaSkottieModule(ReactApplicationContext context) {
+  public SkiaSkottieModule(ReactApplicationContext context) {
     super(context);
   }
 
-  @Override
   @ReactMethod(isBlockingSynchronousMethod = true)
   public boolean install() {
     try {
