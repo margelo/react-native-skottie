@@ -61,8 +61,18 @@ export class SkiaSkottieView extends React.Component<SkiaSkottieViewProps> {
         stopMapper(this._mapperId);
       }
 
+      const timePerFrame = 1000 / 30;
+      let lastRenderTimestamp = { value: 0 };
       this._mapperId = startMapper(() => {
         'worklet';
+
+        // Only re-render every timePerFrame
+        const now = performance.now();
+        if (now - lastRenderTimestamp.value < timePerFrame) {
+          return;
+        }
+        lastRenderTimestamp.value = now;
+
         SkiaViewApi.setJsiProperty(viewId, 'progress', progress.value);
         // TODO: we could schedule this call in the native side directly when sitting the prop
         SkiaViewApi.requestRedraw(viewId);

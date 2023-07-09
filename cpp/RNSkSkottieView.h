@@ -115,7 +115,6 @@ public:
         if (prop.first == "progress") {
             std::static_pointer_cast<RNSkSkottieRenderer>(getRenderer())
             ->setProgress(prop.second.getAsNumber());
-            // TODO: schedule re-render?
         }
     }
   }
