@@ -2,30 +2,61 @@ import '@shopify/react-native-skia'; // Important: register skia module
 import type {
   NativeSkiaViewProps,
   SkRect,
+  SkiaProps,
   SkiaValue,
 } from '@shopify/react-native-skia/lib/typescript/src';
 import React from 'react';
 import { requireNativeComponent } from 'react-native';
 import { SkiaViewApi } from './SkiaViewApi';
 
+// TODO: would be nice to have this properly exported publicly
+import {
+  startMapper,
+  isSharedValue,
+} from '@shopify/react-native-skia/src/external/reanimated/moduleWrapper';
+// import { startMapper, isSharedValue } from 'react-native-reanimated';
+
 // TODO: web support
 const NativeSkiaSkottieView =
   requireNativeComponent<NativeSkiaViewProps>('SkiaSkottieView');
 
-export interface SkiaSkottieViewProps extends NativeSkiaViewProps {
-  src: string;
-}
+export type SkiaSkottieViewProps = SkiaProps<
+  NativeSkiaViewProps & {
+    src: string;
+    progress: number;
+  }
+>;
 
+// TODO: make the nativeId safe by sharing it from the rn-skia implementation
 const nativeId = { current: 94192 };
 
 export class SkiaSkottieView extends React.Component<SkiaSkottieViewProps> {
   constructor(props: SkiaSkottieViewProps) {
     super(props);
     this._nativeId = nativeId.current++;
-    const { src } = props;
-    if (src) {
+
+    if (typeof props.src === 'string') {
       assertSkiaViewApi();
-      SkiaViewApi.setJsiProperty(this._nativeId, 'src', src);
+      SkiaViewApi.setJsiProperty(this._nativeId, 'src', props.src);
+    }
+
+    if (typeof props.progress === 'number') {
+      assertSkiaViewApi();
+      SkiaViewApi.setJsiProperty(this._nativeId, 'progress', props.progress);
+    }
+
+    // TODO: performance, i can imagine we might send more updates than needed
+    //       so we might want to make sure we render only each frame (60fps)
+    const viewId = this._nativeId;
+    if (isSharedValue(props.progress)) {
+      // TODO: stop the mapper
+      const mapperId = startMapper(() => {
+        'worklet';
+        SkiaViewApi.setJsiProperty(viewId, 'progress', props.progress.value);
+        // TODO: we could schedule this call in the native side directly when sitting the prop
+        SkiaViewApi.requestRedraw(viewId);
+      }, [props.progress]);
+      console.log('mapperId', mapperId);
     }
   }
 
@@ -36,10 +67,14 @@ export class SkiaSkottieView extends React.Component<SkiaSkottieViewProps> {
   }
 
   componentDidUpdate(prevProps: SkiaSkottieViewProps) {
-    const { src } = this.props;
+    const { src, progress } = this.props;
     if (src !== prevProps.src) {
       assertSkiaViewApi();
       SkiaViewApi.setJsiProperty(this._nativeId, 'src', src);
+    }
+    if (progress !== prevProps.progress) {
+      assertSkiaViewApi();
+      SkiaViewApi.setJsiProperty(this._nativeId, 'progress', progress);
     }
   }
 
@@ -73,6 +108,7 @@ export class SkiaSkottieView extends React.Component<SkiaSkottieViewProps> {
 
   render() {
     const { mode, debug = false, ...viewProps } = this.props;
+
     return (
       <NativeSkiaSkottieView
         collapsable={false}
@@ -86,7 +122,6 @@ export class SkiaSkottieView extends React.Component<SkiaSkottieViewProps> {
 }
 
 const assertSkiaViewApi = () => {
-  console.log({ SkiaViewApi });
   if (
     SkiaViewApi === null ||
     SkiaViewApi.setJsiProperty === null ||

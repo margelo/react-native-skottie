@@ -7,17 +7,34 @@ import {
 } from 'react-native-skia-skottie';
 import HandsLottie from './Hands.json';
 import {
-  Skia,
-  SkiaView,
-  useDrawCallback,
-  useTiming,
+  useSharedValue,
+  withRepeat,
+  withTiming,
   Easing,
-} from '@shopify/react-native-skia';
+} from 'react-native-reanimated';
 
 export default function App() {
+  const progress = useSharedValue(0);
+
+  React.useEffect(() => {
+    // TODO: we don't know how long the animation is, use JsiSkSkottie here?
+    //       but we might want to avoid creating the same animation twice? Not sure
+    //       how expensive it is.
+    progress.value = withRepeat(
+      withTiming(1, { duration: 5000, easing: Easing.linear }),
+      -1,
+      false
+    );
+  }, [progress]);
+
   return (
     <SafeAreaView style={styles.flex1}>
-      <SkiaSkottieView style={styles.flex1} src={JSON.stringify(HandsLottie)} />
+      <SkiaSkottieView
+        style={styles.flex1}
+        progress={progress}
+        debug={true}
+        src={JSON.stringify(HandsLottie)}
+      />
     </SafeAreaView>
   );
 }

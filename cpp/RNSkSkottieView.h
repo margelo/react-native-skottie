@@ -51,16 +51,20 @@ public:
     performDraw(canvasProvider);
   }
 
-//  void setPicture(std::shared_ptr<jsi::HostObject> picture) {
-//    if (picture == nullptr) {
-//      _picture = nullptr;
-//    } else {
-//      _picture = std::dynamic_pointer_cast<JsiSkPicture>(picture);
-//    }
-//    _requestRedraw();
-//  }
           void setSrc(std::string src) {
               _animation = skottie::Animation::Builder().make(src.c_str(), src.size());
+              if (!std::isnan(_initialProgress)) {
+                  setProgress(_initialProgress);
+                  _initialProgress = std::nan("");
+              }
+          }
+          
+          void setProgress(double progress) {
+              if (_animation != nullptr) {
+                  _animation.get()->seek(progress);
+              } else {
+                  _initialProgress = progress;
+              }
           }
 
 private:
@@ -73,7 +77,6 @@ private:
       canvas->scale(pd, pd);
 
       if (_animation != nullptr) {
-          _animation.get()->seek(0.21);
           _animation.get()->render(canvas);
       }
 
@@ -83,8 +86,8 @@ private:
   }
 
   std::shared_ptr<RNSkPlatformContext> _platformContext;
-//  std::shared_ptr<JsiSkPicture> _picture;
   sk_sp<skottie::Animation> _animation;
+  double _initialProgress = std::nan("");
 };
 
 class RNSkSkottieView : public RNSkView {
@@ -108,6 +111,11 @@ public:
         if (prop.first == "src" && prop.second.getType() == RNJsi::JsiWrapperValueType::String) {
             std::static_pointer_cast<RNSkSkottieRenderer>(getRenderer())
             ->setSrc(prop.second.getAsString());
+        }
+        if (prop.first == "progress") {
+            std::static_pointer_cast<RNSkSkottieRenderer>(getRenderer())
+            ->setProgress(prop.second.getAsNumber());
+            // TODO: schedule re-render?
         }
     }
   }
