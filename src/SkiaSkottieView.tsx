@@ -15,11 +15,8 @@ import {
   isSharedValue,
 } from '@shopify/react-native-skia/src/external/reanimated/moduleWrapper';
 
-import SkiaSkottieNativeComponent from './SkiaSkottieNativeComponent';
-
 // TODO: web support
 const NativeSkiaSkottieView =
-  SkiaSkottieNativeComponent ??
   requireNativeComponent<NativeSkiaViewProps>('SkiaSkottieView');
 
 export type SkiaSkottieViewProps = SkiaProps<
