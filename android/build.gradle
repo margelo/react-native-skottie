@@ -113,7 +113,11 @@ android {
     excludes = [
       "META-INF",
       "META-INF/**",
+//      "**/libc++_shared.so",
+//      "**/libfbjni.so",
       "**/libjsi.so",
+      "**/libreact_nativemodule_core.so",
+      "**/libturbomodulejsijni.so",
     ]
     sourceSets {
       main {
