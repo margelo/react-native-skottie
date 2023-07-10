@@ -2,7 +2,7 @@
   "compilerOptions": {
     "baseUrl": "./",
     "paths": {
-      "react-native-skia-skottie": ["./src/index"]
+      "react-native-skottie": ["./src/index"]
     },
     "allowUnreachableCode": false,
     "allowUnusedLabels": false,

@@ -333,7 +333,7 @@ PODS:
     - React
     - React-callinvoker
     - React-Core
-  - react-native-skia-skottie (0.1.0):
+  - react-native-skia-skottie (0.0.2):
     - React
     - React-Core
     - react-native-skia
@@ -646,7 +646,7 @@ SPEC CHECKSUMS:
   React-jsinspector: 9885f6f94d231b95a739ef7bb50536fb87ce7539
   React-logger: 3f8ebad1be1bf3299d1ab6d7f971802d7395c7ef
   react-native-skia: e2cb3443442bf7680e3276dc82cd87c97f96b6f9
-  react-native-skia-skottie: 74635679c0e9cbeb8ddfa8d74c8a4b0c8c4e846f
+  react-native-skia-skottie: 54b6f6c37a13e578028d317645b5d596f4e394c3
   React-perflogger: 2d505bbe298e3b7bacdd9e542b15535be07220f6
   React-RCTActionSheet: 0e96e4560bd733c9b37efbf68f5b1a47615892fb
   React-RCTAnimation: fd138e26f120371c87e406745a27535e2c8a04ef

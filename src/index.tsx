@@ -45,7 +45,6 @@ declare global {
   var SkiaApi_SkottieCtor: (jsonString: string) => SkSkottie;
 }
 
-// TODO: fix the public API
 export const makeSkSkottieFromString = global.SkiaApi_SkottieCtor;
 
 import { SkiaSkottieView } from './SkiaSkottieView';
