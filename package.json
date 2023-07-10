@@ -1,6 +1,6 @@
 {
-  "name": "react-native-skia-skottie",
-  "version": "0.1.0",
+  "name": "react-native-skottie",
+  "version": "0.0.1",
   "description": "test",
   "main": "lib/commonjs/index",
   "module": "lib/module/index",
@@ -46,9 +46,9 @@
   "author": "Margelo GmbH <hanno@margelo.io> (https://github.com/margelo)",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/margelo/react-native-skia-skottie/issues"
+    "url": "https://github.com/margelo/react-native-skottie/issues"
   },
-  "homepage": "https://github.com/margelo/react-native-skia-skottie#readme",
+  "homepage": "https://github.com/margelo/react-native-skottie#readme",
   "publishConfig": {
     "registry": "https://registry.npmjs.org/"
   },
