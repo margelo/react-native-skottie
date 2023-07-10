@@ -50,6 +50,7 @@ export type SkiaSkottieViewProps = NativeSkiaViewProps & {
   loop?: boolean;
 
   // TODO: onAnimationFinish
+  // TODO: resizeMode?: 'cover' | 'contain' | 'center';
 } & SkiaProps<{ progress?: number }>;
 
 // TODO: make the nativeId safe by sharing it from the rn-skia implementation
