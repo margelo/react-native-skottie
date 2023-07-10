@@ -19,12 +19,9 @@ import {
 const NativeSkiaSkottieView =
   requireNativeComponent<NativeSkiaViewProps>('SkiaSkottieView');
 
-export type SkiaSkottieViewProps = SkiaProps<
-  NativeSkiaViewProps & {
-    src: string;
-    progress: number;
-  }
->;
+export type SkiaSkottieViewProps = NativeSkiaViewProps & {
+  src: string;
+} & SkiaProps<{ progress: number }>;
 
 // TODO: make the nativeId safe by sharing it from the rn-skia implementation
 const nativeId = { current: 94192 };
