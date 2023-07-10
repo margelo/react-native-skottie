@@ -28,16 +28,25 @@ export class SkiaSkottieView extends React.Component<SkiaSkottieViewProps> {
     super(props);
     this._nativeId = nativeId.current++;
 
-    if (typeof props.src === 'string') {
-      assertSkiaViewApi();
-      SkiaViewApi.setJsiProperty(this._nativeId, 'src', props.src);
-    }
-
+    this.updateSrc(props.src);
     this.updateProgress(props.progress);
   }
 
   private _nativeId: number;
   private _mapperId: number | undefined = undefined;
+
+  // TODO: we want to pass it the JSI object instance
+  private updateSrc(src: SkiaSkottieViewProps['src']) {
+    assertSkiaViewApi();
+    if (typeof src === 'string') {
+      SkiaViewApi.setJsiProperty(this._nativeId, 'src', src);
+      return;
+    }
+    if (typeof src === 'object') {
+      SkiaViewApi.setJsiProperty(this._nativeId, 'src', JSON.stringify(src));
+      return;
+    }
+  }
 
   private updateProgress(progress: SkiaSkottieViewProps['progress']) {
     assertSkiaViewApi();
@@ -81,8 +90,7 @@ export class SkiaSkottieView extends React.Component<SkiaSkottieViewProps> {
   componentDidUpdate(prevProps: SkiaSkottieViewProps) {
     const { src, progress } = this.props;
     if (src !== prevProps.src) {
-      assertSkiaViewApi();
-      SkiaViewApi.setJsiProperty(this._nativeId, 'src', src);
+      this.updateSrc(this.props.src);
     }
     if (progress !== prevProps.progress) {
       this.updateProgress(progress);
