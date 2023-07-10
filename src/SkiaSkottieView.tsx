@@ -24,7 +24,7 @@ const nativeIdCount = { current: 94192 };
 export const SkiaSkottieView = (props: SkiaSkottieViewProps) => {
   const mapperIdRef = useRef<number | undefined>(undefined);
   const nativeId = useRef(nativeIdCount.current++).current;
-  const prevPropsRef = useRef<SkiaSkottieViewProps>();
+  const prevPropsRef = useRef<SkiaSkottieViewProps>(props);
 
   const updateSrc = useCallback(
     (src: SkiaSkottieViewProps['src']) => {
@@ -78,14 +78,21 @@ export const SkiaSkottieView = (props: SkiaSkottieViewProps) => {
     [nativeId]
   );
 
+  // On mount/unmount:
   useEffect(() => {
+    updateSrc(props.src);
+    updateProgress(props.progress);
+
     return () => {
       if (mapperIdRef.current != null) {
         stopMapper(mapperIdRef.current);
       }
     };
+
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
+  // On props change:
   useEffect(() => {
     const prevProps = prevPropsRef.current;
 
