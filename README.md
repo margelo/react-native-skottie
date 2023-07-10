@@ -1,27 +1,41 @@
-# react-native-skia-skottie
+# react-native-skottie
 
 Skottie module for react-native-skia
 
 ## Installation
 
 ```sh
-npm install react-native-skia-skottie
+npm install react-native-skottie
 ```
 
 or
 
 ```sh
-yarn add react-native-skia-skottie
+yarn add react-native-skottie
 ```
 
 ## Usage
 
-```js
-import { multiply } from 'react-native-skia-skottie';
+```tsx
+import * as React from 'react';
 
-// ...
+import { StyleSheet, SafeAreaView } from 'react-native';
+import { SkiaSkottieView } from 'react-native-skottie';
+import HandsLottie from './Hands.json';
 
-const result = await multiply(3, 7);
+export default function App() {
+  return (
+    <SafeAreaView style={styles.flex1}>
+      <SkiaSkottieView style={styles.flex1} src={HandsLottie} />
+    </SafeAreaView>
+  );
+}
+
+const styles = StyleSheet.create({
+  flex1: {
+    flex: 1,
+  },
+});
 ```
 
 ## Contributing
