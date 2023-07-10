@@ -1,45 +1,26 @@
 package com.skiaskottie;
 
-import androidx.annotation.Nullable;
+import androidx.annotation.NonNull;
 
+import com.facebook.react.ReactPackage;
 import com.facebook.react.bridge.NativeModule;
 import com.facebook.react.bridge.ReactApplicationContext;
-import com.facebook.react.module.model.ReactModuleInfo;
-import com.facebook.react.module.model.ReactModuleInfoProvider;
-import com.facebook.react.TurboReactPackage;
+import com.facebook.react.uimanager.ViewManager;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.util.Collections;
+import java.util.List;
 
-public class SkiaSkottiePackage extends TurboReactPackage {
+public class SkiaSkottiePackage implements ReactPackage {
 
-  @Nullable
+  @NonNull
   @Override
-  public NativeModule getModule(String name, ReactApplicationContext reactContext) {
-    if (name.equals(SkiaSkottieModule.NAME)) {
-      return new SkiaSkottieModule(reactContext);
-    } else {
-      return null;
-    }
+  public List<NativeModule> createNativeModules(@NonNull ReactApplicationContext reactApplicationContext) {
+    return Collections.singletonList(new SkiaSkottieModule(reactApplicationContext));
   }
 
+  @NonNull
   @Override
-  public ReactModuleInfoProvider getReactModuleInfoProvider() {
-    return () -> {
-      final Map<String, ReactModuleInfo> moduleInfos = new HashMap<>();
-      boolean isTurboModule = BuildConfig.IS_NEW_ARCHITECTURE_ENABLED;
-      moduleInfos.put(
-              SkiaSkottieModule.NAME,
-              new ReactModuleInfo(
-                      SkiaSkottieModule.NAME,
-                      SkiaSkottieModule.NAME,
-                      false, // canOverrideExistingModule
-                      false, // needsEagerInit
-                      true, // hasConstants
-                      false, // isCxxModule
-                      isTurboModule // isTurboModule
-      ));
-      return moduleInfos;
-    };
+  public List<ViewManager> createViewManagers(@NonNull ReactApplicationContext reactApplicationContext) {
+    return Collections.singletonList(new SkiaSkottieViewManager());
   }
 }

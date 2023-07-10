@@ -1,3 +1,4 @@
+import type { SkCanvas, SkRect } from '@shopify/react-native-skia';
 import { NativeModules, Platform } from 'react-native';
 
 const LINKING_ERROR =
@@ -6,12 +7,14 @@ const LINKING_ERROR =
   '- You rebuilt the app after installing the package\n' +
   '- You are not using Expo Go\n';
 
-// @ts-expect-error
-const isTurboModuleEnabled = global.__turboModuleProxy != null;
+// TODO: enable turbo module arch again
+// const isTurboModuleEnabled = global.__turboModuleProxy != null;
 
-const SkiaSkottieModule = isTurboModuleEnabled
-  ? require('./NativeSkiaSkottie').default
-  : NativeModules.SkiaSkottie;
+// const SkiaSkottieModule = isTurboModuleEnabled
+//   ? require('./NativeSkiaSkottie').default
+//   : NativeModules.SkiaSkottie;
+
+const SkiaSkottieModule = NativeModules.SkiaSkottie;
 
 const SkiaSkottie = SkiaSkottieModule
   ? SkiaSkottieModule
@@ -24,6 +27,26 @@ const SkiaSkottie = SkiaSkottieModule
       }
     );
 
-export function multiply(a: number, b: number): Promise<number> {
-  return SkiaSkottie.multiply(a, b);
+if (typeof SkiaSkottie.install === 'function') {
+  SkiaSkottie.install();
+} else {
+  throw new Error(
+    "Couldn't call SkiaModule.install! Is the native library installed?"
+  );
 }
+
+export type SkSkottie = {
+  duration: number;
+  fps: number;
+  render: (canvas: SkCanvas, rect: SkRect) => void;
+  seek: (progress: number) => void;
+};
+declare global {
+  var SkiaApi_SkottieCtor: (jsonString: string) => SkSkottie;
+}
+
+// TODO: fix the public API
+export const makeSkSkottieFromString = global.SkiaApi_SkottieCtor;
+
+import { SkiaSkottieView } from './SkiaSkottieView';
+export { SkiaSkottieView };

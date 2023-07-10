@@ -1,16 +1,42 @@
 package com.skiaskottie;
 
+import android.util.Log;
+
 import androidx.annotation.NonNull;
 
-import com.facebook.react.bridge.Promise;
 import com.facebook.react.bridge.ReactApplicationContext;
+import com.facebook.react.bridge.ReactContextBaseJavaModule;
 import com.facebook.react.bridge.ReactMethod;
+import com.facebook.react.module.annotations.ReactModule;
+import com.shopify.reactnative.skia.PlatformContext;
+import com.shopify.reactnative.skia.RNSkiaModule;
 
-public class SkiaSkottieModule extends SkiaSkottieSpec {
+@ReactModule(name = SkiaSkottieModule.NAME)
+public class SkiaSkottieModule extends ReactContextBaseJavaModule {
   public static final String NAME = "SkiaSkottie";
 
-  SkiaSkottieModule(ReactApplicationContext context) {
+  public SkiaSkottieModule(ReactApplicationContext context) {
     super(context);
+  }
+
+  @ReactMethod(isBlockingSynchronousMethod = true)
+  public boolean install() {
+    try {
+      System.loadLibrary("react-native-skia-skottie");
+      ReactApplicationContext context = getReactApplicationContext();
+
+      RNSkiaModule skiaModule = context.getNativeModule(RNSkiaModule.class);
+      initialize(
+        context.getJavaScriptContextHolder().get(),
+        skiaModule.getSkiaManager().getPlatformContext()
+      );
+
+      Log.i(NAME, "Initialized skia skottie!");
+      return true;
+    } catch (Exception exception) {
+      Log.e(NAME, "Failed to initialize skia skottie!", exception);
+      return false;
+    }
   }
 
   @Override
@@ -19,16 +45,5 @@ public class SkiaSkottieModule extends SkiaSkottieSpec {
     return NAME;
   }
 
-  static {
-    System.loadLibrary("cpp");
-  }
-
-  public static native double nativeMultiply(double a, double b);
-
-  // Example method
-  // See https://reactnative.dev/docs/native-modules-android
-  @ReactMethod
-  public void multiply(double a, double b, Promise promise) {
-    promise.resolve(nativeMultiply(a, b));
-  }
+  public static native void initialize(long jsiPtr, PlatformContext context);
 }
