@@ -25,6 +25,31 @@ import {
 
 export type SkiaSkottieViewProps = NativeSkiaViewProps & {
   src: string | AnimationObject;
+
+  /**
+   * A boolean flag indicating whether or not the animation should start automatically when
+   * mounted.
+   */
+  autoPlay?: boolean;
+
+  /**
+   * The speed the animation will progress. This only affects the imperative API. The
+   * default value is 1.
+   */
+  speed?: number;
+
+  /**
+   * The duration of the animation in ms. Takes precedence over speed when set.
+   * This only works when source is an actual JS object of an animation.
+   */
+  duration?: number;
+
+  /**
+   * A boolean flag indicating whether or not the animation should loop.
+   */
+  loop?: boolean;
+
+  // TODO: onAnimationFinish
 } & SkiaProps<{ progress?: number }>;
 
 // TODO: make the nativeId safe by sharing it from the rn-skia implementation
@@ -63,6 +88,8 @@ export const SkiaSkottieView = (props: SkiaSkottieViewProps) => {
   //#endregion
 
   //#region Callbacks
+  const lockToFps = 60;
+  const timePerFrame = 1000 / lockToFps;
   const updateProgress = useCallback(
     (progressParam: SkiaSkottieViewProps['progress']) => {
       assertSkiaViewApi();
@@ -79,8 +106,6 @@ export const SkiaSkottieView = (props: SkiaSkottieViewProps) => {
 
         // NOTE: We'd have the original FPS in the skottieAnimation that we could use here. Do we want to?
         // Right now this frame lock is a performacne optimization, especially for iOS.
-        const lockToFps = 60;
-        const timePerFrame = 1000 / lockToFps;
         let lastFrameTimestamp = { value: 0 };
         mapperIdRef.current = startMapper(() => {
           'worklet';
@@ -96,7 +121,7 @@ export const SkiaSkottieView = (props: SkiaSkottieViewProps) => {
         }, [progressParam]);
       }
     },
-    [nativeId]
+    [nativeId, timePerFrame]
   );
   //#endregion
 
@@ -104,19 +129,24 @@ export const SkiaSkottieView = (props: SkiaSkottieViewProps) => {
   const isControlledProgress = props.progress != null;
   const isUncontrolledProgress = !isControlledProgress;
 
+  const duration =
+    (props.duration ?? skottieAnimation.duration * 1000) / (props.speed ?? 1);
+
+  const autoPlay = props.autoPlay ?? true;
+
   const _progress = useSharedValue(0);
   const progress = props.progress ?? _progress;
   useEffect(() => {
-    if (isUncontrolledProgress) {
+    if (isUncontrolledProgress || !autoPlay) {
       return;
     }
 
     _progress.value = withRepeat(
       withTiming(1, {
-        duration: skottieAnimation.duration * 1000,
+        duration: duration,
         easing: Easing.linear,
       }),
-      -1,
+      props.loop ? -1 : 0,
       false
     );
 
@@ -128,23 +158,27 @@ export const SkiaSkottieView = (props: SkiaSkottieViewProps) => {
   }, [
     _progress,
     isUncontrolledProgress,
+    props.loop,
     props.progress,
-    skottieAnimation.duration,
+    duration,
+    autoPlay,
   ]);
 
-  const duration = skottieAnimation.duration * 1000;
   useFrameCallback(
     useCallback(
-      ({ timeSinceFirstFrame }) => {
+      ({ timeSinceFirstFrame, timeSincePreviousFrame }) => {
         'worklet';
+        if ((timeSincePreviousFrame ?? 0) < timePerFrame) {
+          return;
+        }
         const progress = (timeSinceFirstFrame % duration) / duration;
 
         SkiaViewApi.setJsiProperty(nativeId, 'progress', progress);
         SkiaViewApi.requestRedraw(nativeId);
       },
-      [duration, nativeId]
+      [duration, nativeId, timePerFrame]
     ),
-    isUncontrolledProgress
+    isUncontrolledProgress && autoPlay
   );
   //#endregion
 
