@@ -13,7 +13,7 @@ import {
 } from '@shopify/react-native-skia/src/external/reanimated/moduleWrapper';
 import type { AnimationObject } from './types';
 import { NativeSkiaSkottieView } from './NaitveSkiaSkottieView';
-import { makeSkSkottieFromString } from './index';
+import { makeSkSkottieFromString } from './NativeSkottieModule';
 import {
   Easing,
   cancelAnimation,
@@ -89,8 +89,7 @@ export const SkiaSkottieView = (props: SkiaSkottieViewProps) => {
   //#endregion
 
   //#region Callbacks
-  const lockToFps = 60;
-  const timePerFrame = 1000 / lockToFps;
+  const timePerFrame = 16.66; // ~60 FPS
   const updateProgress = useCallback(
     (progressParam: SkiaSkottieViewProps['progress']) => {
       assertSkiaViewApi();
@@ -167,17 +166,14 @@ export const SkiaSkottieView = (props: SkiaSkottieViewProps) => {
 
   useFrameCallback(
     useCallback(
-      ({ timeSinceFirstFrame, timeSincePreviousFrame }) => {
+      ({ timeSinceFirstFrame }) => {
         'worklet';
-        if ((timeSincePreviousFrame ?? 0) < timePerFrame) {
-          return;
-        }
         const progress = (timeSinceFirstFrame % duration) / duration;
 
         SkiaViewApi.setJsiProperty(nativeId, 'progress', progress);
         SkiaViewApi.requestRedraw(nativeId);
       },
-      [duration, nativeId, timePerFrame]
+      [duration, nativeId]
     ),
     isUncontrolledProgress && autoPlay
   );
