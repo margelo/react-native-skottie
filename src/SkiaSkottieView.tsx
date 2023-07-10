@@ -1,11 +1,9 @@
 import '@shopify/react-native-skia'; // Important: register skia module
 import type {
   NativeSkiaViewProps,
-  SkRect,
   SkiaProps,
-  SkiaValue,
 } from '@shopify/react-native-skia/lib/typescript/src';
-import React from 'react';
+import React, { useCallback, useEffect, useRef } from 'react';
 import { SkiaViewApi } from './SkiaViewApi';
 
 import {
@@ -21,124 +19,98 @@ export type SkiaSkottieViewProps = NativeSkiaViewProps & {
 } & SkiaProps<{ progress: number }>;
 
 // TODO: make the nativeId safe by sharing it from the rn-skia implementation
-const nativeId = { current: 94192 };
+const nativeIdCount = { current: 94192 };
 
-export class SkiaSkottieView extends React.Component<SkiaSkottieViewProps> {
-  constructor(props: SkiaSkottieViewProps) {
-    super(props);
-    this._nativeId = nativeId.current++;
+export const SkiaSkottieView = (props: SkiaSkottieViewProps) => {
+  const mapperIdRef = useRef<number | undefined>(undefined);
+  const nativeId = useRef(nativeIdCount.current++).current;
+  const prevPropsRef = useRef<SkiaSkottieViewProps>();
 
-    this.updateSrc(props.src);
-    this.updateProgress(props.progress);
-  }
+  const updateSrc = useCallback(
+    (src: SkiaSkottieViewProps['src']) => {
+      assertSkiaViewApi();
 
-  private _nativeId: number;
-  private _mapperId: number | undefined = undefined;
-
-  // TODO: we want to pass it the JSI object instance
-  private updateSrc(src: SkiaSkottieViewProps['src']) {
-    assertSkiaViewApi();
-    if (typeof src === 'string') {
-      SkiaViewApi.setJsiProperty(this._nativeId, 'src', src);
-      return;
-    }
-    if (typeof src === 'object') {
-      SkiaViewApi.setJsiProperty(this._nativeId, 'src', JSON.stringify(src));
-      return;
-    }
-  }
-
-  private updateProgress(progress: SkiaSkottieViewProps['progress']) {
-    assertSkiaViewApi();
-    if (typeof progress === 'number') {
-      SkiaViewApi.setJsiProperty(this._nativeId, 'progress', progress);
-      return;
-    }
-
-    // TODO: performance, i can imagine we might send more updates than needed
-    //       so we might want to make sure we render only each frame (60fps)
-    const viewId = this._nativeId;
-    if (isSharedValue(progress)) {
-      if (this._mapperId != null) {
-        stopMapper(this._mapperId);
+      let source;
+      if (typeof src === 'string') {
+        source = src;
+      } else if (typeof src === 'object') {
+        source = JSON.stringify(src);
+      } else {
+        throw Error('[react-native-skottie] Invalid src prop provided.');
       }
 
-      const lockToFps = 60;
-      const timePerFrame = 1000 / lockToFps;
-      let lastFrameTimestamp = { value: 0 };
-      this._mapperId = startMapper(() => {
-        'worklet';
+      SkiaViewApi.setJsiProperty(nativeId, 'src', source);
+    },
+    [nativeId]
+  );
 
-        // Only re-render every timePerFrame / lockToFps
-        const now = performance.now();
-        if (now - lastFrameTimestamp.value < timePerFrame) {
-          return;
+  const updateProgress = useCallback(
+    (progress: SkiaSkottieViewProps['progress']) => {
+      assertSkiaViewApi();
+      if (typeof progress === 'number') {
+        SkiaViewApi.setJsiProperty(nativeId, 'progress', progress);
+        return;
+      }
+
+      const viewId = nativeId;
+      if (isSharedValue(progress)) {
+        if (mapperIdRef.current != null) {
+          stopMapper(mapperIdRef.current);
         }
-        lastFrameTimestamp.value = now;
 
-        SkiaViewApi.setJsiProperty(viewId, 'progress', progress.value);
-        // TODO: we could schedule this call in the native side directly when sitting the prop
-        SkiaViewApi.requestRedraw(viewId);
-      }, [progress]);
+        const lockToFps = 60;
+        const timePerFrame = 1000 / lockToFps;
+        let lastFrameTimestamp = { value: 0 };
+        mapperIdRef.current = startMapper(() => {
+          'worklet';
+
+          const now = performance.now();
+          if (now - lastFrameTimestamp.value < timePerFrame) {
+            return;
+          }
+          lastFrameTimestamp.value = now;
+
+          SkiaViewApi.setJsiProperty(viewId, 'progress', progress.value);
+          SkiaViewApi.requestRedraw(viewId);
+        }, [progress]);
+      }
+    },
+    [nativeId]
+  );
+
+  useEffect(() => {
+    return () => {
+      if (mapperIdRef.current != null) {
+        stopMapper(mapperIdRef.current);
+      }
+    };
+  }, []);
+
+  useEffect(() => {
+    const prevProps = prevPropsRef.current;
+
+    if (props.src !== prevProps?.src) {
+      updateSrc(props.src);
     }
-  }
-
-  public get nativeId() {
-    return this._nativeId;
-  }
-
-  componentDidUpdate(prevProps: SkiaSkottieViewProps) {
-    const { src, progress } = this.props;
-    if (src !== prevProps.src) {
-      this.updateSrc(this.props.src);
+    if (props.progress !== prevProps?.progress) {
+      updateProgress(props.progress);
     }
-    if (progress !== prevProps.progress) {
-      this.updateProgress(progress);
-    }
-  }
 
-  /**
-   * Creates a snapshot from the canvas in the surface
-   * @param rect Rect to use as bounds. Optional.
-   * @returns An Image object.
-   */
-  public makeImageSnapshot(rect?: SkRect) {
-    assertSkiaViewApi();
-    return SkiaViewApi.makeImageSnapshot(this._nativeId, rect);
-  }
+    prevPropsRef.current = props;
+  }, [props, updateProgress, updateSrc]);
 
-  /**
-   * Sends a redraw request to the native SkiaView.
-   */
-  public redraw() {
-    assertSkiaViewApi();
-    SkiaViewApi.requestRedraw(this._nativeId);
-  }
+  const { mode, debug = false, ...viewProps } = props;
 
-  /**
-   * Registers one or move values as a dependant value of the Skia View. The view will
-   * The view will redraw itself when any of the values change.
-   * @param values Values to register
-   */
-  public registerValues(values: SkiaValue<unknown>[]): () => void {
-    assertSkiaViewApi();
-    return SkiaViewApi.registerValuesInView(this._nativeId, values);
-  }
-
-  render() {
-    const { mode, debug = false, ...viewProps } = this.props;
-
-    return (
-      <NativeSkiaSkottieView
-        collapsable={false}
-        nativeID={`${this._nativeId}`}
-        mode={mode}
-        debug={debug}
-        {...viewProps}
-      />
-    );
-  }
-}
+  return (
+    <NativeSkiaSkottieView
+      collapsable={false}
+      nativeID={`${nativeId}`}
+      mode={mode}
+      debug={debug}
+      {...viewProps}
+    />
+  );
+};
 
 const assertSkiaViewApi = () => {
   if (
