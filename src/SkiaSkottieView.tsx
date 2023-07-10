@@ -6,7 +6,6 @@ import type {
   SkiaValue,
 } from '@shopify/react-native-skia/lib/typescript/src';
 import React from 'react';
-import { requireNativeComponent } from 'react-native';
 import { SkiaViewApi } from './SkiaViewApi';
 
 import {
@@ -14,13 +13,11 @@ import {
   stopMapper,
   isSharedValue,
 } from '@shopify/react-native-skia/src/external/reanimated/moduleWrapper';
-
-// TODO: web support
-const NativeSkiaSkottieView =
-  requireNativeComponent<NativeSkiaViewProps>('SkiaSkottieView');
+import type { AnimationObject } from './types';
+import { NativeSkiaSkottieView } from './NaitveSkiaSkottieView';
 
 export type SkiaSkottieViewProps = NativeSkiaViewProps & {
-  src: string;
+  src: string | AnimationObject;
 } & SkiaProps<{ progress: number }>;
 
 // TODO: make the nativeId safe by sharing it from the rn-skia implementation
