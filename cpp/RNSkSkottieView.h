@@ -6,6 +6,7 @@
 #include <string>
 #include <unordered_map>
 #include <vector>
+#include <cmath>
 
 #include <jsi/jsi.h>
 
@@ -51,21 +52,24 @@ public:
     performDraw(canvasProvider);
   }
 
+          //CAGetCurrentMediaTime / android chrono
+          
           void setSrc(std::string src) {
               _animation = skottie::Animation::Builder().make(src.c_str(), src.size());
-              if (!std::isnan(_initialProgress)) {
-                  setProgress(_initialProgress);
-                  _initialProgress = std::nan("");
-              }
+              animationStart = CACurrentMediaTime();
+//              if (!std::isnan(_initialProgress)) {
+//                  setProgress(_initialProgress);
+//                  _initialProgress = std::nan("");
+//              }
           }
           
-          void setProgress(double progress) {
-              if (_animation != nullptr) {
-                  _animation.get()->seek(progress);
-              } else {
-                  _initialProgress = progress;
-              }
-          }
+//          void setProgress(double progress) {
+//              if (_animation != nullptr) {
+//                  _animation.get()->seek(progress);
+//              } else {
+//                  _initialProgress = progress;
+//              }
+//          }
 
 private:
   bool performDraw(std::shared_ptr<RNSkCanvasProvider> canvasProvider) {
@@ -77,7 +81,14 @@ private:
       canvas->scale(pd, pd);
 
       if (_animation != nullptr) {
+          auto now = CACurrentMediaTime();
+          double elapsedTimeInMilliseconds = (now - animationStart) * 1000.0;
+          double animationDuration = _animation.get()->duration() * 1000.0;
+          double progress = std::fmod(elapsedTimeInMilliseconds, animationDuration) / animationDuration;
+          
+//          printf("elapsedtime: %.2f ms, progress: %.2f\n", elapsedTimeInMilliseconds, progress);
           _animation.get()->render(canvas);
+          _animation.get()->seekFrameTime(progress);
       }
 
       canvas->restore();
@@ -87,7 +98,8 @@ private:
 
   std::shared_ptr<RNSkPlatformContext> _platformContext;
   sk_sp<skottie::Animation> _animation;
-  double _initialProgress = std::nan("");
+//  double _initialProgress = std::nan("");
+          CFTimeInterval animationStart;
 };
 
 class RNSkSkottieView : public RNSkView {
@@ -111,11 +123,13 @@ public:
         if (prop.first == "src" && prop.second.getType() == RNJsi::JsiWrapperValueType::String) {
             std::static_pointer_cast<RNSkSkottieRenderer>(getRenderer())
             ->setSrc(prop.second.getAsString());
+            setDrawingMode(Continuous);
+//            startDraw
         }
-        if (prop.first == "progress") {
-            std::static_pointer_cast<RNSkSkottieRenderer>(getRenderer())
-            ->setProgress(prop.second.getAsNumber());
-        }
+//        if (prop.first == "progress") {
+//            std::static_pointer_cast<RNSkSkottieRenderer>(getRenderer())
+//            ->setProgress(prop.second.getAsNumber());
+//        }
     }
   }
 };
