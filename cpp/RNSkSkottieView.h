@@ -87,8 +87,10 @@ private:
           double progress = std::fmod(elapsedTimeInMilliseconds, animationDuration) / animationDuration;
           
 //          printf("elapsedtime: %.2f ms, progress: %.2f\n", elapsedTimeInMilliseconds, progress);
+//          printf("animationDuration: %.2f ms\n", animationDuration);
           _animation.get()->render(canvas);
-          _animation.get()->seekFrameTime(progress);
+//          _animation.get()->seekFrameTime(progress);
+          _animation.get()->seek(progress);
       }
 
       canvas->restore();
@@ -123,7 +125,7 @@ public:
         if (prop.first == "src" && prop.second.getType() == RNJsi::JsiWrapperValueType::String) {
             std::static_pointer_cast<RNSkSkottieRenderer>(getRenderer())
             ->setSrc(prop.second.getAsString());
-            setDrawingMode(Continuous);
+//            setDrawingMode(Continuous);
 //            startDraw
         }
 //        if (prop.first == "progress") {
