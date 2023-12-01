@@ -159,7 +159,7 @@
     ]
   },
   "dependencies": {
-    "@shopify/react-native-skia": "^0.1.188",
-    "react-native-reanimated": "3.1.0"
+    "@shopify/react-native-skia": "^0.1.224",
+    "react-native-reanimated": "3.6.1"
   }
 }

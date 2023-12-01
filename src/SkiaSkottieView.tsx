@@ -3,7 +3,8 @@ import type {
   NativeSkiaViewProps,
   SkiaProps,
 } from '@shopify/react-native-skia/lib/typescript/src';
-import React, { useCallback, useEffect, useMemo, useRef } from 'react';
+import { SkiaViewNativeId } from '@shopify/react-native-skia';
+import React, { useCallback, useLayoutEffect, useMemo, useRef } from 'react';
 import { SkiaViewApi } from './SkiaViewApi';
 
 import type { AnimationObject } from './types';
@@ -39,11 +40,8 @@ export type SkiaSkottieViewProps = NativeSkiaViewProps & {
   // TODO: resizeMode?: 'cover' | 'contain' | 'center';
 } & SkiaProps<{ progress?: number }>;
 
-// TODO: make the nativeId safe by sharing it from the rn-skia implementation
-const nativeIdCount = { current: 94192 };
-
 export const SkiaSkottieView = (props: SkiaSkottieViewProps) => {
-  const nativeId = useRef(nativeIdCount.current++).current;
+  const nativeId = useRef(SkiaViewNativeId.current++).current;
 
   //#region Compute values
   const source = useMemo(() => {
@@ -67,7 +65,8 @@ export const SkiaSkottieView = (props: SkiaSkottieViewProps) => {
   );
   //#endregion
 
-  useEffect(() => {
+  useLayoutEffect(() => {
+    console.log('SkiaSkottieView useLayoutEffect');
     updateSrc(source);
   }, [source, updateSrc]);
 
