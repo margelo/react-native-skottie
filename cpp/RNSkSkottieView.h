@@ -102,12 +102,26 @@ public:
 
     for (auto& prop : props) {
       if (prop.first == "src" && prop.second.getType() == RNJsi::JsiWrapperValueType::String) {
+        // TODO: Christian, would it be beneficial to call getRenderer only once and store it?
         std::static_pointer_cast<RNSkSkottieRenderer>(getRenderer())->setSrc(prop.second.getAsString());
       }
       if (prop.first == "progress") {
         std::static_pointer_cast<RNSkSkottieRenderer>(getRenderer())->setProgress(prop.second.getAsNumber());
       }
     }
+  }
+    
+  jsi::Value callJsiMethod(jsi::Runtime &runtime,
+                                const std::string &name,
+                                const jsi::Value *arguments, size_t count) override {
+      if (name == "setProgress") {
+          // Get first argument as number as it contains the updated value
+          auto progressValue = arguments[0].asNumber();
+          std::static_pointer_cast<RNSkSkottieRenderer>(getRenderer())->setProgress(progressValue);
+          requestRedraw();
+      }
+      
+      return {};
   }
 };
 } // namespace RNSkia
