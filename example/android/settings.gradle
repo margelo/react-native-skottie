@@ -3,5 +3,5 @@ apply from: file("../node_modules/@react-native-community/cli-platform-android/n
 include ':app'
 includeBuild('../node_modules/@react-native/gradle-plugin')
 
-include ':react-native-skia-skottie'
-project(':react-native-skia-skottie').projectDir = new File(rootProject.projectDir, '../../android')
+include ':react-native-skottie'
+project(':react-native-skottie').projectDir = new File(rootProject.projectDir, '../../android')
