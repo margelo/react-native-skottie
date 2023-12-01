@@ -6,10 +6,9 @@
 #import <jsi/jsi.h>
 
 @implementation SkiaSkottie
-RCT_EXPORT_MODULE() //TODO: include package name here?
+RCT_EXPORT_MODULE() // TODO: include package name here?
 
-RCT_EXPORT_BLOCKING_SYNCHRONOUS_METHOD(install)
-{
+RCT_EXPORT_BLOCKING_SYNCHRONOUS_METHOD(install) {
   NSLog(@"Installing JSI bindings for react-native-skia-skottie...");
   RCTBridge* bridge = [RCTBridge currentBridge];
   RCTCxxBridge* cxxBridge = (RCTCxxBridge*)bridge;
@@ -19,7 +18,7 @@ RCT_EXPORT_BLOCKING_SYNCHRONOUS_METHOD(install)
 
   using namespace facebook;
 
-  auto jsiRuntime = (jsi::Runtime*) cxxBridge.runtime;
+  auto jsiRuntime = (jsi::Runtime*)cxxBridge.runtime;
   if (jsiRuntime == nil) {
     return @false;
   }
@@ -37,10 +36,8 @@ RCT_EXPORT_BLOCKING_SYNCHRONOUS_METHOD(install)
 
 // Don't compile this code when we build for the old architecture.
 #ifdef RCT_NEW_ARCH_ENABLED
-- (std::shared_ptr<facebook::react::TurboModule>)getTurboModule:
-    (const facebook::react::ObjCTurboModule::InitParams &)params
-{
-    return std::make_shared<facebook::react::NativeSkiaSkottieSpecJSI>(params);
+- (std::shared_ptr<facebook::react::TurboModule>)getTurboModule:(const facebook::react::ObjCTurboModule::InitParams&)params {
+  return std::make_shared<facebook::react::NativeSkiaSkottieSpecJSI>(params);
 }
 #endif
 

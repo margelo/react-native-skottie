@@ -66,7 +66,6 @@ export const SkiaSkottieView = (props: SkiaSkottieViewProps) => {
   //#endregion
 
   useLayoutEffect(() => {
-    console.log('SkiaSkottieView useLayoutEffect');
     updateSrc(source);
   }, [source, updateSrc]);
 
@@ -76,7 +75,7 @@ export const SkiaSkottieView = (props: SkiaSkottieViewProps) => {
     <NativeSkiaSkottieView
       collapsable={false}
       nativeID={`${nativeId}`}
-      mode={'continuous'}
+      // mode={'continuous'}
       debug={debug}
       {...viewProps}
     />

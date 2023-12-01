@@ -2,8 +2,8 @@
 #include <React/RCTBridge+Private.h>
 
 #include <RNSkIOSView.h>
-#include <RNSkSkottieView.h>
 #include <RNSkPlatformContext.h>
+#include <RNSkSkottieView.h>
 
 #include "SkiaManager.h"
 #include "SkiaUIView.h"
@@ -13,38 +13,35 @@
 
 RCT_EXPORT_MODULE(SkiaSkottieView)
 
-- (SkiaManager *)skiaManager {
+- (SkiaManager*)skiaManager {
   auto bridge = [RCTBridge currentBridge];
-  auto skiaModule = (RNSkiaModule *)[bridge moduleForName:@"RNSkiaModule"];
+  auto skiaModule = (RNSkiaModule*)[bridge moduleForName:@"RNSkiaModule"];
   return [skiaModule manager];
 }
 
 RCT_CUSTOM_VIEW_PROPERTY(nativeID, NSNumber, SkiaUIView) {
   // Get parameter
   int nativeId = [[RCTConvert NSString:json] intValue];
-  [(SkiaUIView *)view setNativeId:nativeId];
+  [(SkiaUIView*)view setNativeId:nativeId];
 }
 
 RCT_CUSTOM_VIEW_PROPERTY(mode, NSString, SkiaUIView) {
-  std::string mode =
-      json != NULL ? [[RCTConvert NSString:json] UTF8String] : "default";
-  [(SkiaUIView *)view setDrawingMode:mode];
+  std::string mode = json != NULL ? [[RCTConvert NSString:json] UTF8String] : "default";
+  [(SkiaUIView*)view setDrawingMode:mode];
 }
 
 RCT_CUSTOM_VIEW_PROPERTY(debug, BOOL, SkiaUIView) {
   bool debug = json != NULL ? [RCTConvert BOOL:json] : false;
-  [(SkiaUIView *)view setDebugMode:debug];
+  [(SkiaUIView*)view setDebugMode:debug];
 }
 
-- (UIView *)view {
+- (UIView*)view {
   auto skManager = [[self skiaManager] skManager];
   // Pass SkManager as a raw pointer to avoid circular dependenciesr
-  return [[SkiaUIView alloc]
-      initWithManager:skManager.get()
-              factory:[](std::shared_ptr<RNSkia::RNSkPlatformContext> context) {
-                return std::make_shared<RNSkiOSView<RNSkia::RNSkSkottieView>>(
-                    context);
-              }];
+  return [[SkiaUIView alloc] initWithManager:skManager.get()
+                                     factory:[](std::shared_ptr<RNSkia::RNSkPlatformContext> context) {
+                                       return std::make_shared<RNSkiOSView<RNSkia::RNSkSkottieView>>(context);
+                                     }];
 }
 
 @end
