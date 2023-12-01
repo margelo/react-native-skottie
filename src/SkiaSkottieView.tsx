@@ -25,6 +25,8 @@ import {
 } from 'react-native-reanimated';
 import type { SkSkottie } from 'lib/typescript/NativeSkottieModule';
 
+export type ResizeMode = 'cover' | 'contain' | 'stretch';
+
 export type SkiaSkottieViewProps = NativeSkiaViewProps & {
   src: string | AnimationObject;
 
@@ -57,7 +59,11 @@ export type SkiaSkottieViewProps = NativeSkiaViewProps & {
   progress?: SharedValue<number>;
 
   // TODO: onAnimationFinish
-  // TODO: resizeMode?: 'cover' | 'contain' | 'center';
+
+  /**
+   * @default contain
+   */
+  resizeMode?: ResizeMode;
 };
 
 export const SkiaSkottieView = (props: SkiaSkottieViewProps) => {
@@ -91,11 +97,23 @@ export const SkiaSkottieView = (props: SkiaSkottieViewProps) => {
     },
     [nativeId]
   );
+
+  const updateResizeMode = useCallback(
+    (resizeMode: ResizeMode) => {
+      assertSkiaViewApi();
+      SkiaViewApi.setJsiProperty(nativeId, 'scaleType', resizeMode);
+    },
+    [nativeId]
+  );
   //#endregion
 
   useLayoutEffect(() => {
     updateAnimation(skottieAnimation);
   }, [nativeId, skottieAnimation, source, updateAnimation]);
+
+  useLayoutEffect(() => {
+    updateResizeMode(props.resizeMode ?? 'contain');
+  }, [nativeId, props.resizeMode, updateResizeMode]);
 
   // Handle animation updates
   useEffect(() => {

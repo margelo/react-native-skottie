@@ -52,6 +52,7 @@ public:
       _animation = nullptr;
     } else {
       _animation = std::dynamic_pointer_cast<JsiSkSkottie>(animation);
+      _srcR = SkRect::MakeSize(_animation->getObject()->size());
     }
   }
 
@@ -63,6 +64,10 @@ public:
     _animation->getObject()->seek(progress);
   }
 
+  void setResizeMode(std::string resizeMode) {
+    _resizeMode = resizeMode;
+  }
+
 private:
   bool performDraw(std::shared_ptr<RNSkCanvasProvider> canvasProvider) {
     canvasProvider->renderToCanvas([=](SkCanvas* canvas) {
@@ -72,7 +77,28 @@ private:
       canvas->save();
       canvas->scale(pd, pd);
 
+
       if (_animation != nullptr) {
+        auto dstRect = canvas->getLocalClipBounds();
+
+        // Defaults to "contain"
+        SkMatrix::ScaleToFit scaleType = SkMatrix::kCenter_ScaleToFit;
+        if (_resizeMode == "stretch") {
+            scaleType = SkMatrix::kFill_ScaleToFit;
+        }
+
+        if (_resizeMode == "cover") {
+            auto scale = std::max(dstRect.width() / _srcR.width(), dstRect.height() / _srcR.height());
+            auto scaledWidth = _srcR.width() * scale;
+            auto scaledHeight = _srcR.height() * scale;
+            auto x = (dstRect.width() - scaledWidth) / 2;
+            auto y = (dstRect.height() - scaledHeight) / 2;
+
+            dstRect = SkRect::MakeXYWH(x, y, scaledWidth, scaledHeight);
+            scaleType = SkMatrix::kCenter_ScaleToFit;
+        }
+
+        canvas->concat(SkMatrix::RectToRect(_srcR, dstRect, scaleType));
         _animation->getObject()->render(canvas);
       }
 
@@ -83,6 +109,8 @@ private:
 
   std::shared_ptr<RNSkPlatformContext> _platformContext;
   std::shared_ptr<JsiSkSkottie> _animation;
+  SkRect _srcR;
+  std::string _resizeMode = "contain";
 };
 
 class RNSkSkottieView : public RNSkView {
@@ -104,6 +132,9 @@ public:
       }
       if (prop.first == "progress") {
         std::static_pointer_cast<RNSkSkottieRenderer>(getRenderer())->setProgress(prop.second.getAsNumber());
+      }
+      if (prop.first == "scaleType") {
+          std::static_pointer_cast<RNSkSkottieRenderer>(getRenderer())->setResizeMode(prop.second.getAsString());
       }
     }
   }
