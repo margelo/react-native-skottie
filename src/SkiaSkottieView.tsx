@@ -92,30 +92,18 @@ export const SkiaSkottieView = (props: SkiaSkottieViewProps) => {
   useLayoutEffect(() => {
     // TODO: Instead of setting source, set JSISkottie instance, which we need anyway already for duration?
     updateSrc(source);
-
-    // TODO: Christian, registerValuesInView only works for skia animated values? Do we have to do that?
-    // SkiaViewApi.registerValuesInView(nativeId, [progress]);
   }, [nativeId, source, updateSrc]);
 
   // Handle animation updates
-  // TODO: Christian We manually need to handle the mapping of reanimated values, instead of being
-  //       able to use #extractReanimatedProps, because that only works with Views using the Node API.
   useEffect(() => {
     assertSkiaViewApi();
-    // TODO: can we get this from RnSkia?
     const mapperId = startMapper(() => {
       'worklet';
-      // TODO: Christian, i am using callJsiMethod here, but could also do setJsiProperty. Is there any advantage / disadvantage?
-      // TODO: Christian, when using this code i am seeing increased memory jumps?
       try {
         SkiaViewApi.callJsiMethod(nativeId, 'setProgress', progress.value);
       } catch (e) {
-        // TODO: error: ReanimatedError: callCustomCommand: Could not call action setProgress on view - view not ready., js engine: reanimated
-        //       Note: This doesn't happen with using setJsiProperty - investigate native code
+        // ignored, view might not be ready yet
       }
-
-      // SkiaViewApi.setJsiProperty(nativeId, 'progress', progress.value);
-      // SkiaViewApi.requestRedraw(nativeId);
     }, [progress]);
 
     return () => {
