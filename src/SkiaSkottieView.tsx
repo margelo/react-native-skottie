@@ -1,8 +1,5 @@
 import '@shopify/react-native-skia'; // Important: register skia module
-import type {
-  NativeSkiaViewProps,
-  SkiaProps,
-} from '@shopify/react-native-skia/lib/typescript/src';
+import type { NativeSkiaViewProps } from '@shopify/react-native-skia/lib/typescript/src';
 import { SkiaViewNativeId } from '@shopify/react-native-skia';
 import React, {
   useCallback,
@@ -18,6 +15,7 @@ import { NativeSkiaSkottieView } from './NativeSkiaSkottieView';
 import { makeSkSkottieFromString } from './NativeSkottieModule';
 import {
   Easing,
+  SharedValue,
   cancelAnimation,
   startMapper,
   stopMapper,
@@ -53,9 +51,14 @@ export type SkiaSkottieViewProps = NativeSkiaViewProps & {
    */
   loop?: boolean;
 
+  /**
+   * Provide a reanimated shared value between 0 and 1 to control the animation progress.
+   */
+  progress?: SharedValue<number>;
+
   // TODO: onAnimationFinish
   // TODO: resizeMode?: 'cover' | 'contain' | 'center';
-} & SkiaProps<{ progress?: number }>;
+};
 
 export const SkiaSkottieView = (props: SkiaSkottieViewProps) => {
   const nativeId = useRef(SkiaViewNativeId.current++).current;
@@ -79,7 +82,7 @@ export const SkiaSkottieView = (props: SkiaSkottieViewProps) => {
   );
 
   const _progress = useSharedValue(0);
-  const progress = _progress;
+  const progress = props.progress ?? _progress;
 
   const updateAnimation = useCallback(
     (animation: SkSkottie) => {
@@ -116,7 +119,7 @@ export const SkiaSkottieView = (props: SkiaSkottieViewProps) => {
 
   // Start the animation
   useEffect(() => {
-    if (!props.autoPlay) {
+    if (!props.autoPlay || props.progress != null) {
       return;
     }
 
@@ -132,7 +135,13 @@ export const SkiaSkottieView = (props: SkiaSkottieViewProps) => {
     return () => {
       cancelAnimation(_progress);
     };
-  }, [_progress, props.autoPlay, props.loop, skottieAnimation.duration]);
+  }, [
+    _progress,
+    props.autoPlay,
+    props.loop,
+    props.progress,
+    skottieAnimation.duration,
+  ]);
 
   const { mode, debug = false, ...viewProps } = props;
 
