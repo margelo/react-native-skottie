@@ -25,6 +25,7 @@ import {
   withRepeat,
   withTiming,
 } from 'react-native-reanimated';
+import type { SkSkottie } from 'lib/typescript/NativeSkottieModule';
 
 export type SkiaSkottieViewProps = NativeSkiaViewProps & {
   src: string | AnimationObject;
@@ -80,19 +81,18 @@ export const SkiaSkottieView = (props: SkiaSkottieViewProps) => {
   const _progress = useSharedValue(0);
   const progress = _progress;
 
-  const updateSrc = useCallback(
-    (src: string) => {
+  const updateAnimation = useCallback(
+    (animation: SkSkottie) => {
       assertSkiaViewApi();
-      SkiaViewApi.setJsiProperty(nativeId, 'src', src);
+      SkiaViewApi.setJsiProperty(nativeId, 'src', animation);
     },
     [nativeId]
   );
   //#endregion
 
   useLayoutEffect(() => {
-    // TODO: Instead of setting source, set JSISkottie instance, which we need anyway already for duration?
-    updateSrc(source);
-  }, [nativeId, source, updateSrc]);
+    updateAnimation(skottieAnimation);
+  }, [nativeId, skottieAnimation, source, updateAnimation]);
 
   // Handle animation updates
   useEffect(() => {
@@ -103,13 +103,16 @@ export const SkiaSkottieView = (props: SkiaSkottieViewProps) => {
         SkiaViewApi.callJsiMethod(nativeId, 'setProgress', progress.value);
       } catch (e) {
         // ignored, view might not be ready yet
+        if (props.debug) {
+          console.warn(e);
+        }
       }
     }, [progress]);
 
     return () => {
       stopMapper(mapperId);
     };
-  }, [nativeId, progress]);
+  }, [nativeId, progress, props.debug]);
 
   // Start the animation
   useEffect(() => {

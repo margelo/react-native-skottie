@@ -1,4 +1,8 @@
-import type { SkCanvas, SkRect } from '@shopify/react-native-skia';
+import type {
+  SkCanvas,
+  SkJSIInstance,
+  SkRect,
+} from '@shopify/react-native-skia';
 import { NativeModules, Platform } from 'react-native';
 
 const LINKING_ERROR =
@@ -35,12 +39,12 @@ if (typeof SkiaSkottie.install === 'function') {
   );
 }
 
-export type SkSkottie = {
+export interface SkSkottie extends SkJSIInstance<'Skottie'> {
   duration: number;
   fps: number;
   render: (canvas: SkCanvas, rect: SkRect) => void;
   seek: (progress: number) => void;
-};
+}
 declare global {
   var SkiaApi_SkottieCtor: (jsonString: string) => SkSkottie;
 }

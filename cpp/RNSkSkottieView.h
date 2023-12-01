@@ -25,11 +25,10 @@
 #include "SkBBHFactory.h"
 #include "SkCanvas.h"
 #include "SkPictureRecorder.h"
+#include "JsiSkSkottie.h"
 #include <modules/skottie/include/Skottie.h>
 
 #pragma clang diagnostic pop
-
-class SkRect;
 
 namespace RNSkia {
 
@@ -48,16 +47,20 @@ public:
     performDraw(canvasProvider);
   }
 
-  void setSrc(std::string src) {
-    _animation = skottie::Animation::Builder().make(src.c_str(), src.size());
+  void setSrc(std::shared_ptr<jsi::HostObject> animation) {
+    if (animation == nullptr) {
+      _animation = nullptr;
+    } else {
+      _animation = std::dynamic_pointer_cast<JsiSkSkottie>(animation);
+    }
   }
 
   void setProgress(double progress) {
-    if (_animation != nullptr) {
-      _animation.get()->seek(progress);
-    } else {
-      _initialProgress = progress;
+    if (_animation == nullptr) {
+        return;
     }
+
+    _animation->getObject()->seek(progress);
   }
 
 private:
@@ -69,12 +72,8 @@ private:
       canvas->save();
       canvas->scale(pd, pd);
 
-      // TODO:  Question Christian: performDraw will get called when the animation value updates
-      //        because we are using registerValues. So there is no de-sync between render and seek, right?
-      // However, the animation value might update more frequently than 60FPS?
-      // Do we need to limit this somehow to avoid over computation?
       if (_animation != nullptr) {
-        _animation.get()->render(canvas);
+        _animation->getObject()->render(canvas);
       }
 
       canvas->restore();
@@ -83,8 +82,7 @@ private:
   }
 
   std::shared_ptr<RNSkPlatformContext> _platformContext;
-  sk_sp<skottie::Animation> _animation;
-  double _initialProgress = std::nan("");
+  std::shared_ptr<JsiSkSkottie> _animation;
 };
 
 class RNSkSkottieView : public RNSkView {
@@ -101,16 +99,15 @@ public:
     RNSkView::setJsiProperties(props);
 
     for (auto& prop : props) {
-      if (prop.first == "src" && prop.second.getType() == RNJsi::JsiWrapperValueType::String) {
-        // TODO: Christian, would it be beneficial to call getRenderer only once and store it?
-        std::static_pointer_cast<RNSkSkottieRenderer>(getRenderer())->setSrc(prop.second.getAsString());
+      if (prop.first == "src" && prop.second.getType() == RNJsi::JsiWrapperValueType::HostObject) {
+        std::static_pointer_cast<RNSkSkottieRenderer>(getRenderer())->setSrc(prop.second.getAsHostObject());
       }
       if (prop.first == "progress") {
         std::static_pointer_cast<RNSkSkottieRenderer>(getRenderer())->setProgress(prop.second.getAsNumber());
       }
     }
   }
-    
+
   jsi::Value callJsiMethod(jsi::Runtime &runtime,
                                 const std::string &name,
                                 const jsi::Value *arguments, size_t count) override {
@@ -120,7 +117,7 @@ public:
           std::static_pointer_cast<RNSkSkottieRenderer>(getRenderer())->setProgress(progressValue);
           requestRedraw();
       }
-      
+
       return {};
   }
 };
