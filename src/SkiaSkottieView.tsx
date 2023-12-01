@@ -123,9 +123,11 @@ export const SkiaSkottieView = (props: SkiaSkottieViewProps) => {
       return;
     }
 
+    const speed = props.speed ?? 1;
+    const duration = (skottieAnimation.duration * 1000) / speed;
     _progress.value = withRepeat(
       withTiming(1, {
-        duration: skottieAnimation.duration * 1000,
+        duration: duration,
         easing: Easing.linear,
       }),
       props.loop ? -1 : 0,
@@ -140,6 +142,7 @@ export const SkiaSkottieView = (props: SkiaSkottieViewProps) => {
     props.autoPlay,
     props.loop,
     props.progress,
+    props.speed,
     skottieAnimation.duration,
   ]);
 
