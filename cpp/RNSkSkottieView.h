@@ -50,7 +50,6 @@ public:
 
   void setSrc(std::string src) {
     _animation = skottie::Animation::Builder().make(src.c_str(), src.size());
-    animationStart = CACurrentMediaTime();
   }
 
   void setProgress(double progress) {
@@ -70,14 +69,12 @@ private:
       canvas->save();
       canvas->scale(pd, pd);
 
+      // TODO:  Question Christian: performDraw will get called when the animation value updates
+      //        because we are using registerValues. So there is no de-sync between render and seek, right?
+      // However, the animation value might update more frequently than 60FPS?
+      // Do we need to limit this somehow to avoid over computation?
       if (_animation != nullptr) {
-        auto now = CACurrentMediaTime();
-        double elapsedTimeInMilliseconds = (now - animationStart) * 1000.0;
-        double animationDuration = _animation.get()->duration() * 1000.0;
-        double progress = std::fmod(elapsedTimeInMilliseconds, animationDuration) / animationDuration;
-
         _animation.get()->render(canvas);
-        _animation.get()->seek(progress);
       }
 
       canvas->restore();
@@ -87,7 +84,6 @@ private:
 
   std::shared_ptr<RNSkPlatformContext> _platformContext;
   sk_sp<skottie::Animation> _animation;
-  CFTimeInterval animationStart;
   double _initialProgress = std::nan("");
 };
 

@@ -4,11 +4,26 @@ import type {
   SkiaProps,
 } from '@shopify/react-native-skia/lib/typescript/src';
 import { SkiaViewNativeId } from '@shopify/react-native-skia';
-import React, { useCallback, useLayoutEffect, useMemo, useRef } from 'react';
+import React, {
+  useCallback,
+  useEffect,
+  useLayoutEffect,
+  useMemo,
+  useRef,
+} from 'react';
 import { SkiaViewApi } from './SkiaViewApi';
 
 import type { AnimationObject } from './types';
 import { NativeSkiaSkottieView } from './NaitveSkiaSkottieView';
+import { makeSkSkottieFromString } from './NativeSkottieModule';
+import {
+  Easing,
+  startMapper,
+  stopMapper,
+  useSharedValue,
+  withRepeat,
+  withTiming,
+} from 'react-native-reanimated';
 
 export type SkiaSkottieViewProps = NativeSkiaViewProps & {
   src: string | AnimationObject;
@@ -56,6 +71,14 @@ export const SkiaSkottieView = (props: SkiaSkottieViewProps) => {
     return _source;
   }, [props.src]);
 
+  const skottieAnimation = useMemo(
+    () => makeSkSkottieFromString(source),
+    [source]
+  );
+
+  const _progress = useSharedValue(0);
+  const progress = _progress;
+
   const updateSrc = useCallback(
     (src: string) => {
       assertSkiaViewApi();
@@ -65,17 +88,57 @@ export const SkiaSkottieView = (props: SkiaSkottieViewProps) => {
   );
   //#endregion
 
-  useLayoutEffect(() => {
-    updateSrc(source);
-  }, [source, updateSrc]);
+  // Handle animation updates
+  // TODO: Christian We manually need to handle the mapping of reanimated values, instead of being
+  //       able to use #extractReanimatedProps, because that only works with Views using the Node API.
+  useEffect(() => {
+    assertSkiaViewApi();
+    // TODO: can we get this from RnSkia?
+    const mapperId = startMapper(() => {
+      'worklet';
+      // TODO: Christian, i am using callJsiMethod here, but could also do setJsiProperty. Is there any advantage / disadvantage?
+      // SkiaViewApi.callJsiMethod(nativeId, 'setProgress', [progress.value]);
+      SkiaViewApi.setJsiProperty(nativeId, 'progress', progress.value);
+      // TODO: request this on the native side when calling setProgress to minimize overhead
+      SkiaViewApi.requestRedraw(nativeId);
+    }, [progress]);
 
-  const { debug = false, ...viewProps } = props;
+    return () => {
+      stopMapper(mapperId);
+    };
+  }, [nativeId, progress]);
+
+  useLayoutEffect(() => {
+    // TODO: Instead of setting source, set JSISkottie instance, which we need anyway already for duration?
+    updateSrc(source);
+
+    // TODO: Christian, registerValuesInView only works for skia animated values? Do we have to do that?
+    // SkiaViewApi.registerValuesInView(nativeId, [progress]);
+  }, [nativeId, source, updateSrc]);
+
+  // Start the animation
+  useEffect(() => {
+    if (!props.autoPlay) {
+      return;
+    }
+
+    _progress.value = withRepeat(
+      withTiming(1, {
+        duration: skottieAnimation.duration * 1000,
+        easing: Easing.linear,
+      }),
+      props.loop ? -1 : 0,
+      false
+    );
+  }, [_progress, props.autoPlay, props.loop, skottieAnimation.duration]);
+
+  const { mode, debug = false, ...viewProps } = props;
 
   return (
     <NativeSkiaSkottieView
       collapsable={false}
       nativeID={`${nativeId}`}
-      // mode={'continuous'}
+      mode={mode}
       debug={debug}
       {...viewProps}
     />
