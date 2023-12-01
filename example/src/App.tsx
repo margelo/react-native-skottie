@@ -2,7 +2,7 @@ import * as React from 'react';
 
 import { StyleSheet, SafeAreaView } from 'react-native';
 import { SkiaSkottieView } from 'react-native-skottie';
-import HandsLottie from './Hands.json';
+import HandsLottie from './animation2.json';
 
 export default function App() {
   return (
