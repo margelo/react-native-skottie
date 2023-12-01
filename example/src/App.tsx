@@ -19,7 +19,8 @@ export default function App() {
           style={styles.flex1}
           src={LottieAnimation}
           autoPlay={true}
-          loop={true}
+          loop={false}
+          onAnimationFinish={() => console.log('Animation finished')}
         />
       </View>
     </SafeAreaView>

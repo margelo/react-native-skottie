@@ -17,6 +17,7 @@ import {
   Easing,
   SharedValue,
   cancelAnimation,
+  runOnJS,
   startMapper,
   stopMapper,
   useSharedValue,
@@ -58,12 +59,16 @@ export type SkiaSkottieViewProps = NativeSkiaViewProps & {
    */
   progress?: SharedValue<number>;
 
-  // TODO: onAnimationFinish
-
   /**
    * @default contain
    */
   resizeMode?: ResizeMode;
+
+  /**
+   * Called when the animation is finished playing.
+   * Note: this will be called multiple times if the animation is looping.
+   */
+  onAnimationFinish?: () => void;
 };
 
 export const SkiaSkottieView = (props: SkiaSkottieViewProps) => {
@@ -143,12 +148,22 @@ export const SkiaSkottieView = (props: SkiaSkottieViewProps) => {
 
     const speed = props.speed ?? 1;
     const duration = (skottieAnimation.duration * 1000) / speed;
+    const doneCallback = props.onAnimationFinish;
+
     _progress.value = withRepeat(
-      withTiming(1, {
-        duration: duration,
-        easing: Easing.linear,
-      }),
-      props.loop ? -1 : 0,
+      withTiming(
+        1,
+        {
+          duration: duration,
+          easing: Easing.linear,
+        },
+        (finished) => {
+          if (finished && doneCallback != null) {
+            runOnJS(doneCallback)();
+          }
+        }
+      ),
+      props.loop ? -1 : 1,
       false
     );
 
@@ -159,6 +174,7 @@ export const SkiaSkottieView = (props: SkiaSkottieViewProps) => {
     _progress,
     props.autoPlay,
     props.loop,
+    props.onAnimationFinish,
     props.progress,
     props.speed,
     skottieAnimation.duration,
