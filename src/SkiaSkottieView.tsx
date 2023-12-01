@@ -14,7 +14,7 @@ import React, {
 import { SkiaViewApi } from './SkiaViewApi';
 
 import type { AnimationObject } from './types';
-import { NativeSkiaSkottieView } from './NaitveSkiaSkottieView';
+import { NativeSkiaSkottieView } from './NativeSkiaSkottieView';
 import { makeSkSkottieFromString } from './NativeSkottieModule';
 import {
   Easing,
