@@ -22,7 +22,7 @@ public class SkiaSkottieModule extends ReactContextBaseJavaModule {
   @ReactMethod(isBlockingSynchronousMethod = true)
   public boolean install() {
     try {
-      System.loadLibrary("react-native-skia-skottie");
+      System.loadLibrary("react-native-skottie");
       ReactApplicationContext context = getReactApplicationContext();
 
       RNSkiaModule skiaModule = context.getNativeModule(RNSkiaModule.class);

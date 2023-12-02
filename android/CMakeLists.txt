@@ -1,7 +1,7 @@
-project(react-native-skia-skottie)
+project(react-native-skottie)
 cmake_minimum_required(VERSION 3.4.1)
 
-set(PACKAGE_NAME "react-native-skia-skottie")
+set(PACKAGE_NAME "react-native-skottie")
 
 set(CMAKE_VERBOSE_MAKEFILE ON)
 set(CMAKE_CXX_STANDARD 17)
@@ -39,7 +39,26 @@ include_directories(
         "${NODE_MODULES_DIR}/react-native/ReactAndroid/src/main/java/com/facebook/react/turbomodule/core/jni"
 
         # include skia headers
+        "${NODE_MODULES_DIR}/@shopify/react-native-skia/cpp/rnskia"
+        "${NODE_MODULES_DIR}/@shopify/react-native-skia/cpp/skia/include/config/"
+        "${NODE_MODULES_DIR}/@shopify/react-native-skia/cpp/skia/include/core/"
+        "${NODE_MODULES_DIR}/@shopify/react-native-skia/cpp/skia/include/effects/"
+        "${NODE_MODULES_DIR}/@shopify/react-native-skia/cpp/skia/include/utils/"
+        "${NODE_MODULES_DIR}/@shopify/react-native-skia/cpp/skia/include/pathops/"
+        "${NODE_MODULES_DIR}/@shopify/react-native-skia/cpp/skia/modules/"
+        "${NODE_MODULES_DIR}/@shopify/react-native-skia/cpp/skia/modules/skparagraph/include/"
+        "${NODE_MODULES_DIR}/@shopify/react-native-skia/cpp/skia/include/"
         "${NODE_MODULES_DIR}/@shopify/react-native-skia/cpp/skia"
+
+        "${NODE_MODULES_DIR}/@shopify/react-native-skia/cpp/api"
+        "${NODE_MODULES_DIR}/@shopify/react-native-skia/cpp/jsi"
+        "${NODE_MODULES_DIR}/@shopify/react-native-skia/cpp/rnskia"
+        "${NODE_MODULES_DIR}/@shopify/react-native-skia/cpp/rnskia/values"
+        "${NODE_MODULES_DIR}/@shopify/react-native-skia/cpp/rnskia/dom"
+        "${NODE_MODULES_DIR}/@shopify/react-native-skia/cpp/rnskia/dom/base"
+        "${NODE_MODULES_DIR}/@shopify/react-native-skia/cpp/rnskia/dom/nodes"
+        "${NODE_MODULES_DIR}/@shopify/react-native-skia/cpp/rnskia/dom/props"
+        "${NODE_MODULES_DIR}/@shopify/react-native-skia/cpp/utils"
 
         ${libfbjni_include_DIRS}
 )
@@ -62,6 +81,10 @@ set_property(TARGET skshaper PROPERTY IMPORTED_LOCATION "${SKIA_LIBS_PATH}/libsk
 set(SKIA_MODULE_SKSG_LIB "sksg")
 add_library(sksg STATIC IMPORTED)
 set_property(TARGET sksg PROPERTY IMPORTED_LOCATION "${SKIA_LIBS_PATH}/libsksg.a")
+
+set(SKIA_MODULE_SKUNICODE_LIB "skunicode")
+add_library(skunicode STATIC IMPORTED)
+set_property(TARGET skunicode PROPERTY IMPORTED_LOCATION "${SKIA_LIBS_PATH}/libskunicode.a")
 
 # Import react native libs
 find_package(fbjni REQUIRED CONFIG)
@@ -92,6 +115,7 @@ target_link_libraries(
         ${SKIA_MODULE_SKOTTIE_LIB}
         ${SKIA_SKSHAPER_LIB}
         ${SKIA_MODULE_SKSG_LIB}
+        ${SKIA_MODULE_SKUNICODE_LIB}
         ${SKIA_LIB}
         shopify_react-native-skia::rnskia
         -ljnigraphics

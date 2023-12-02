@@ -8,7 +8,8 @@ buildscript {
   }
 
   dependencies {
-    classpath("com.android.tools.build:gradle:7.2.2")
+    classpath("com.android.tools.build:gradle")
+    classpath("com.facebook.react:react-native-gradle-plugin")
   }
 }
 
@@ -27,8 +28,11 @@ def isNewArchitectureEnabled() {
   return project.hasProperty("newArchEnabled") && project.newArchEnabled == "true"
 }
 
-apply plugin: 'com.facebook.react'
 apply plugin: 'com.android.library'
+
+if (isNewArchitectureEnabled()) {
+  apply plugin: "com.facebook.react"
+}
 
 import java.nio.file.Paths
 
@@ -138,7 +142,11 @@ android {
 
 dependencies {
   implementation 'com.facebook.react:react-android:+'
-  implementation project(":shopify_react-native-skia")
+  implementation(project(":shopify_react-native-skia")) {
+    exclude group: "com.facebook.react", module: "react-native"
+  }
+  // TODO: not sure if this is still needed, now that we have the task dependency at the bottom?
+  implementation(project(":react-native-reanimated"))
 }
 
 // Resolves "LOCAL_SRC_FILES points to a missing file, Check that libfb.so exists or that its path is correct".
@@ -161,5 +169,11 @@ if (isNewArchitectureEnabled()) {
     jsRootDir = file("../src/")
     libraryName = "SkiaSkottie"
     codegenJavaPackageName = "com.skiaskottie"
+  }
+}
+
+if (isNewArchitectureEnabled()) {
+  tasks.named('generateCodegenSchemaFromJavaScript') {
+  dependsOn ':react-native-reanimated:prepareHeadersForPrefab'
   }
 }

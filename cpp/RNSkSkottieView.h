@@ -1,5 +1,6 @@
 #pragma once
 
+#include <cmath>
 #include <functional>
 #include <memory>
 #include <mutex>
@@ -24,60 +25,81 @@
 #include "SkBBHFactory.h"
 #include "SkCanvas.h"
 #include "SkPictureRecorder.h"
+#include "JsiSkSkottie.h"
 #include <modules/skottie/include/Skottie.h>
 
 #pragma clang diagnostic pop
-
-class SkRect;
 
 namespace RNSkia {
 
 namespace jsi = facebook::jsi;
 
-class RNSkSkottieRenderer
-    : public RNSkRenderer,
-      public std::enable_shared_from_this<RNSkSkottieRenderer> {
+class RNSkSkottieRenderer : public RNSkRenderer, public std::enable_shared_from_this<RNSkSkottieRenderer> {
 public:
-  RNSkSkottieRenderer(std::function<void()> requestRedraw,
-                      std::shared_ptr<RNSkPlatformContext> context)
+  RNSkSkottieRenderer(std::function<void()> requestRedraw, std::shared_ptr<RNSkPlatformContext> context)
       : RNSkRenderer(requestRedraw), _platformContext(context) {}
 
   bool tryRender(std::shared_ptr<RNSkCanvasProvider> canvasProvider) override {
     return performDraw(canvasProvider);
   }
 
-  void
-  renderImmediate(std::shared_ptr<RNSkCanvasProvider> canvasProvider) override {
+  void renderImmediate(std::shared_ptr<RNSkCanvasProvider> canvasProvider) override {
     performDraw(canvasProvider);
   }
 
-          void setSrc(std::string src) {
-              _animation = skottie::Animation::Builder().make(src.c_str(), src.size());
-              if (!std::isnan(_initialProgress)) {
-                  setProgress(_initialProgress);
-                  _initialProgress = std::nan("");
-              }
-          }
-          
-          void setProgress(double progress) {
-              if (_animation != nullptr) {
-                  _animation.get()->seek(progress);
-              } else {
-                  _initialProgress = progress;
-              }
-          }
+  void setSrc(std::shared_ptr<jsi::HostObject> animation) {
+    if (animation == nullptr) {
+      _animation = nullptr;
+    } else {
+      _animation = std::dynamic_pointer_cast<JsiSkSkottie>(animation);
+      _srcR = SkRect::MakeSize(_animation->getObject()->size());
+    }
+  }
+
+  void setProgress(double progress) {
+    if (_animation == nullptr) {
+        return;
+    }
+
+    _animation->getObject()->seek(progress);
+  }
+
+  void setResizeMode(std::string resizeMode) {
+    _resizeMode = resizeMode;
+  }
 
 private:
   bool performDraw(std::shared_ptr<RNSkCanvasProvider> canvasProvider) {
-    canvasProvider->renderToCanvas([=](SkCanvas *canvas) {
+    canvasProvider->renderToCanvas([=](SkCanvas* canvas) {
       // Make sure to scale correctly
       auto pd = _platformContext->getPixelDensity();
       canvas->clear(SK_ColorTRANSPARENT);
       canvas->save();
       canvas->scale(pd, pd);
 
+
       if (_animation != nullptr) {
-          _animation.get()->render(canvas);
+        auto dstRect = canvas->getLocalClipBounds();
+
+        // Defaults to "contain"
+        SkMatrix::ScaleToFit scaleType = SkMatrix::kCenter_ScaleToFit;
+        if (_resizeMode == "stretch") {
+            scaleType = SkMatrix::kFill_ScaleToFit;
+        }
+
+        if (_resizeMode == "cover") {
+            auto scale = std::max(dstRect.width() / _srcR.width(), dstRect.height() / _srcR.height());
+            auto scaledWidth = _srcR.width() * scale;
+            auto scaledHeight = _srcR.height() * scale;
+            auto x = (dstRect.width() - scaledWidth) / 2;
+            auto y = (dstRect.height() - scaledHeight) / 2;
+
+            dstRect = SkRect::MakeXYWH(x, y, scaledWidth, scaledHeight);
+            scaleType = SkMatrix::kCenter_ScaleToFit;
+        }
+
+        canvas->concat(SkMatrix::RectToRect(_srcR, dstRect, scaleType));
+        _animation->getObject()->render(canvas);
       }
 
       canvas->restore();
@@ -86,8 +108,9 @@ private:
   }
 
   std::shared_ptr<RNSkPlatformContext> _platformContext;
-  sk_sp<skottie::Animation> _animation;
-  double _initialProgress = std::nan("");
+  std::shared_ptr<JsiSkSkottie> _animation;
+  SkRect _srcR;
+  std::string _resizeMode = "contain";
 };
 
 class RNSkSkottieView : public RNSkView {
@@ -95,28 +118,38 @@ public:
   /**
    * Constructor
    */
-  RNSkSkottieView(std::shared_ptr<RNSkPlatformContext> context,
-                  std::shared_ptr<RNSkCanvasProvider> canvasProvider)
-      : RNSkView(
-            context, canvasProvider,
-            std::make_shared<RNSkSkottieRenderer>(
-                std::bind(&RNSkSkottieView::requestRedraw, this), context)) {}
+  RNSkSkottieView(std::shared_ptr<RNSkPlatformContext> context, std::shared_ptr<RNSkCanvasProvider> canvasProvider)
+      : RNSkView(context, canvasProvider,
+                 std::make_shared<RNSkSkottieRenderer>(std::bind(&RNSkSkottieView::requestRedraw, this), context)) {}
 
-  void setJsiProperties(
-      std::unordered_map<std::string, RNJsi::JsiValueWrapper> &props) override {
+  void setJsiProperties(std::unordered_map<std::string, RNJsi::JsiValueWrapper>& props) override {
 
     RNSkView::setJsiProperties(props);
 
-    for (auto &prop : props) {
-        if (prop.first == "src" && prop.second.getType() == RNJsi::JsiWrapperValueType::String) {
-            std::static_pointer_cast<RNSkSkottieRenderer>(getRenderer())
-            ->setSrc(prop.second.getAsString());
-        }
-        if (prop.first == "progress") {
-            std::static_pointer_cast<RNSkSkottieRenderer>(getRenderer())
-            ->setProgress(prop.second.getAsNumber());
-        }
+    for (auto& prop : props) {
+      if (prop.first == "src" && prop.second.getType() == RNJsi::JsiWrapperValueType::HostObject) {
+        std::static_pointer_cast<RNSkSkottieRenderer>(getRenderer())->setSrc(prop.second.getAsHostObject());
+      }
+      if (prop.first == "progress") {
+        std::static_pointer_cast<RNSkSkottieRenderer>(getRenderer())->setProgress(prop.second.getAsNumber());
+      }
+      if (prop.first == "scaleType") {
+          std::static_pointer_cast<RNSkSkottieRenderer>(getRenderer())->setResizeMode(prop.second.getAsString());
+      }
     }
+  }
+
+  jsi::Value callJsiMethod(jsi::Runtime &runtime,
+                                const std::string &name,
+                                const jsi::Value *arguments, size_t count) override {
+      if (name == "setProgress") {
+          // Get first argument as number as it contains the updated value
+          auto progressValue = arguments[0].asNumber();
+          std::static_pointer_cast<RNSkSkottieRenderer>(getRenderer())->setProgress(progressValue);
+          requestRedraw();
+      }
+
+      return {};
   }
 };
 } // namespace RNSkia

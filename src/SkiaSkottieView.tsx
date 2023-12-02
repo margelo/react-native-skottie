@@ -1,27 +1,32 @@
 import '@shopify/react-native-skia'; // Important: register skia module
-import type {
-  NativeSkiaViewProps,
-  SkiaProps,
-} from '@shopify/react-native-skia/lib/typescript/src';
-import React, { useCallback, useEffect, useMemo, useRef } from 'react';
+import type { NativeSkiaViewProps } from '@shopify/react-native-skia/lib/typescript/src';
+import { SkiaViewNativeId } from '@shopify/react-native-skia';
+import React, {
+  useCallback,
+  useEffect,
+  useLayoutEffect,
+  useMemo,
+  useRef,
+} from 'react';
 import { SkiaViewApi } from './SkiaViewApi';
 
-import {
-  startMapper,
-  stopMapper,
-  isSharedValue,
-} from '@shopify/react-native-skia/src/external/reanimated/moduleWrapper';
 import type { AnimationObject } from './types';
-import { NativeSkiaSkottieView } from './NaitveSkiaSkottieView';
+import { NativeSkiaSkottieView } from './NativeSkiaSkottieView';
 import { makeSkSkottieFromString } from './NativeSkottieModule';
 import {
   Easing,
+  SharedValue,
   cancelAnimation,
-  useFrameCallback,
+  runOnJS,
+  startMapper,
+  stopMapper,
   useSharedValue,
   withRepeat,
   withTiming,
 } from 'react-native-reanimated';
+import type { SkSkottie } from 'lib/typescript/NativeSkottieModule';
+
+export type ResizeMode = 'cover' | 'contain' | 'stretch';
 
 export type SkiaSkottieViewProps = NativeSkiaViewProps & {
   src: string | AnimationObject;
@@ -49,17 +54,25 @@ export type SkiaSkottieViewProps = NativeSkiaViewProps & {
    */
   loop?: boolean;
 
-  // TODO: onAnimationFinish
-  // TODO: resizeMode?: 'cover' | 'contain' | 'center';
-} & SkiaProps<{ progress?: number }>;
+  /**
+   * Provide a reanimated shared value between 0 and 1 to control the animation progress.
+   */
+  progress?: SharedValue<number>;
 
-// TODO: make the nativeId safe by sharing it from the rn-skia implementation
-const nativeIdCount = { current: 94192 };
+  /**
+   * @default contain
+   */
+  resizeMode?: ResizeMode;
+
+  /**
+   * Called when the animation is finished playing.
+   * Note: this will be called multiple times if the animation is looping.
+   */
+  onAnimationFinish?: () => void;
+};
 
 export const SkiaSkottieView = (props: SkiaSkottieViewProps) => {
-  const mapperIdRef = useRef<number | undefined>(undefined);
-  const nativeId = useRef(nativeIdCount.current++).current;
-  const prevPropsRef = useRef<SkiaSkottieViewProps>(props);
+  const nativeId = useRef(SkiaViewNativeId.current++).current;
 
   //#region Compute values
   const source = useMemo(() => {
@@ -79,141 +92,92 @@ export const SkiaSkottieView = (props: SkiaSkottieViewProps) => {
     [source]
   );
 
-  const updateSrc = useCallback(
-    (src: string) => {
+  const _progress = useSharedValue(0);
+  const progress = props.progress ?? _progress;
+
+  const updateAnimation = useCallback(
+    (animation: SkSkottie) => {
       assertSkiaViewApi();
-      SkiaViewApi.setJsiProperty(nativeId, 'src', src);
+      SkiaViewApi.setJsiProperty(nativeId, 'src', animation);
+    },
+    [nativeId]
+  );
+
+  const updateResizeMode = useCallback(
+    (resizeMode: ResizeMode) => {
+      assertSkiaViewApi();
+      SkiaViewApi.setJsiProperty(nativeId, 'scaleType', resizeMode);
     },
     [nativeId]
   );
   //#endregion
 
-  //#region Callbacks
-  const timePerFrame = 16.66; // ~60 FPS
-  const updateProgress = useCallback(
-    (progressParam: SkiaSkottieViewProps['progress']) => {
-      assertSkiaViewApi();
-      if (typeof progressParam === 'number') {
-        SkiaViewApi.setJsiProperty(nativeId, 'progress', progressParam);
-        return;
-      }
+  useLayoutEffect(() => {
+    updateAnimation(skottieAnimation);
+  }, [nativeId, skottieAnimation, source, updateAnimation]);
 
-      const viewId = nativeId;
-      if (isSharedValue(progressParam)) {
-        if (mapperIdRef.current != null) {
-          stopMapper(mapperIdRef.current);
-        }
+  useLayoutEffect(() => {
+    updateResizeMode(props.resizeMode ?? 'contain');
+  }, [nativeId, props.resizeMode, updateResizeMode]);
 
-        // NOTE: We'd have the original FPS in the skottieAnimation that we could use here. Do we want to?
-        // Right now this frame lock is a performacne optimization, especially for iOS.
-        let lastFrameTimestamp = { value: 0 };
-        mapperIdRef.current = startMapper(() => {
-          'worklet';
-
-          const now = performance.now();
-          if (now - lastFrameTimestamp.value < timePerFrame) {
-            return;
-          }
-          lastFrameTimestamp.value = now;
-
-          SkiaViewApi.setJsiProperty(viewId, 'progress', progressParam.value);
-          SkiaViewApi.requestRedraw(viewId);
-        }, [progressParam]);
-      }
-    },
-    [nativeId, timePerFrame]
-  );
-  //#endregion
-
-  //#region Running animation progress
-  const isControlledProgress = props.progress != null;
-  const isUncontrolledProgress = !isControlledProgress;
-
-  const duration =
-    (props.duration ?? skottieAnimation.duration * 1000) / (props.speed ?? 1);
-
-  const autoPlay = props.autoPlay ?? true;
-
-  const _progress = useSharedValue(0);
-  const progress = props.progress ?? _progress;
+  // Handle animation updates
   useEffect(() => {
-    if (isUncontrolledProgress || !autoPlay) {
+    assertSkiaViewApi();
+    const mapperId = startMapper(() => {
+      'worklet';
+      try {
+        SkiaViewApi.callJsiMethod(nativeId, 'setProgress', progress.value);
+      } catch (e) {
+        // ignored, view might not be ready yet
+        if (props.debug) {
+          console.warn(e);
+        }
+      }
+    }, [progress]);
+
+    return () => {
+      stopMapper(mapperId);
+    };
+  }, [nativeId, progress, props.debug]);
+
+  // Start the animation
+  useEffect(() => {
+    if (!props.autoPlay || props.progress != null) {
       return;
     }
 
+    const speed = props.speed ?? 1;
+    const duration = (skottieAnimation.duration * 1000) / speed;
+    const doneCallback = props.onAnimationFinish;
+
     _progress.value = withRepeat(
-      withTiming(1, {
-        duration: duration,
-        easing: Easing.linear,
-      }),
-      props.loop ? -1 : 0,
+      withTiming(
+        1,
+        {
+          duration: duration,
+          easing: Easing.linear,
+        },
+        (finished) => {
+          if (finished && doneCallback != null) {
+            runOnJS(doneCallback)();
+          }
+        }
+      ),
+      props.loop ? -1 : 1,
       false
     );
 
     return () => {
-      if (props.progress == null) {
-        cancelAnimation(_progress);
-      }
+      cancelAnimation(_progress);
     };
   }, [
     _progress,
-    isUncontrolledProgress,
+    props.autoPlay,
     props.loop,
+    props.onAnimationFinish,
     props.progress,
-    duration,
-    autoPlay,
-  ]);
-
-  useFrameCallback(
-    useCallback(
-      ({ timeSinceFirstFrame }) => {
-        'worklet';
-        const progress = (timeSinceFirstFrame % duration) / duration;
-
-        SkiaViewApi.setJsiProperty(nativeId, 'progress', progress);
-        SkiaViewApi.requestRedraw(nativeId);
-      },
-      [duration, nativeId]
-    ),
-    isUncontrolledProgress && autoPlay
-  );
-  //#endregion
-
-  // On mount/unmount:
-  useEffect(() => {
-    updateSrc(source);
-    if (isControlledProgress) {
-      updateProgress(progress);
-    }
-
-    return () => {
-      if (mapperIdRef.current != null) {
-        stopMapper(mapperIdRef.current);
-      }
-    };
-
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
-
-  // On props change:
-  useEffect(() => {
-    const prevProps = prevPropsRef.current;
-
-    if (props.src !== prevProps?.src) {
-      updateSrc(source);
-    }
-    if (props.progress !== prevProps?.progress && isControlledProgress) {
-      updateProgress(progress);
-    }
-
-    prevPropsRef.current = props;
-  }, [
-    isControlledProgress,
-    progress,
-    props,
-    source,
-    updateProgress,
-    updateSrc,
+    props.speed,
+    skottieAnimation.duration,
   ]);
 
   const { mode, debug = false, ...viewProps } = props;

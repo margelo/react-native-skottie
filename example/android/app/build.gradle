@@ -166,7 +166,7 @@ dependencies {
         implementation jscFlavor
     }
 
-  implementation project(':react-native-skia-skottie')
+  implementation project(':react-native-skottie')
 }
 
 apply from: file("../../node_modules/@react-native-community/cli-platform-android/native_modules.gradle"); applyNativeModulesAppBuildGradle(project)

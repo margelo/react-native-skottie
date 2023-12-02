@@ -35,7 +35,8 @@
     "example": "yarn --cwd example",
     "bootstrap": "yarn example && yarn install && yarn example pods",
     "clean": "del-cli android/build example/android/build example/android/app/build example/ios/build",
-    "dev:module-copy-skia-headers": "yarn rimraf ./cpp/skia/modules/ && mkdir -p ./cpp/skia/modules/skottie/include && mkdir -p ./cpp/skia/modules/skottie/src/text && cp -a ./externals/skia/modules/skottie/include/. ./cpp/skia/modules/skottie/include && cp ./externals/skia/modules/skottie/src/text/SkottieShaper.h ./cpp/skia/modules/skottie/src/text/SkottieShaper.h"
+    "dev:module-copy-skia-headers": "yarn rimraf ./cpp/skia/modules/ && mkdir -p ./cpp/skia/modules/skottie/include && mkdir -p ./cpp/skia/modules/skottie/src/text && cp -a ./externals/skia/modules/skottie/include/. ./cpp/skia/modules/skottie/include && cp ./externals/skia/modules/skottie/src/text/SkottieShaper.h ./cpp/skia/modules/skottie/src/text/SkottieShaper.h",
+    "check-cpp": "scripts/clang-format.sh"
   },
   "keywords": [
     "react-native",
@@ -55,11 +56,11 @@
   "devDependencies": {
     "@commitlint/config-conventional": "^17.0.2",
     "@evilmartians/lefthook": "^1.2.2",
-    "@react-native-community/eslint-config": "^3.0.2",
+    "@react-native/eslint-config": "^0.72.2",
     "@release-it/conventional-changelog": "^5.0.0",
-    "@types/jest": "^28.1.2",
+    "@tsconfig/react-native": "^3.0.0",
+    "@types/jest": "^29.5.10",
     "@types/react": "~17.0.21",
-    "@types/react-native": "0.70.0",
     "commitlint": "^17.0.2",
     "del-cli": "^5.0.0",
     "eslint": "^8.4.1",
@@ -69,13 +70,10 @@
     "pod-install": "^0.1.0",
     "prettier": "^2.0.5",
     "react": "18.2.0",
-    "react-native": "0.71.7",
-    "react-native-builder-bob": "^0.20.0",
+    "react-native": "0.72.7",
+    "react-native-builder-bob": "^0.23.2",
     "release-it": "^15.0.0",
-    "typescript": "^4.5.2"
-  },
-  "resolutions": {
-    "@types/react": "17.0.21"
+    "typescript": "^4.8.4"
   },
   "peerDependencies": {
     "@shopify/react-native-skia": ">= 0.1.197",
@@ -119,7 +117,7 @@
   "eslintConfig": {
     "root": true,
     "extends": [
-      "@react-native-community",
+      "@react-native",
       "prettier"
     ],
     "rules": {
@@ -162,7 +160,7 @@
     ]
   },
   "dependencies": {
-    "@shopify/react-native-skia": "^0.1.188",
-    "react-native-reanimated": "3.1.0"
+    "@shopify/react-native-skia": "^0.1.224",
+    "react-native-reanimated": "3.6.1"
   }
 }
