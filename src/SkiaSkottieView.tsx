@@ -12,7 +12,7 @@ import { SkiaViewApi } from './SkiaViewApi';
 
 import type { AnimationObject } from './types';
 import { NativeSkiaSkottieView } from './NativeSkiaSkottieView';
-import { makeSkSkottieFromString } from './NativeSkottieModule';
+import { SkSkottie, makeSkSkottieFromString } from './NativeSkottieModule';
 import {
   Easing,
   SharedValue,
@@ -24,7 +24,6 @@ import {
   withRepeat,
   withTiming,
 } from 'react-native-reanimated';
-import type { SkSkottie } from 'lib/typescript/NativeSkottieModule';
 
 export type ResizeMode = 'cover' | 'contain' | 'stretch';
 
