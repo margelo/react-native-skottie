@@ -1,7 +1,7 @@
 #!/bin/bash
 
 if which clang-format >/dev/null; then
-  find cpp ios -type f \( -name "*.h" -o -name "*.cpp" -o -name "*.m" -o -name "*.mm" \) -print0 | while read -d $'\0' file; do
+  find cpp ios android/cpp cpp -type f \( -name "*.h" -o -name "*.cpp" -o -name "*.m" -o -name "*.mm" \) -print0 | while read -d $'\0' file; do
     clang-format -style=file:./cpp/.clang-format -i "$file"
   done
 else
