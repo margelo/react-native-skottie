@@ -22,10 +22,10 @@
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wdocumentation"
 
+#include "JsiSkSkottie.h"
 #include "SkBBHFactory.h"
 #include "SkCanvas.h"
 #include "SkPictureRecorder.h"
-#include "JsiSkSkottie.h"
 #include <modules/skottie/include/Skottie.h>
 
 #pragma clang diagnostic pop
@@ -58,7 +58,7 @@ public:
 
   void setProgress(double progress) {
     if (_animation == nullptr) {
-        return;
+      return;
     }
 
     _animation->getObject()->seek(progress);
@@ -77,25 +77,24 @@ private:
       canvas->save();
       canvas->scale(pd, pd);
 
-
       if (_animation != nullptr) {
         auto dstRect = canvas->getLocalClipBounds();
 
         // Defaults to "contain"
         SkMatrix::ScaleToFit scaleType = SkMatrix::kCenter_ScaleToFit;
         if (_resizeMode == "stretch") {
-            scaleType = SkMatrix::kFill_ScaleToFit;
+          scaleType = SkMatrix::kFill_ScaleToFit;
         }
 
         if (_resizeMode == "cover") {
-            auto scale = std::max(dstRect.width() / _srcR.width(), dstRect.height() / _srcR.height());
-            auto scaledWidth = _srcR.width() * scale;
-            auto scaledHeight = _srcR.height() * scale;
-            auto x = (dstRect.width() - scaledWidth) / 2;
-            auto y = (dstRect.height() - scaledHeight) / 2;
+          auto scale = std::max(dstRect.width() / _srcR.width(), dstRect.height() / _srcR.height());
+          auto scaledWidth = _srcR.width() * scale;
+          auto scaledHeight = _srcR.height() * scale;
+          auto x = (dstRect.width() - scaledWidth) / 2;
+          auto y = (dstRect.height() - scaledHeight) / 2;
 
-            dstRect = SkRect::MakeXYWH(x, y, scaledWidth, scaledHeight);
-            scaleType = SkMatrix::kCenter_ScaleToFit;
+          dstRect = SkRect::MakeXYWH(x, y, scaledWidth, scaledHeight);
+          scaleType = SkMatrix::kCenter_ScaleToFit;
         }
 
         canvas->concat(SkMatrix::RectToRect(_srcR, dstRect, scaleType));
@@ -134,22 +133,20 @@ public:
         std::static_pointer_cast<RNSkSkottieRenderer>(getRenderer())->setProgress(prop.second.getAsNumber());
       }
       if (prop.first == "scaleType") {
-          std::static_pointer_cast<RNSkSkottieRenderer>(getRenderer())->setResizeMode(prop.second.getAsString());
+        std::static_pointer_cast<RNSkSkottieRenderer>(getRenderer())->setResizeMode(prop.second.getAsString());
       }
     }
   }
 
-  jsi::Value callJsiMethod(jsi::Runtime &runtime,
-                                const std::string &name,
-                                const jsi::Value *arguments, size_t count) override {
-      if (name == "setProgress") {
-          // Get first argument as number as it contains the updated value
-          auto progressValue = arguments[0].asNumber();
-          std::static_pointer_cast<RNSkSkottieRenderer>(getRenderer())->setProgress(progressValue);
-          requestRedraw();
-      }
+  jsi::Value callJsiMethod(jsi::Runtime& runtime, const std::string& name, const jsi::Value* arguments, size_t count) override {
+    if (name == "setProgress") {
+      // Get first argument as number as it contains the updated value
+      auto progressValue = arguments[0].asNumber();
+      std::static_pointer_cast<RNSkSkottieRenderer>(getRenderer())->setProgress(progressValue);
+      requestRedraw();
+    }
 
-      return {};
+    return {};
   }
 };
 } // namespace RNSkia

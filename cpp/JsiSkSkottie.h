@@ -25,15 +25,12 @@ public:
     return static_cast<double>(getObject()->fps());
   }
 
-  JSI_PROPERTY_GET(__typename__) {                                             \
-    return jsi::String::createFromUtf8(runtime, "Skottie");                           \
+  JSI_PROPERTY_GET(__typename__) {
+    return jsi::String::createFromUtf8(runtime, "Skottie");
   }
 
-  JSI_EXPORT_PROPERTY_GETTERS(
-          JSI_EXPORT_PROP_GET(JsiSkSkottie, duration),
-          JSI_EXPORT_PROP_GET(JsiSkSkottie, fps),
-          JSI_EXPORT_PROP_GET(JsiSkSkottie, __typename__)
-      )
+  JSI_EXPORT_PROPERTY_GETTERS(JSI_EXPORT_PROP_GET(JsiSkSkottie, duration), JSI_EXPORT_PROP_GET(JsiSkSkottie, fps),
+                              JSI_EXPORT_PROP_GET(JsiSkSkottie, __typename__))
   // #endregion
 
   // #region Methods
@@ -53,11 +50,7 @@ public:
     return jsi::Value::undefined();
   }
 
-  JSI_EXPORT_FUNCTIONS(
-          JSI_EXPORT_FUNC(JsiSkSkottie, seek),
-          JSI_EXPORT_FUNC(JsiSkSkottie, render),
-          JSI_EXPORT_FUNC(JsiSkSkottie, dispose)
-          )
+  JSI_EXPORT_FUNCTIONS(JSI_EXPORT_FUNC(JsiSkSkottie, seek), JSI_EXPORT_FUNC(JsiSkSkottie, render), JSI_EXPORT_FUNC(JsiSkSkottie, dispose))
   // #endregion
 
   /**
