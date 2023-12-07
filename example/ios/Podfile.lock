@@ -375,12 +375,14 @@ PODS:
   - React-jsinspector (0.72.7)
   - React-logger (0.72.7):
     - glog
+  - react-native-performance-stats (0.2.3):
+    - React-Core
   - react-native-skia (0.1.224):
     - RCT-Folly (= 2021.07.22.00)
     - React
     - React-callinvoker
     - React-Core
-  - react-native-skia-skottie (0.1.1):
+  - react-native-skia-skottie (0.2.0):
     - React
     - React-Core
     - react-native-skia
@@ -549,6 +551,7 @@ DEPENDENCIES:
   - React-jsiexecutor (from `../node_modules/react-native/ReactCommon/jsiexecutor`)
   - React-jsinspector (from `../node_modules/react-native/ReactCommon/jsinspector`)
   - React-logger (from `../node_modules/react-native/ReactCommon/logger`)
+  - react-native-performance-stats (from `../node_modules/react-native-performance-stats`)
   - "react-native-skia (from `../node_modules/@shopify/react-native-skia`)"
   - react-native-skia-skottie (from `../..`)
   - React-NativeModulesApple (from `../node_modules/react-native/ReactCommon/react/nativemodule/core/platform/ios`)
@@ -632,6 +635,8 @@ EXTERNAL SOURCES:
     :path: "../node_modules/react-native/ReactCommon/jsinspector"
   React-logger:
     :path: "../node_modules/react-native/ReactCommon/logger"
+  react-native-performance-stats:
+    :path: "../node_modules/react-native-performance-stats"
   react-native-skia:
     :path: "../node_modules/@shopify/react-native-skia"
   react-native-skia-skottie:
@@ -709,8 +714,9 @@ SPEC CHECKSUMS:
   React-jsiexecutor: c49502e5d02112247ee4526bc3ccfc891ae3eb9b
   React-jsinspector: 8baadae51f01d867c3921213a25ab78ab4fbcd91
   React-logger: 8edc785c47c8686c7962199a307015e2ce9a0e4f
+  react-native-performance-stats: 6b797310a9f72412b8f9f010e0cf1de0274d1c42
   react-native-skia: 4371ab4c413a8feca859e2753f632e34111584b4
-  react-native-skia-skottie: de898e6a96e726f7ed1fcd945d2e59403a0124e5
+  react-native-skia-skottie: 5031bb289b4845f7dcf90a9204500de2de6f60ab
   React-NativeModulesApple: b6868ee904013a7923128892ee4a032498a1024a
   React-perflogger: 31ea61077185eb1428baf60c0db6e2886f141a5a
   React-RCTActionSheet: 392090a3abc8992eb269ef0eaa561750588fc39d

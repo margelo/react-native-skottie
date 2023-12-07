@@ -1,0 +1,6 @@
+appId: com.skiaskottieexample
+---
+- launchApp
+- runScript: /Users/hannomargelo/Documents/Github/maestroWait.js
+# adb install android/app/build/outputs/apk/release/app-release.apk
+# flashlight test --testCommand "maestro test maestroTest.yaml" --bundleId com.skiaskottieexample
