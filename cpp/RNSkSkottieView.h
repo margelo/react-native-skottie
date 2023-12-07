@@ -18,6 +18,7 @@
 #include "RNSkLog.h"
 #include "RNSkPlatformContext.h"
 #include "RNSkTimingInfo.h"
+#include "RNSkTime.h"
 
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wdocumentation"
@@ -63,6 +64,10 @@ public:
 
     _animation->getObject()->seek(progress);
   }
+    
+    void setStartTime(double startTime) {
+        _startTime = startTime;
+    }
 
   void setResizeMode(std::string resizeMode) {
     _resizeMode = resizeMode;
@@ -103,6 +108,20 @@ private:
 
       canvas->restore();
     });
+      
+      // Seek to next frame, happens after render to give us 16.7ms to create it
+      if (_startTime != -1.0 && _animation != nullptr) {
+          auto timeNow = RNSkTime::GetSecs();
+          auto timePassed = timeNow - _startTime;
+          auto duration = _animation->getObject()->duration();
+          if (timePassed > duration) {
+              setStartTime(timeNow);
+              timePassed = 0.0;
+          }
+          
+          _animation->getObject()->seekFrameTime(timePassed);
+      }
+      
     return true;
   }
 
@@ -110,6 +129,7 @@ private:
   std::shared_ptr<JsiSkSkottie> _animation;
   SkRect _srcR;
   std::string _resizeMode = "contain";
+    double _startTime = -1.0;
 };
 
 class RNSkSkottieView : public RNSkView {
@@ -129,9 +149,6 @@ public:
       if (prop.first == "src" && prop.second.getType() == RNJsi::JsiWrapperValueType::HostObject) {
         std::static_pointer_cast<RNSkSkottieRenderer>(getRenderer())->setSrc(prop.second.getAsHostObject());
       }
-      if (prop.first == "progress") {
-        std::static_pointer_cast<RNSkSkottieRenderer>(getRenderer())->setProgress(prop.second.getAsNumber());
-      }
       if (prop.first == "scaleType") {
         std::static_pointer_cast<RNSkSkottieRenderer>(getRenderer())->setResizeMode(prop.second.getAsString());
       }
@@ -145,6 +162,11 @@ public:
       std::static_pointer_cast<RNSkSkottieRenderer>(getRenderer())->setProgress(progressValue);
       requestRedraw();
     }
+      
+      if (name == "start") {
+          std::static_pointer_cast<RNSkSkottieRenderer>(getRenderer())->setStartTime(RNSkTime::GetSecs());
+          setDrawingMode(RNSkDrawingMode::Continuous);
+      }
 
     return {};
   }
