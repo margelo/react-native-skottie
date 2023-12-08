@@ -6,7 +6,8 @@
     "android": "react-native run-android",
     "ios": "react-native run-ios",
     "start": "react-native start",
-    "pods": "pod-install --quiet"
+    "pods": "pod-install --quiet",
+    "typescript": "tsc --noEmit"
   },
   "dependencies": {
     "@shopify/react-native-skia": "^0.1.224",

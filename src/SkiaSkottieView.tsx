@@ -1,8 +1,5 @@
 import '@shopify/react-native-skia'; // Important: register skia module
-import type {
-  DrawMode,
-  NativeSkiaViewProps,
-} from '@shopify/react-native-skia/lib/typescript/src';
+import type { NativeSkiaViewProps } from '@shopify/react-native-skia/lib/typescript/src';
 import { SkiaViewNativeId } from '@shopify/react-native-skia';
 import React, {
   useCallback,
@@ -147,9 +144,11 @@ export const SkiaSkottieView = (props: SkiaSkottieViewProps) => {
   const shouldPlay = progress == null && props.autoPlay;
   useEffect(() => {
     if (shouldPlay) {
-      requestAnimationFrame(() => {
-        start();
-      });
+      setTimeout(() => {
+        requestAnimationFrame(() => {
+          start();
+        });
+      }, 1);
     }
 
     // const speed = props.speed ?? 1;
