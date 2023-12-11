@@ -8,6 +8,7 @@
 namespace RNSkia {
 using namespace facebook;
 
+std::function<std::string(std::string)> _readDotLottieArg;
 void RNSkModuleManager::installBindings(jsi::Runtime* jsRuntime, std::shared_ptr<RNSkPlatformContext> platformContext, std::function<std::string(std::string)> readDotLottieArg) {
   // Install bindings
   auto createSkottie = JsiSkSkottie::createCtor(std::move(platformContext));
@@ -15,11 +16,12 @@ void RNSkModuleManager::installBindings(jsi::Runtime* jsRuntime, std::shared_ptr
       *jsRuntime, "SkiaApi_SkottieCtor",
       jsi::Function::createFromHostFunction(*jsRuntime, jsi::PropNameID::forAscii(*jsRuntime, "SkottieCtor"), 1, createSkottie));
 
+  _readDotLottieArg = readDotLottieArg;
   jsRuntime->global().setProperty(
       *jsRuntime, "SkiaApi_SkottieFromUri",
       jsi::Function::createFromHostFunction(
           *jsRuntime, jsi::PropNameID::forAscii(*jsRuntime, "SkottieFromUri"), 1,
-          [&readDotLottieArg](jsi::Runtime& rt, const jsi::Value& thisValue, const jsi::Value* args, size_t count) -> jsi::Value // C++ lambda
+          [](jsi::Runtime& rt, const jsi::Value& thisValue, const jsi::Value* args, size_t count) -> jsi::Value // C++ lambda
           {
             if (count == 0) {
               jsi::detail::throwOrDie<jsi::JSError>(
@@ -33,7 +35,7 @@ void RNSkModuleManager::installBindings(jsi::Runtime* jsRuntime, std::shared_ptr
             }
 
             std::string dotLottieFilePath = args[0].asString(rt).utf8(rt);
-            std::string result = readDotLottieArg(dotLottieFilePath);
+            std::string result = _readDotLottieArg(dotLottieFilePath);
 
             return {};
           }));

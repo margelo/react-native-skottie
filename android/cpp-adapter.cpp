@@ -11,7 +11,9 @@ Java_com_skiaskottie_SkiaSkottieModule_initialize(JNIEnv *env, jclass clazz, jlo
                                                   jobject context)
 {
     __android_log_print(ANDROID_LOG_DEBUG, "SkiaSkottieModule", "Initializing SkiaSkottieModule");
-    std::function<std::string(std::string)> readDotLottie = [&env](std::string uri) -> std::string {
+
+    // TODO: We are capturing the JNIEnv here, i feel like thats a bad idea…
+    std::function<std::string(std::string)> readDotLottie = [env](std::string uri) -> std::string {
 
         jclass javaClass = env->FindClass("com/skiaskottie/DotLottieReader");
         if (javaClass == nullptr) {
@@ -44,7 +46,7 @@ Java_com_skiaskottie_SkiaSkottieModule_initialize(JNIEnv *env, jclass clazz, jlo
         RNSkia::RNSkModuleManager::installBindings(
             reinterpret_cast<facebook::jsi::Runtime *>(jsi_ptr),
             nullptr,
-            readDotLottie
+            std::move(readDotLottie)
             );
 
         __android_log_print(ANDROID_LOG_DEBUG, "SkiaSkottieModule", "SkiaSkottieModule initialized!");
