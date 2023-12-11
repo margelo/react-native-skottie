@@ -1,9 +1,10 @@
 import * as React from 'react';
-import { View, Button, StyleSheet, SafeAreaView } from 'react-native';
+import { Text, View, Button, StyleSheet, SafeAreaView } from 'react-native';
 import { SkiaSkottieView, AnimationObject } from 'react-native-skottie';
 import * as Animations from './animations';
+import LottieView from 'lottie-react-native';
 
-function Animation({ source }: { source: AnimationObject }) {
+function SkottieAnimation({ source }: { source: AnimationObject }) {
   return (
     <SkiaSkottieView
       resizeMode="contain"
@@ -15,21 +16,60 @@ function Animation({ source }: { source: AnimationObject }) {
   );
 }
 
+function LottieAnimation({ source }: { source: AnimationObject }) {
+  return (
+    <LottieView
+      resizeMode="contain"
+      style={styles.flex1}
+      source={source}
+      autoPlay={true}
+      loop={true}
+    />
+  );
+}
+
 export default function App() {
+  const [type, setType] = React.useState<'skottie' | 'lottie'>('skottie');
   const [animation, setAnimation] = React.useState();
 
   return (
     <SafeAreaView style={styles.flex1}>
       {animation == null ? (
-        Object.keys(Animations).map((key) => (
-          <View key={key}>
-            {/* @ts-expect-error Animations not having right type */}
-            <Button title={key} onPress={() => setAnimation(Animations[key])} />
-          </View>
-        ))
+        <View style={styles.flex1}>
+          <Text>Skottie</Text>
+          {Object.keys(Animations).map((key) => (
+            <View key={`skottie-${key}`}>
+              <Button
+                title={key}
+                onPress={() => {
+                  setType('skottie');
+                  // @ts-expect-error Animations not having right type
+                  setAnimation(Animations[key]);
+                }}
+              />
+            </View>
+          ))}
+          <Text>Lottie</Text>
+          {Object.keys(Animations).map((key) => (
+            <View key={`lottie-${key}`}>
+              <Button
+                title={key}
+                onPress={() => {
+                  setType('lottie');
+                  // @ts-expect-error Animations not having right type
+                  setAnimation(Animations[key]);
+                }}
+              />
+            </View>
+          ))}
+        </View>
       ) : (
         <View style={styles.flex1}>
-          <Animation source={animation} />
+          {type === 'skottie' ? (
+            <SkottieAnimation source={animation} />
+          ) : (
+            <LottieAnimation source={animation} />
+          )}
           <Button title="Back" onPress={() => setAnimation(undefined)} />
         </View>
       )}
