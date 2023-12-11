@@ -93,6 +93,13 @@ public:
     _lastPauseTime = RNSkTime::GetSecs();
   }
 
+  void resetPlayback() {
+    _startTime = -1.0;
+    _lastPauseTime = 0.0;
+    _totalPausedDuration = 0.0;
+    _animation->getObject()->seekFrame(0);
+  }
+
 private:
   bool performDraw(std::shared_ptr<RNSkCanvasProvider> canvasProvider) {
     canvasProvider->renderToCanvas([=](SkCanvas* canvas) {
@@ -201,6 +208,9 @@ public:
 
       setDrawingMode(RNSkDrawingMode::Default);
       std::static_pointer_cast<RNSkSkottieRenderer>(getRenderer())->pause();
+    } else if (name == "reset") {
+      std::static_pointer_cast<RNSkSkottieRenderer>(getRenderer())->resetPlayback();
+      setDrawingMode(RNSkDrawingMode::Default); // This will also trigger a requestRedraw
     }
 
     return {};
