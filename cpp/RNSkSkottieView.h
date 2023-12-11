@@ -64,7 +64,7 @@ public:
 
     _animation->getObject()->seek(progress);
   }
-    
+
     void setStartTime(double startTime) {
         _startTime = startTime;
     }
@@ -102,13 +102,16 @@ private:
           scaleType = SkMatrix::kCenter_ScaleToFit;
         }
 
+//          skottie::Animation::RenderFlags flags = skottie::Animation::RenderFlag::kDisableTopLevelClipping | skottie::Animation::RenderFlag::kSkipTopLevelIsolation;
+//          _animation->getObject()->render(canvas, &dstRect, flags);
+
         canvas->concat(SkMatrix::RectToRect(_srcR, dstRect, scaleType));
         _animation->getObject()->render(canvas);
       }
 
       canvas->restore();
     });
-      
+
       // Seek to next frame, happens after render to give us 16.7ms to create it
       if (_startTime != -1.0 && _animation != nullptr) {
           auto timeNow = RNSkTime::GetSecs();
@@ -118,10 +121,10 @@ private:
               setStartTime(timeNow);
               timePassed = 0.0;
           }
-          
+
           _animation->getObject()->seekFrameTime(timePassed);
       }
-      
+
     return true;
   }
 
@@ -162,7 +165,7 @@ public:
       std::static_pointer_cast<RNSkSkottieRenderer>(getRenderer())->setProgress(progressValue);
       requestRedraw();
     }
-      
+
       if (name == "start") {
           std::static_pointer_cast<RNSkSkottieRenderer>(getRenderer())->setStartTime(RNSkTime::GetSecs());
           setDrawingMode(RNSkDrawingMode::Continuous);
