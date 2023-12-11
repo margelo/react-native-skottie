@@ -2,12 +2,15 @@ const path = require('path');
 const escape = require('escape-string-regexp');
 const exclusionList = require('metro-config/src/defaults/exclusionList');
 const pak = require('../package.json');
+const { getDefaultConfig, mergeConfig } = require('@react-native/metro-config');
 
 const root = path.resolve(__dirname, '..');
 
 const modules = Object.keys({
   ...pak.peerDependencies,
 });
+
+const defaultConfig = getDefaultConfig(__dirname);
 
 /**
  * Metro configuration
@@ -35,6 +38,8 @@ const config = {
       acc[name] = path.join(__dirname, 'node_modules', name);
       return acc;
     }, {}),
+
+    assetExts: [...defaultConfig.resolver.assetExts, 'lottie'],
   },
 
   transformer: {
@@ -47,5 +52,4 @@ const config = {
   },
 };
 
-const { getDefaultConfig, mergeConfig } = require('@react-native/metro-config');
 module.exports = mergeConfig(getDefaultConfig(__dirname), config);
