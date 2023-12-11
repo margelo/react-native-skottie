@@ -54,6 +54,8 @@ public:
     } else {
       _animation = std::dynamic_pointer_cast<JsiSkSkottie>(animation);
       _srcR = SkRect::MakeSize(_animation->getObject()->size());
+//         Seek to the first frame
+        _animation->getObject()->seekFrame(0);
     }
   }
 
@@ -151,6 +153,7 @@ public:
     for (auto& prop : props) {
       if (prop.first == "src" && prop.second.getType() == RNJsi::JsiWrapperValueType::HostObject) {
         std::static_pointer_cast<RNSkSkottieRenderer>(getRenderer())->setSrc(prop.second.getAsHostObject());
+          renderImmediate(); // Draw the first frame
       }
       if (prop.first == "scaleType") {
         std::static_pointer_cast<RNSkSkottieRenderer>(getRenderer())->setResizeMode(prop.second.getAsString());

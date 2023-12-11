@@ -101,12 +101,12 @@ export const SkiaSkottieView = (props: SkiaSkottieViewProps) => {
   //#endregion
 
   useLayoutEffect(() => {
-    updateAnimation(skottieAnimation);
-  }, [nativeId, skottieAnimation, source, updateAnimation]);
-
-  useLayoutEffect(() => {
     updateResizeMode(props.resizeMode ?? 'contain');
   }, [nativeId, props.resizeMode, updateResizeMode]);
+
+  useLayoutEffect(() => {
+    updateAnimation(skottieAnimation);
+  }, [nativeId, skottieAnimation, source, updateAnimation]);
 
   // Handle animation updates
   useEffect(() => {
