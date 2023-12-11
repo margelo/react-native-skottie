@@ -45,8 +45,11 @@ export interface SkSkottie extends SkJSIInstance<'Skottie'> {
   render: (canvas: SkCanvas, rect: SkRect) => void;
   seek: (progress: number) => void;
 }
+
 declare global {
   var SkiaApi_SkottieCtor: (jsonString: string) => SkSkottie;
+  var SkiaApi_SkottieFromUri: (uri: string) => SkSkottie;
 }
 
 export const makeSkSkottieFromString = global.SkiaApi_SkottieCtor;
+export const makeSkSkottieFromUri = global.SkiaApi_SkottieFromUri;
