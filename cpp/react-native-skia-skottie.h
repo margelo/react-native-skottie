@@ -13,7 +13,7 @@ public:
    * callbacks for RNSkDrawViews. Called on installation of the parent native
    * module.
    */
-  static void installBindings(jsi::Runtime* jsRuntime, std::shared_ptr<RNSkPlatformContext> platformContext);
+  static void installBindings(jsi::Runtime* jsRuntime, std::shared_ptr<RNSkPlatformContext> platformContext, std::function<std::string(std::string)> readDotLottieArg);
 
 private:
   jsi::Runtime* _jsRuntime;

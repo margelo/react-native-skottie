@@ -9,7 +9,7 @@
 RCT_EXPORT_MODULE() // TODO: include package name here?
 
 RCT_EXPORT_BLOCKING_SYNCHRONOUS_METHOD(install) {
-  NSLog(@"Installing JSI bindings for react-native-skia-skottie...");
+  NSLog(@"Installing JSI bindings for react-native-skottie...");
   RCTBridge* bridge = [RCTBridge currentBridge];
   RCTCxxBridge* cxxBridge = (RCTCxxBridge*)bridge;
   if (cxxBridge == nil) {
@@ -30,7 +30,7 @@ RCT_EXPORT_BLOCKING_SYNCHRONOUS_METHOD(install) {
   //       or could just do the JSI ourselves?
   RNSkia::RNSkModuleManager::installBindings(jsiRuntime, nullptr);
 
-  NSLog(@"Successfully installed JSI bindings for react-native-skia-skottie!");
+  NSLog(@"Successfully installed JSI bindings for react-native-skottie!");
   return @true;
 }
 
