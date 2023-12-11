@@ -1,4 +1,5 @@
-import { SkiaSkottieView } from './SkiaSkottieView';
 import { makeSkSkottieFromString } from './NativeSkottieModule';
-export { SkiaSkottieView, makeSkSkottieFromString };
+
+export { makeSkSkottieFromString };
 export * from './types';
+export * from './SkiaSkottieView';

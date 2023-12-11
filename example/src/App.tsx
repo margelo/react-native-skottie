@@ -1,6 +1,10 @@
 import * as React from 'react';
 import { Text, View, Button, StyleSheet, SafeAreaView } from 'react-native';
-import { SkiaSkottieView, AnimationObject } from 'react-native-skottie';
+import {
+  SkiaSkottieView,
+  AnimationObject,
+  type SkiaSkottieViewRef,
+} from 'react-native-skottie';
 import * as Animations from './animations';
 import LottieView from 'lottie-react-native';
 
@@ -29,12 +33,30 @@ function LottieAnimation({ source }: { source: AnimationObject }) {
 }
 
 function SkottieImperativeAPI({ source }: { source: AnimationObject }) {
+  const skottieRef = React.useRef<SkiaSkottieViewRef>(null);
+
   return (
     <View style={styles.flex1}>
-      <Button title="Play" onPress={() => {}} />
-      <Button title="Pause" onPress={() => {}} />
-      <Button title="Resume" onPress={() => {}} />
+      <Button
+        title="Play"
+        onPress={() => {
+          skottieRef.current?.play();
+        }}
+      />
+      <Button
+        title="Pause"
+        onPress={() => {
+          skottieRef.current?.pause();
+        }}
+      />
+      <Button
+        title="Reset"
+        onPress={() => {
+          skottieRef.current?.reset();
+        }}
+      />
       <SkiaSkottieView
+        ref={skottieRef}
         resizeMode="contain"
         style={styles.flex1}
         src={source}
@@ -88,7 +110,9 @@ function LottieImperativeAPI({ source }: { source: AnimationObject }) {
 export default function App() {
   const [type, setType] = React.useState<'skottie' | 'lottie'>('skottie');
   const [isImperativeAPI, setIsImperativeAPI] = React.useState(false);
-  const [animation, setAnimation] = React.useState();
+  const [animation, setAnimation] = React.useState<
+    AnimationObject | undefined
+  >();
 
   return (
     <SafeAreaView style={styles.flex1}>
@@ -98,7 +122,7 @@ export default function App() {
             title="Skottie imperative API"
             onPress={() => {
               setType('skottie');
-              setAnimation(Animations.FastMoney);
+              setAnimation(Animations.Hands);
               setIsImperativeAPI(true);
             }}
           />

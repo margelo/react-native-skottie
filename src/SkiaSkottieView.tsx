@@ -4,6 +4,7 @@ import { SkiaViewNativeId } from '@shopify/react-native-skia';
 import React, {
   useCallback,
   useEffect,
+  useImperativeHandle,
   useLayoutEffect,
   useMemo,
   useRef,
@@ -60,7 +61,16 @@ export type SkiaSkottieViewProps = NativeSkiaViewProps & {
   onAnimationFinish?: () => void;
 };
 
-export const SkiaSkottieView = (props: SkiaSkottieViewProps) => {
+export type SkiaSkottieViewRef = {
+  play: () => void;
+  pause: () => void;
+  reset: () => void;
+};
+
+export const SkiaSkottieView = React.forwardRef<
+  SkiaSkottieViewRef,
+  SkiaSkottieViewProps
+>((props, ref) => {
   const nativeId = useRef(SkiaViewNativeId.current++).current;
 
   //#region Compute values
@@ -164,6 +174,24 @@ export const SkiaSkottieView = (props: SkiaSkottieViewProps) => {
     start,
   ]);
 
+  //#region Imperative API handling
+  useImperativeHandle(
+    ref,
+    () => ({
+      play: start,
+      pause: () => {
+        assertSkiaViewApi();
+        SkiaViewApi.callJsiMethod(nativeId, 'pause');
+      },
+      reset: () => {
+        assertSkiaViewApi();
+        SkiaViewApi.callJsiMethod(nativeId, 'reset');
+      },
+    }),
+    [nativeId, start]
+  );
+  //#endregion
+
   const { debug = false, ...viewProps } = props;
 
   return (
@@ -174,7 +202,7 @@ export const SkiaSkottieView = (props: SkiaSkottieViewProps) => {
       {...viewProps}
     />
   );
-};
+});
 
 const assertSkiaViewApi = () => {
   if (

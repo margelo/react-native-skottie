@@ -13,9 +13,13 @@
 namespace RNSkTime {
 
 double GetNSecs();
-inline double GetSecs() { return GetNSecs() * 1e-9; }
-inline double GetMSecs() { return GetNSecs() * 1e-6; }
+inline double GetSecs() {
+  return GetNSecs() * 1e-9;
+}
+inline double GetMSecs() {
+  return GetNSecs() * 1e-6;
+}
 
-} // namespace SkTime
+} // namespace RNSkTime
 
 #endif
