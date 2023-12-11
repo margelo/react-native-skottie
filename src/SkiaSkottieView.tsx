@@ -4,6 +4,7 @@ import { SkiaViewNativeId } from '@shopify/react-native-skia';
 import React, {
   useCallback,
   useEffect,
+  useImperativeHandle,
   useLayoutEffect,
   useMemo,
   useRef,
@@ -13,17 +14,7 @@ import { SkiaViewApi } from './SkiaViewApi';
 import type { AnimationObject } from './types';
 import { NativeSkiaSkottieView } from './NativeSkiaSkottieView';
 import { SkSkottie, makeSkSkottieFromString } from './NativeSkottieModule';
-import {
-  Easing,
-  SharedValue,
-  cancelAnimation,
-  runOnJS,
-  startMapper,
-  stopMapper,
-  useSharedValue,
-  withRepeat,
-  withTiming,
-} from 'react-native-reanimated';
+import { SharedValue, startMapper, stopMapper } from 'react-native-reanimated';
 
 export type ResizeMode = 'cover' | 'contain' | 'stretch';
 
@@ -70,7 +61,16 @@ export type SkiaSkottieViewProps = NativeSkiaViewProps & {
   onAnimationFinish?: () => void;
 };
 
-export const SkiaSkottieView = (props: SkiaSkottieViewProps) => {
+export type SkiaSkottieViewRef = {
+  play: () => void;
+  pause: () => void;
+  reset: () => void;
+};
+
+export const SkiaSkottieView = React.forwardRef<
+  SkiaSkottieViewRef,
+  SkiaSkottieViewProps
+>((props, ref) => {
   const nativeId = useRef(SkiaViewNativeId.current++).current;
 
   //#region Compute values
@@ -91,8 +91,7 @@ export const SkiaSkottieView = (props: SkiaSkottieViewProps) => {
     [source]
   );
 
-  const _progress = useSharedValue(0);
-  const progress = props.progress ?? _progress;
+  const progress = props.progress;
 
   const updateAnimation = useCallback(
     (animation: SkSkottie) => {
@@ -112,20 +111,25 @@ export const SkiaSkottieView = (props: SkiaSkottieViewProps) => {
   //#endregion
 
   useLayoutEffect(() => {
-    updateAnimation(skottieAnimation);
-  }, [nativeId, skottieAnimation, source, updateAnimation]);
-
-  useLayoutEffect(() => {
     updateResizeMode(props.resizeMode ?? 'contain');
   }, [nativeId, props.resizeMode, updateResizeMode]);
 
+  useLayoutEffect(() => {
+    updateAnimation(skottieAnimation);
+  }, [nativeId, skottieAnimation, source, updateAnimation]);
+
   // Handle animation updates
   useEffect(() => {
+    const _progress = progress;
+    if (_progress == null) {
+      return;
+    }
+
     assertSkiaViewApi();
     const mapperId = startMapper(() => {
       'worklet';
       try {
-        SkiaViewApi.callJsiMethod(nativeId, 'setProgress', progress.value);
+        SkiaViewApi.callJsiMethod(nativeId, 'setProgress', _progress.value);
       } catch (e) {
         // ignored, view might not be ready yet
         if (props.debug) {
@@ -139,58 +143,66 @@ export const SkiaSkottieView = (props: SkiaSkottieViewProps) => {
     };
   }, [nativeId, progress, props.debug]);
 
+  //#region Imperative API
+  const start = useCallback(() => {
+    assertSkiaViewApi();
+    SkiaViewApi.callJsiMethod(nativeId, 'start');
+  }, [nativeId]);
+  //#endregion
+
   // Start the animation
+  const shouldPlay = progress == null && props.autoPlay;
   useEffect(() => {
-    if (!props.autoPlay || props.progress != null) {
-      return;
+    if (shouldPlay) {
+      setTimeout(() => {
+        requestAnimationFrame(() => {
+          start();
+        });
+      }, 1);
     }
 
-    const speed = props.speed ?? 1;
-    const duration = (skottieAnimation.duration * 1000) / speed;
-    const doneCallback = props.onAnimationFinish;
-
-    _progress.value = withRepeat(
-      withTiming(
-        1,
-        {
-          duration: duration,
-          easing: Easing.linear,
-        },
-        (finished) => {
-          if (finished && doneCallback != null) {
-            runOnJS(doneCallback)();
-          }
-        }
-      ),
-      props.loop ? -1 : 1,
-      false
-    );
-
-    return () => {
-      cancelAnimation(_progress);
-    };
+    // const speed = props.speed ?? 1;
+    // const duration = (skottieAnimation.duration * 1000) / speed;
+    // const doneCallback = props.onAnimationFinish;
   }, [
-    _progress,
+    progress,
     props.autoPlay,
-    props.loop,
     props.onAnimationFinish,
-    props.progress,
     props.speed,
+    shouldPlay,
     skottieAnimation.duration,
+    start,
   ]);
 
-  const { mode, debug = false, ...viewProps } = props;
+  //#region Imperative API handling
+  useImperativeHandle(
+    ref,
+    () => ({
+      play: start,
+      pause: () => {
+        assertSkiaViewApi();
+        SkiaViewApi.callJsiMethod(nativeId, 'pause');
+      },
+      reset: () => {
+        assertSkiaViewApi();
+        SkiaViewApi.callJsiMethod(nativeId, 'reset');
+      },
+    }),
+    [nativeId, start]
+  );
+  //#endregion
+
+  const { debug = false, ...viewProps } = props;
 
   return (
     <NativeSkiaSkottieView
       collapsable={false}
       nativeID={`${nativeId}`}
-      mode={mode}
       debug={debug}
       {...viewProps}
     />
   );
-};
+});
 
 const assertSkiaViewApi = () => {
   if (

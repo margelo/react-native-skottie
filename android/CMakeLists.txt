@@ -20,6 +20,8 @@ add_library(${PACKAGE_NAME}
         ../cpp/react-native-skia-skottie.cpp
         ../cpp/JsiSkSkottie.h
         ../cpp/RNSkSkottieView.h
+        ../cpp/RNSkTime.h
+        ../cpp/RNSkTime.cpp
         cpp/jni/JniLoad.cpp
         cpp-adapter.cpp
 )

@@ -17,6 +17,7 @@
 #include "RNSkInfoParameter.h"
 #include "RNSkLog.h"
 #include "RNSkPlatformContext.h"
+#include "RNSkTime.h"
 #include "RNSkTimingInfo.h"
 
 #pragma clang diagnostic push
@@ -53,6 +54,8 @@ public:
     } else {
       _animation = std::dynamic_pointer_cast<JsiSkSkottie>(animation);
       _srcR = SkRect::MakeSize(_animation->getObject()->size());
+      // Seek to the first frame:
+      _animation->getObject()->seekFrame(0);
     }
   }
 
@@ -64,8 +67,37 @@ public:
     _animation->getObject()->seek(progress);
   }
 
+  void setStartTime(double startTime) {
+    if (_lastPauseTime > 0.0 && startTime > -1.0) {
+      _totalPausedDuration += RNSkTime::GetSecs() - _lastPauseTime;
+      _lastPauseTime = 0.0;
+    } else {
+      _startTime = startTime;
+    }
+  }
+
   void setResizeMode(std::string resizeMode) {
     _resizeMode = resizeMode;
+  }
+
+  bool isPaused() {
+    return _lastPauseTime > 0.0;
+  }
+
+  void pause() {
+    if (isPaused()) {
+      // We are already paused
+      return;
+    }
+
+    _lastPauseTime = RNSkTime::GetSecs();
+  }
+
+  void resetPlayback() {
+    _startTime = -1.0;
+    _lastPauseTime = 0.0;
+    _totalPausedDuration = 0.0;
+    _animation->getObject()->seekFrame(0);
   }
 
 private:
@@ -97,12 +129,33 @@ private:
           scaleType = SkMatrix::kCenter_ScaleToFit;
         }
 
+        //          skottie::Animation::RenderFlags flags = skottie::Animation::RenderFlag::kDisableTopLevelClipping |
+        //          skottie::Animation::RenderFlag::kSkipTopLevelIsolation; _animation->getObject()->render(canvas, &dstRect, flags);
+
         canvas->concat(SkMatrix::RectToRect(_srcR, dstRect, scaleType));
         _animation->getObject()->render(canvas);
       }
 
       canvas->restore();
     });
+
+    // Seek to next frame, happens after render to give us 16.7ms to create it
+    if (_startTime != -1.0 && _animation != nullptr) {
+      auto timeNow = RNSkTime::GetSecs();
+      auto timePassed = timeNow - _startTime - _totalPausedDuration;
+      auto duration = _animation->getObject()->duration();
+      if (timePassed > duration) {
+        setStartTime(timeNow);
+        timePassed = 0.0;
+
+        // Reset paused values for cleanup
+        _lastPauseTime = 0.0;
+        _totalPausedDuration = 0.0;
+      }
+
+      _animation->getObject()->seekFrameTime(timePassed);
+    }
+
     return true;
   }
 
@@ -110,6 +163,9 @@ private:
   std::shared_ptr<JsiSkSkottie> _animation;
   SkRect _srcR;
   std::string _resizeMode = "contain";
+  double _startTime = -1.0;
+  double _lastPauseTime = 0.0;
+  double _totalPausedDuration = 0.0;
 };
 
 class RNSkSkottieView : public RNSkView {
@@ -128,9 +184,7 @@ public:
     for (auto& prop : props) {
       if (prop.first == "src" && prop.second.getType() == RNJsi::JsiWrapperValueType::HostObject) {
         std::static_pointer_cast<RNSkSkottieRenderer>(getRenderer())->setSrc(prop.second.getAsHostObject());
-      }
-      if (prop.first == "progress") {
-        std::static_pointer_cast<RNSkSkottieRenderer>(getRenderer())->setProgress(prop.second.getAsNumber());
+        renderImmediate(); // Draw the first frame
       }
       if (prop.first == "scaleType") {
         std::static_pointer_cast<RNSkSkottieRenderer>(getRenderer())->setResizeMode(prop.second.getAsString());
@@ -144,6 +198,19 @@ public:
       auto progressValue = arguments[0].asNumber();
       std::static_pointer_cast<RNSkSkottieRenderer>(getRenderer())->setProgress(progressValue);
       requestRedraw();
+    } else if (name == "start") {
+      std::static_pointer_cast<RNSkSkottieRenderer>(getRenderer())->setStartTime(RNSkTime::GetSecs());
+      setDrawingMode(RNSkDrawingMode::Continuous);
+    } else if (name == "pause") {
+      if (std::static_pointer_cast<RNSkSkottieRenderer>(getRenderer())->isPaused()) {
+        return {};
+      }
+
+      setDrawingMode(RNSkDrawingMode::Default);
+      std::static_pointer_cast<RNSkSkottieRenderer>(getRenderer())->pause();
+    } else if (name == "reset") {
+      std::static_pointer_cast<RNSkSkottieRenderer>(getRenderer())->resetPlayback();
+      setDrawingMode(RNSkDrawingMode::Default); // This will also trigger a requestRedraw
     }
 
     return {};
