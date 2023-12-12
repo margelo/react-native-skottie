@@ -13,13 +13,18 @@ import { SkiaViewApi } from './SkiaViewApi';
 
 import type { AnimationObject } from './types';
 import { NativeSkiaSkottieView } from './NativeSkiaSkottieView';
-import { SkSkottie, makeSkSkottieFromString } from './NativeSkottieModule';
+import {
+  SkSkottie,
+  makeSkSkottieFromString,
+  makeSkSkottieFromUri,
+} from './NativeSkottieModule';
 import { SharedValue, startMapper, stopMapper } from 'react-native-reanimated';
+import { Image } from 'react-native';
 
 export type ResizeMode = 'cover' | 'contain' | 'stretch';
 
 export type SkiaSkottieViewProps = NativeSkiaViewProps & {
-  src: string | AnimationObject;
+  src: number | string | AnimationObject;
 
   /**
    * A boolean flag indicating whether or not the animation should start automatically when
@@ -75,21 +80,32 @@ export const SkiaSkottieView = React.forwardRef<
 
   //#region Compute values
   const source = useMemo(() => {
-    let _source;
+    let _source: string | { sourceDotLottieURI: string };
     if (typeof props.src === 'string') {
       _source = props.src;
     } else if (typeof props.src === 'object') {
       _source = JSON.stringify(props.src);
+    } else if (typeof props.src === 'number') {
+      const uri = Image.resolveAssetSource(props.src)?.uri;
+      if (uri == null) {
+        throw Error(
+          '[react-native-skottie] Invalid src prop provided. Cant resolve asset source.'
+        );
+      }
+      _source = { sourceDotLottieURI: uri };
     } else {
       throw Error('[react-native-skottie] Invalid src prop provided.');
     }
     return _source;
   }, [props.src]);
 
-  const skottieAnimation = useMemo(
-    () => makeSkSkottieFromString(source),
-    [source]
-  );
+  const skottieAnimation = useMemo(() => {
+    if (typeof source === 'string') {
+      return makeSkSkottieFromString(source);
+    } else {
+      return makeSkSkottieFromUri(source.sourceDotLottieURI);
+    }
+  }, [source]);
 
   const progress = props.progress;
 

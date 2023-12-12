@@ -28,7 +28,9 @@ public class SkiaSkottieModule extends ReactContextBaseJavaModule {
       RNSkiaModule skiaModule = context.getNativeModule(RNSkiaModule.class);
       initialize(
         context.getJavaScriptContextHolder().get(),
-        skiaModule.getSkiaManager().getPlatformContext()
+        null
+        // TODO: right now we don't use the platform context, and sometimes its null :thinking:
+//        skiaModule.getSkiaManager().getPlatformContext()
       );
 
       Log.i(NAME, "Initialized skia skottie!");
