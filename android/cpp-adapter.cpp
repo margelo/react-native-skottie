@@ -3,17 +3,13 @@
 #include <android/log.h>
 #include <stdexcept>
 
-//extern "C" {
-//    jstring readDotLottie(JNIEnv *env, jstring uri);
-//}
-
 extern "C" JNIEXPORT void JNICALL
 Java_com_skiaskottie_SkiaSkottieModule_initialize(JNIEnv *env, jclass clazz, jlong jsi_ptr,
                                                   jobject context)
 {
     __android_log_print(ANDROID_LOG_DEBUG, "SkiaSkottieModule", "Initializing SkiaSkottieModule");
 
-    // TODO: We are capturing the JNIEnv here, i feel like thats a bad idea…
+    // TODO: We are capturing the JNIEnv here, while testing i haven't found any issues with that, however that might become problematic in the future?
     std::function<std::string(std::string)> readDotLottie = [env](std::string uri) -> std::string {
 
         jclass javaClass = env->FindClass("com/skiaskottie/DotLottieReader");
@@ -40,7 +36,6 @@ Java_com_skiaskottie_SkiaSkottieModule_initialize(JNIEnv *env, jclass clazz, jlo
         env->DeleteLocalRef(javaClass);
         env->DeleteLocalRef(jUri);
 
-        // return jstring to std::string:
         const char *resultCString = env->GetStringUTFChars(resultJString, nullptr);
         std::string result = std::string(resultCString);
         env->ReleaseStringUTFChars(resultJString, resultCString);
