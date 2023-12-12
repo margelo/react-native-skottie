@@ -2,9 +2,6 @@
 #include "JsiSkSkottie.h"
 #include <utility>
 
-// Expect this function to be available:
-//std::string readDotLottie(std::string uri);
-
 namespace RNSkia {
 using namespace facebook;
 

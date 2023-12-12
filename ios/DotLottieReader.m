@@ -12,7 +12,10 @@
 
 - (NSString*)readDotLottie:(NSString*)uri {
   NSLog(@"Hello from ObjectiveC!");
-  return @"Hello from ObjectiveC!";
+//  return @"Hello from ObjectiveC!";
+    @throw [NSException exceptionWithName:@"MyCustomException"
+                                   reason:@"Something went wrong"
+                                 userInfo:nil];
 }
 
 @end

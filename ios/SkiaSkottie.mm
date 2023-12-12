@@ -5,6 +5,9 @@
 #import <ReactCommon/RCTTurboModule.h>
 #import <jsi/jsi.h>
 
+// Expect this function to be available:
+std::string readDotLottie(std::string uri);
+
 @implementation SkiaSkottie
 RCT_EXPORT_MODULE() // TODO: include package name here?
 
@@ -28,7 +31,7 @@ RCT_EXPORT_BLOCKING_SYNCHRONOUS_METHOD(install) {
   // TODO: pass correct reference to RNSKPlatformContext
   // Note: I am wondering if for skottie we really need the platform context
   //       or could just do the JSI ourselves?
-  RNSkia::RNSkModuleManager::installBindings(jsiRuntime, nullptr);
+  RNSkia::RNSkModuleManager::installBindings(jsiRuntime, nullptr, readDotLottie);
 
   NSLog(@"Successfully installed JSI bindings for react-native-skottie!");
   return @true;
