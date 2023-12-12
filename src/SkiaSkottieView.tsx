@@ -108,31 +108,7 @@ export const SkiaSkottieView = React.forwardRef<
   }, [source]);
 
   const progress = props.progress;
-
-  const updateAnimation = useCallback(
-    (animation: SkSkottie) => {
-      assertSkiaViewApi();
-      SkiaViewApi.setJsiProperty(nativeId, 'src', animation);
-    },
-    [nativeId]
-  );
-
-  const updateResizeMode = useCallback(
-    (resizeMode: ResizeMode) => {
-      assertSkiaViewApi();
-      SkiaViewApi.setJsiProperty(nativeId, 'scaleType', resizeMode);
-    },
-    [nativeId]
-  );
   //#endregion
-
-  useLayoutEffect(() => {
-    updateResizeMode(props.resizeMode ?? 'contain');
-  }, [nativeId, props.resizeMode, updateResizeMode]);
-
-  useLayoutEffect(() => {
-    updateAnimation(skottieAnimation);
-  }, [nativeId, skottieAnimation, source, updateAnimation]);
 
   // Handle animation updates
   useEffect(() => {
@@ -159,31 +135,59 @@ export const SkiaSkottieView = React.forwardRef<
     };
   }, [nativeId, progress, props.debug]);
 
-  //#region Imperative API
+  //#region Callbacks / Imperative API
   const start = useCallback(() => {
     assertSkiaViewApi();
     SkiaViewApi.setJsiProperty(nativeId, 'start', null);
   }, [nativeId]);
 
+  const pause = useCallback(() => {
+    assertSkiaViewApi();
+    SkiaViewApi.setJsiProperty(nativeId, 'pause', null);
+  }, [nativeId]);
+
+  const updateAnimation = useCallback(
+    (animation: SkSkottie) => {
+      assertSkiaViewApi();
+      SkiaViewApi.setJsiProperty(nativeId, 'src', animation);
+    },
+    [nativeId]
+  );
+
+  const updateResizeMode = useCallback(
+    (resizeMode: ResizeMode) => {
+      assertSkiaViewApi();
+      SkiaViewApi.setJsiProperty(nativeId, 'scaleType', resizeMode);
+    },
+    [nativeId]
+  );
+
   useImperativeHandle(
     ref,
     () => ({
       play: start,
-      pause: () => {
-        assertSkiaViewApi();
-        SkiaViewApi.setJsiProperty(nativeId, 'pause', null);
-      },
+      pause: pause,
       reset: () => {
         assertSkiaViewApi();
         SkiaViewApi.setJsiProperty(nativeId, 'reset', null);
       },
     }),
-    [nativeId, start]
+    [nativeId, start, pause]
   );
   //#endregion
 
+  useLayoutEffect(() => {
+    updateResizeMode(props.resizeMode ?? 'contain');
+  }, [nativeId, props.resizeMode, updateResizeMode]);
+
+  useLayoutEffect(() => {
+    updateAnimation(skottieAnimation);
+  }, [nativeId, skottieAnimation, source, updateAnimation]);
+
+  // #region Prop controlled animation
   // Start the animation
   const shouldPlay = progress == null && props.autoPlay;
+  const initialShouldPlayRef = useRef(shouldPlay);
   useEffect(() => {
     if (shouldPlay) {
       start();
@@ -202,6 +206,22 @@ export const SkiaSkottieView = React.forwardRef<
     start,
   ]);
 
+  // Pause the animation
+  const shouldPause = progress == null && !props.autoPlay;
+  useEffect(() => {
+    if (shouldPause) {
+      pause();
+    }
+  }, [shouldPause, pause]);
+
+  // TODO: loop mode isn't supported yet, it will always loop right now
+  // Toggle loop mode
+  useEffect(() => {
+    assertSkiaViewApi();
+    SkiaViewApi.setJsiProperty(nativeId, 'loop', props.loop);
+  }, [nativeId, props.loop]);
+  //#endregion
+
   const { debug = false, ...viewProps } = props;
 
   return (
@@ -210,7 +230,7 @@ export const SkiaSkottieView = React.forwardRef<
       nativeID={`${nativeId}`}
       debug={debug}
       {...viewProps}
-      mode={shouldPlay ? 'continuous' : 'default'}
+      mode={initialShouldPlayRef.current ? 'continuous' : undefined}
     />
   );
 });

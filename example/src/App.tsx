@@ -83,7 +83,7 @@ function SkottieImperativeAPI({ source }: { source: AnimationObject }) {
 
 function SkottiePropsAPI({ source }: { source: AnimationObject }) {
   const [loop, setLoop] = React.useState(true);
-  const [autoPlay, setAutoPlay] = React.useState(true);
+  const [autoPlay, setAutoPlay] = React.useState(false);
   const [speed, setSpeed] = React.useState(1);
   const [_progress, setProgress] = React.useState(0);
 
@@ -108,15 +108,15 @@ function SkottiePropsAPI({ source }: { source: AnimationObject }) {
         }}
       />
       <Button
-        title="Loop"
+        title={`Toggle loop (its ${loop ? 'on' : 'off'})`}
         onPress={() => {
-          setLoop((loop) => !loop);
+          setLoop((p) => !p);
         }}
       />
       <Button
-        title="Speed"
+        title="Speed +1"
         onPress={() => {
-          setSpeed((speed) => speed + 1);
+          setSpeed((p) => p + 1);
         }}
       />
       <SkiaSkottieView

@@ -83,7 +83,7 @@ public:
   }
 
   bool isPaused() {
-    return _lastPauseTime > 0.0;
+    return _lastPauseTime > 0.0 || _startTime == -1.0;
   }
 
   void pause() {
@@ -212,7 +212,7 @@ public:
         setDrawingMode(RNSkDrawingMode::Continuous);
       } else if (prop.first == "pause") {
         if (std::static_pointer_cast<RNSkSkottieRenderer>(getRenderer())->isPaused()) {
-          return;
+            continue;
         }
 
         setDrawingMode(RNSkDrawingMode::Default);
