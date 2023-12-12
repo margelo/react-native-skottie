@@ -27,9 +27,9 @@
 #include "SkBBHFactory.h"
 #include "SkCanvas.h"
 #include "SkPictureRecorder.h"
+#include <algorithm>
 #include <modules/skottie/include/Skottie.h>
 #include <vector>
-#include <algorithm>
 
 #pragma clang diagnostic pop
 
@@ -183,18 +183,16 @@ public:
 
     RNSkView::setJsiProperties(props);
 
-      // We need to make sure .start gets called last.
-      // It might happen that setJsiProperties gets called multiple times before the view is actually ready.
-      // In this case all our "props" will be stored, and then once its ready setJsiProperties gets called
-      // with all the props at once. Then .start has to be called last, otherwise the animation will not play.
-      std::vector<std::pair<std::string, RNJsi::JsiValueWrapper>> sortedProps(props.begin(), props.end());
-      if (sortedProps.size() > 1) {
-          // Custom sort function to place 'start' at the end
-          std::sort(sortedProps.begin(), sortedProps.end(),
-                    [](const auto& a, const auto& b) {
-              return !(a.first == "start") && (b.first == "start" || a.first < b.first);
-          });
-      }
+    // We need to make sure .start gets called last.
+    // It might happen that setJsiProperties gets called multiple times before the view is actually ready.
+    // In this case all our "props" will be stored, and then once its ready setJsiProperties gets called
+    // with all the props at once. Then .start has to be called last, otherwise the animation will not play.
+    std::vector<std::pair<std::string, RNJsi::JsiValueWrapper>> sortedProps(props.begin(), props.end());
+    if (sortedProps.size() > 1) {
+      // Custom sort function to place 'start' at the end
+      std::sort(sortedProps.begin(), sortedProps.end(),
+                [](const auto& a, const auto& b) { return !(a.first == "start") && (b.first == "start" || a.first < b.first); });
+    }
 
     for (auto& prop : sortedProps) {
       if (prop.first == "src" && prop.second.getType() == RNJsi::JsiWrapperValueType::HostObject) {
@@ -212,7 +210,7 @@ public:
         setDrawingMode(RNSkDrawingMode::Continuous);
       } else if (prop.first == "pause") {
         if (std::static_pointer_cast<RNSkSkottieRenderer>(getRenderer())->isPaused()) {
-            continue;
+          continue;
         }
 
         setDrawingMode(RNSkDrawingMode::Default);
