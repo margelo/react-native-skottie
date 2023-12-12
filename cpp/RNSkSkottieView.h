@@ -28,6 +28,8 @@
 #include "SkCanvas.h"
 #include "SkPictureRecorder.h"
 #include <modules/skottie/include/Skottie.h>
+#include <vector>
+#include <algorithm>
 
 #pragma clang diagnostic pop
 
@@ -181,39 +183,45 @@ public:
 
     RNSkView::setJsiProperties(props);
 
-    for (auto& prop : props) {
+      // We need to make sure .start gets called last.
+      // It might happen that setJsiProperties gets called multiple times before the view is actually ready.
+      // In this case all our "props" will be stored, and then once its ready setJsiProperties gets called
+      // with all the props at once. Then .start has to be called last, otherwise the animation will not play.
+      std::vector<std::pair<std::string, RNJsi::JsiValueWrapper>> sortedProps(props.begin(), props.end());
+      if (sortedProps.size() > 1) {
+          // Custom sort function to place 'start' at the end
+          std::sort(sortedProps.begin(), sortedProps.end(),
+                    [](const auto& a, const auto& b) {
+              return !(a.first == "start") && (b.first == "start" || a.first < b.first);
+          });
+      }
+
+    for (auto& prop : sortedProps) {
       if (prop.first == "src" && prop.second.getType() == RNJsi::JsiWrapperValueType::HostObject) {
         std::static_pointer_cast<RNSkSkottieRenderer>(getRenderer())->setSrc(prop.second.getAsHostObject());
         renderImmediate(); // Draw the first frame
-      }
-      if (prop.first == "scaleType") {
+      } else if (prop.first == "scaleType") {
         std::static_pointer_cast<RNSkSkottieRenderer>(getRenderer())->setResizeMode(prop.second.getAsString());
+      } else if (prop.first == "setProgress") {
+        // Get first argument as number as it contains the updated value
+        auto progressValue = prop.second.getAsNumber();
+        std::static_pointer_cast<RNSkSkottieRenderer>(getRenderer())->setProgress(progressValue);
+        requestRedraw();
+      } else if (prop.first == "start") {
+        std::static_pointer_cast<RNSkSkottieRenderer>(getRenderer())->setStartTime(RNSkTime::GetSecs());
+        setDrawingMode(RNSkDrawingMode::Continuous);
+      } else if (prop.first == "pause") {
+        if (std::static_pointer_cast<RNSkSkottieRenderer>(getRenderer())->isPaused()) {
+          return;
+        }
+
+        setDrawingMode(RNSkDrawingMode::Default);
+        std::static_pointer_cast<RNSkSkottieRenderer>(getRenderer())->pause();
+      } else if (prop.first == "reset") {
+        std::static_pointer_cast<RNSkSkottieRenderer>(getRenderer())->resetPlayback();
+        setDrawingMode(RNSkDrawingMode::Default); // This will also trigger a requestRedraw
       }
     }
-  }
-
-  jsi::Value callJsiMethod(jsi::Runtime& runtime, const std::string& name, const jsi::Value* arguments, size_t count) override {
-    if (name == "setProgress") {
-      // Get first argument as number as it contains the updated value
-      auto progressValue = arguments[0].asNumber();
-      std::static_pointer_cast<RNSkSkottieRenderer>(getRenderer())->setProgress(progressValue);
-      requestRedraw();
-    } else if (name == "start") {
-      std::static_pointer_cast<RNSkSkottieRenderer>(getRenderer())->setStartTime(RNSkTime::GetSecs());
-      setDrawingMode(RNSkDrawingMode::Continuous);
-    } else if (name == "pause") {
-      if (std::static_pointer_cast<RNSkSkottieRenderer>(getRenderer())->isPaused()) {
-        return {};
-      }
-
-      setDrawingMode(RNSkDrawingMode::Default);
-      std::static_pointer_cast<RNSkSkottieRenderer>(getRenderer())->pause();
-    } else if (name == "reset") {
-      std::static_pointer_cast<RNSkSkottieRenderer>(getRenderer())->resetPlayback();
-      setDrawingMode(RNSkDrawingMode::Default); // This will also trigger a requestRedraw
-    }
-
-    return {};
   }
 };
 } // namespace RNSkia

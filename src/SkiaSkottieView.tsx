@@ -145,7 +145,7 @@ export const SkiaSkottieView = React.forwardRef<
     const mapperId = startMapper(() => {
       'worklet';
       try {
-        SkiaViewApi.callJsiMethod(nativeId, 'setProgress', _progress.value);
+        SkiaViewApi.setJsiProperty(nativeId, 'setProgress', _progress.value);
       } catch (e) {
         // ignored, view might not be ready yet
         if (props.debug) {
@@ -162,19 +162,31 @@ export const SkiaSkottieView = React.forwardRef<
   //#region Imperative API
   const start = useCallback(() => {
     assertSkiaViewApi();
-    SkiaViewApi.callJsiMethod(nativeId, 'start');
+    SkiaViewApi.setJsiProperty(nativeId, 'start', null);
   }, [nativeId]);
+
+  useImperativeHandle(
+    ref,
+    () => ({
+      play: start,
+      pause: () => {
+        assertSkiaViewApi();
+        SkiaViewApi.setJsiProperty(nativeId, 'pause', null);
+      },
+      reset: () => {
+        assertSkiaViewApi();
+        SkiaViewApi.setJsiProperty(nativeId, 'reset', null);
+      },
+    }),
+    [nativeId, start]
+  );
   //#endregion
 
   // Start the animation
   const shouldPlay = progress == null && props.autoPlay;
   useEffect(() => {
     if (shouldPlay) {
-      setTimeout(() => {
-        requestAnimationFrame(() => {
-          start();
-        });
-      }, 1);
+      start();
     }
 
     // const speed = props.speed ?? 1;
@@ -190,24 +202,6 @@ export const SkiaSkottieView = React.forwardRef<
     start,
   ]);
 
-  //#region Imperative API handling
-  useImperativeHandle(
-    ref,
-    () => ({
-      play: start,
-      pause: () => {
-        assertSkiaViewApi();
-        SkiaViewApi.callJsiMethod(nativeId, 'pause');
-      },
-      reset: () => {
-        assertSkiaViewApi();
-        SkiaViewApi.callJsiMethod(nativeId, 'reset');
-      },
-    }),
-    [nativeId, start]
-  );
-  //#endregion
-
   const { debug = false, ...viewProps } = props;
 
   return (
@@ -216,6 +210,7 @@ export const SkiaSkottieView = React.forwardRef<
       nativeID={`${nativeId}`}
       debug={debug}
       {...viewProps}
+      mode={shouldPlay ? 'continuous' : 'default'}
     />
   );
 });
