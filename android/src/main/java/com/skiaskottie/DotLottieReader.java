@@ -36,6 +36,9 @@ public class DotLottieReader {
       throw e;
     }
 
+    // Debug: get start time
+    long startTime = System.currentTimeMillis();
+
     // Read the zip data (dotLottie is just a zip file)
     try (ZipInputStream zipInputStream = new ZipInputStream(in)) {
       ZipEntry entry;
@@ -60,13 +63,11 @@ public class DotLottieReader {
         }
         String jsonContent = stringBuilder.toString();
 
-        Log.i(TAG, "Read dotLottie from " + uri);
-        Log.d(TAG, jsonContent);
+        Log.i(TAG, "Read dotLottie in " + (System.currentTimeMillis() - startTime) + "ms");
 
         return jsonContent;
       }
     } catch (IOException e) {
-      // Handle exceptions
       Log.e(TAG, "Failed to read dotLottie from " + uri, e);
       throw e;
     } finally {
