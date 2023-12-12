@@ -24,7 +24,7 @@ import { Image } from 'react-native';
 export type ResizeMode = 'cover' | 'contain' | 'stretch';
 
 export type SkiaSkottieViewProps = NativeSkiaViewProps & {
-  src: number | string | AnimationObject;
+  source: number | string | AnimationObject;
 
   /**
    * A boolean flag indicating whether or not the animation should start automatically when
@@ -81,12 +81,12 @@ export const SkiaSkottieView = React.forwardRef<
   //#region Compute values
   const source = useMemo(() => {
     let _source: string | { sourceDotLottieURI: string };
-    if (typeof props.src === 'string') {
-      _source = props.src;
-    } else if (typeof props.src === 'object') {
-      _source = JSON.stringify(props.src);
-    } else if (typeof props.src === 'number') {
-      const uri = Image.resolveAssetSource(props.src)?.uri;
+    if (typeof props.source === 'string') {
+      _source = props.source;
+    } else if (typeof props.source === 'object') {
+      _source = JSON.stringify(props.source);
+    } else if (typeof props.source === 'number') {
+      const uri = Image.resolveAssetSource(props.source)?.uri;
       if (uri == null) {
         throw Error(
           '[react-native-skottie] Invalid src prop provided. Cant resolve asset source.'
@@ -97,7 +97,7 @@ export const SkiaSkottieView = React.forwardRef<
       throw Error('[react-native-skottie] Invalid src prop provided.');
     }
     return _source;
-  }, [props.src]);
+  }, [props.source]);
 
   const skottieAnimation = useMemo(() => {
     if (typeof source === 'string') {

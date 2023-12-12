@@ -26,7 +26,7 @@ import HandsLottie from './Hands.json';
 export default function App() {
   return (
     <SafeAreaView style={styles.flex1}>
-      <SkiaSkottieView style={styles.flex1} src={HandsLottie} />
+      <SkiaSkottieView style={styles.flex1} source={HandsLottie} />
     </SafeAreaView>
   );
 }

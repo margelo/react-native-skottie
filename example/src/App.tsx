@@ -26,7 +26,7 @@ function SkottieAnimation({ source }: { source: AnimationObject }) {
     <SkiaSkottieView
       resizeMode="contain"
       style={styles.flex1}
-      src={source}
+      source={source}
       autoPlay={true}
       loop={true}
     />
@@ -72,7 +72,7 @@ function SkottieImperativeAPI({ source }: { source: AnimationObject }) {
         ref={skottieRef}
         resizeMode="contain"
         style={styles.flex1}
-        src={source}
+        source={source}
         loop={true}
       />
     </View>
