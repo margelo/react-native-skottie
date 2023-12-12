@@ -21,7 +21,7 @@ void RNSkModuleManager::installBindings(jsi::Runtime* jsRuntime, std::shared_ptr
       *jsRuntime, "SkiaApi_SkottieFromUri",
       jsi::Function::createFromHostFunction(
           *jsRuntime, jsi::PropNameID::forAscii(*jsRuntime, "SkottieFromUri"), 1,
-          [](jsi::Runtime& rt, const jsi::Value& thisValue, const jsi::Value* args, size_t count) -> jsi::Value // C++ lambda
+          [createSkottie](jsi::Runtime& rt, const jsi::Value& thisValue, const jsi::Value* args, size_t count) -> jsi::Value // C++ lambda
           {
             if (count == 0) {
               jsi::detail::throwOrDie<jsi::JSError>(
@@ -34,8 +34,18 @@ void RNSkModuleManager::installBindings(jsi::Runtime* jsRuntime, std::shared_ptr
               return {};
             }
 
-            std::string dotLottieFilePath = args[0].asString(rt).utf8(rt);
-            std::string result = _readDotLottieArg(dotLottieFilePath);
+            try {
+                std::string dotLottieFilePath = args[0].asString(rt).utf8(rt);
+                std::string result = _readDotLottieArg(dotLottieFilePath);
+
+                // Make SkSkottie instance from string
+                jsi::Value animString = jsi::String::createFromUtf8(rt, result);
+                std::vector<jsi::Value> arguments;
+                arguments.emplace_back(std::move(animString));
+                return createSkottie(rt, thisValue, arguments.data(), arguments.size());
+            } catch (const std::exception& e) {
+                jsi::detail::throwOrDie<jsi::JSError>(rt, e.what());
+            }
 
             return {};
           }));

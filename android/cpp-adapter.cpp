@@ -1,6 +1,7 @@
 #include <jni.h>
 #include "react-native-skia-skottie.h"
 #include <android/log.h>
+#include <stdexcept>
 
 //extern "C" {
 //    jstring readDotLottie(JNIEnv *env, jstring uri);
@@ -17,21 +18,25 @@ Java_com_skiaskottie_SkiaSkottieModule_initialize(JNIEnv *env, jclass clazz, jlo
 
         jclass javaClass = env->FindClass("com/skiaskottie/DotLottieReader");
         if (javaClass == nullptr) {
-            env->ThrowNew(env->FindClass("java/lang/RuntimeException"), "Class not found");
-            return nullptr;
+            throw std::runtime_error("Class com/skiaskottie/DotLottieReader not found");
         }
 
         jmethodID methodId = env->GetStaticMethodID(javaClass, "readDotLottie", "(Ljava/lang/String;)Ljava/lang/String;");
         if (methodId == nullptr) {
-            env->ThrowNew(env->FindClass("java/lang/RuntimeException"), "Method not found");
-            return nullptr;
+            throw std::runtime_error("Method readDotLottie not found");
         }
 
         // std::string uri to jstring:
         jstring jUri = env->NewStringUTF(uri.c_str());
 
-
         jstring resultJString = (jstring)env->CallStaticObjectMethod(javaClass, methodId, jUri);
+        if (env->ExceptionCheck()) {
+            env->ExceptionDescribe(); // This prints the exception details to the console
+            env->ExceptionClear();    // Clear the exception so you can continue
+
+            throw std::runtime_error("Exception in readDotLottie. Check native logs.");
+        }
+
         env->DeleteLocalRef(javaClass);
         env->DeleteLocalRef(jUri);
 
