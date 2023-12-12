@@ -11,20 +11,15 @@ import React, {
 } from 'react';
 import { SkiaViewApi } from './SkiaViewApi';
 
-import type { AnimationObject } from './types';
+import type { SkottieViewSource, SkSkottie } from './types';
 import { NativeSkiaSkottieView } from './NativeSkiaSkottieView';
-import {
-  SkSkottie,
-  makeSkSkottieFromString,
-  makeSkSkottieFromUri,
-} from './NativeSkottieModule';
+import { SkottieAPI } from './NativeSkottieModule';
 import { SharedValue, startMapper, stopMapper } from 'react-native-reanimated';
-import { Image } from 'react-native';
 
 export type ResizeMode = 'cover' | 'contain' | 'stretch';
 
 export type SkiaSkottieViewProps = NativeSkiaViewProps & {
-  source: number | string | AnimationObject;
+  source: SkottieViewSource;
 
   /**
    * A boolean flag indicating whether or not the animation should start automatically when
@@ -78,37 +73,16 @@ export const SkiaSkottieView = React.forwardRef<
 >((props, ref) => {
   const nativeId = useRef(SkiaViewNativeId.current++).current;
 
-  //#region Compute values
-  const source = useMemo(() => {
-    let _source: string | { sourceDotLottieURI: string };
-    if (typeof props.source === 'string') {
-      _source = props.source;
-    } else if (typeof props.source === 'object') {
-      _source = JSON.stringify(props.source);
-    } else if (typeof props.source === 'number') {
-      const uri = Image.resolveAssetSource(props.source)?.uri;
-      if (uri == null) {
-        throw Error(
-          '[react-native-skottie] Invalid src prop provided. Cant resolve asset source.'
-        );
-      }
-      _source = { sourceDotLottieURI: uri };
-    } else {
-      throw Error('[react-native-skottie] Invalid src prop provided.');
+  const skottieAnimation = useMemo(() => {
+    if (typeof props.source === 'object' && 'fps' in props.source) {
+      // Case: the user passed a SkSkottie instance
+      return props.source;
     }
-    return _source;
+
+    return SkottieAPI.createFrom(props.source);
   }, [props.source]);
 
-  const skottieAnimation = useMemo(() => {
-    if (typeof source === 'string') {
-      return makeSkSkottieFromString(source);
-    } else {
-      return makeSkSkottieFromUri(source.sourceDotLottieURI);
-    }
-  }, [source]);
-
   const progress = props.progress;
-  //#endregion
 
   // Handle animation updates
   useEffect(() => {
@@ -182,7 +156,7 @@ export const SkiaSkottieView = React.forwardRef<
 
   useLayoutEffect(() => {
     updateAnimation(skottieAnimation);
-  }, [nativeId, skottieAnimation, source, updateAnimation]);
+  }, [nativeId, skottieAnimation, updateAnimation]);
 
   // #region Prop controlled animation
   // Start the animation

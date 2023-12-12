@@ -12,11 +12,18 @@ import {
   SkiaSkottieView,
   AnimationObject,
   type SkiaSkottieViewRef,
+  SkottieAPI,
 } from 'react-native-skottie';
 import * as Animations from './animations';
 import LottieView from 'lottie-react-native';
 import DotLottieAnimation from './animations/Hands.lottie';
-import { useMemo } from 'react';
+import { useEffect, useMemo } from 'react';
+import {
+  Easing,
+  useSharedValue,
+  withRepeat,
+  withTiming,
+} from 'react-native-reanimated';
 
 const animations = {
   ...Animations,
@@ -81,6 +88,47 @@ function SkottieImperativeAPI({ source }: { source: AnimationObject }) {
   );
 }
 
+function LottieImperativeAPI({ source }: { source: AnimationObject }) {
+  const lottieRef = React.useRef<LottieView>(null);
+
+  return (
+    <View style={styles.flex1}>
+      <Button
+        title="Play"
+        onPress={() => {
+          lottieRef.current?.play();
+        }}
+      />
+      <Button
+        title="Pause"
+        onPress={() => {
+          lottieRef.current?.pause();
+        }}
+      />
+      <Button
+        title="Resume"
+        onPress={() => {
+          lottieRef.current?.resume();
+        }}
+      />
+      <Button
+        title="Reset"
+        onPress={() => {
+          lottieRef.current?.reset();
+        }}
+      />
+      <LottieView
+        ref={lottieRef}
+        resizeMode="contain"
+        style={styles.flex1}
+        source={source}
+        loop={true}
+        autoPlay={false}
+      />
+    </View>
+  );
+}
+
 function SkottiePropsAPI({ source }: { source: AnimationObject }) {
   const [loop, setLoop] = React.useState(true);
   const [autoPlay, setAutoPlay] = React.useState(false);
@@ -136,42 +184,29 @@ function SkottiePropsAPI({ source }: { source: AnimationObject }) {
   );
 }
 
-function LottieImperativeAPI({ source }: { source: AnimationObject }) {
-  const lottieRef = React.useRef<LottieView>(null);
+function SkottieProgressAPI({ source }: { source: AnimationObject }) {
+  // Create animation manually
+  const animation = useMemo(() => SkottieAPI.createFrom(source), [source]);
+  const progress = useSharedValue(0);
+
+  useEffect(() => {
+    // Run the animation using reanimated
+    progress.value = withRepeat(
+      withTiming(1, {
+        duration: animation.duration * 1000,
+        easing: Easing.linear,
+      }),
+      -1
+    );
+  }, [animation.duration, progress]);
 
   return (
     <View style={styles.flex1}>
-      <Button
-        title="Play"
-        onPress={() => {
-          lottieRef.current?.play();
-        }}
-      />
-      <Button
-        title="Pause"
-        onPress={() => {
-          lottieRef.current?.pause();
-        }}
-      />
-      <Button
-        title="Resume"
-        onPress={() => {
-          lottieRef.current?.resume();
-        }}
-      />
-      <Button
-        title="Reset"
-        onPress={() => {
-          lottieRef.current?.reset();
-        }}
-      />
-      <LottieView
-        ref={lottieRef}
-        resizeMode="contain"
+      <Text style={styles.heading}>Progress controlled example</Text>
+      <SkiaSkottieView
+        source={animation}
+        progress={progress}
         style={styles.flex1}
-        source={source}
-        loop={true}
-        autoPlay={false}
       />
     </View>
   );
@@ -243,7 +278,7 @@ export default function App() {
         case 'props-controlled':
           return <SkottiePropsAPI source={animation} />;
         case 'progress-controlled':
-          return <SkottieAnimation source={animation} />;
+          return <SkottieProgressAPI source={animation} />;
       }
     }
     if (type === 'lottie') {
@@ -258,6 +293,8 @@ export default function App() {
           return <LottieAnimation source={animation} />;
       }
     }
+
+    throw new Error('Invalid type');
   }, [animation, exampleType, type]);
 
   return (
