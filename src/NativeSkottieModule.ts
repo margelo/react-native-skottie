@@ -3,7 +3,8 @@ import type {
   SkJSIInstance,
   SkRect,
 } from '@shopify/react-native-skia';
-import { NativeModules, Platform } from 'react-native';
+import { Image, NativeModules, Platform } from 'react-native';
+import type { SkottieViewSource } from './types';
 
 const LINKING_ERROR =
   `The package 'react-native-skottie' doesn't seem to be linked. Make sure: \n\n` +
@@ -51,5 +52,29 @@ declare global {
   var SkiaApi_SkottieFromUri: (uri: string) => SkSkottie;
 }
 
-export const makeSkSkottieFromString = global.SkiaApi_SkottieCtor;
-export const makeSkSkottieFromUri = global.SkiaApi_SkottieFromUri;
+export const SkottieAPI = {
+  createFrom: (source: SkottieViewSource): SkSkottie => {
+    let _source: string | { sourceDotLottieURI: string };
+    if (typeof source === 'string') {
+      _source = source;
+    } else if (typeof source === 'object') {
+      _source = JSON.stringify(props.source);
+    } else if (typeof source === 'number') {
+      const uri = Image.resolveAssetSource(props.source)?.uri;
+      if (uri == null) {
+        throw Error(
+          '[react-native-skottie] Invalid src prop provided. Cant resolve asset source.'
+        );
+      }
+      _source = { sourceDotLottieURI: uri };
+    } else {
+      throw Error('[react-native-skottie] Invalid src prop provided.');
+    }
+
+    if (typeof _source === 'string') {
+      return global.SkiaApi_SkottieCtor(source);
+    } else {
+      return global.SkiaApi_SkottieFromUri(source.sourceDotLottieURI);
+    }
+  },
+};

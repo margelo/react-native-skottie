@@ -14,3 +14,5 @@ export interface AnimationObject {
   layers: any[];
   markers?: any[];
 }
+
+export type SkottieViewSource = number | string | AnimationObject;

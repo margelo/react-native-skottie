@@ -81,6 +81,47 @@ function SkottieImperativeAPI({ source }: { source: AnimationObject }) {
   );
 }
 
+function LottieImperativeAPI({ source }: { source: AnimationObject }) {
+  const lottieRef = React.useRef<LottieView>(null);
+
+  return (
+    <View style={styles.flex1}>
+      <Button
+        title="Play"
+        onPress={() => {
+          lottieRef.current?.play();
+        }}
+      />
+      <Button
+        title="Pause"
+        onPress={() => {
+          lottieRef.current?.pause();
+        }}
+      />
+      <Button
+        title="Resume"
+        onPress={() => {
+          lottieRef.current?.resume();
+        }}
+      />
+      <Button
+        title="Reset"
+        onPress={() => {
+          lottieRef.current?.reset();
+        }}
+      />
+      <LottieView
+        ref={lottieRef}
+        resizeMode="contain"
+        style={styles.flex1}
+        source={source}
+        loop={true}
+        autoPlay={false}
+      />
+    </View>
+  );
+}
+
 function SkottiePropsAPI({ source }: { source: AnimationObject }) {
   const [loop, setLoop] = React.useState(true);
   const [autoPlay, setAutoPlay] = React.useState(false);
@@ -136,46 +177,7 @@ function SkottiePropsAPI({ source }: { source: AnimationObject }) {
   );
 }
 
-function LottieImperativeAPI({ source }: { source: AnimationObject }) {
-  const lottieRef = React.useRef<LottieView>(null);
-
-  return (
-    <View style={styles.flex1}>
-      <Button
-        title="Play"
-        onPress={() => {
-          lottieRef.current?.play();
-        }}
-      />
-      <Button
-        title="Pause"
-        onPress={() => {
-          lottieRef.current?.pause();
-        }}
-      />
-      <Button
-        title="Resume"
-        onPress={() => {
-          lottieRef.current?.resume();
-        }}
-      />
-      <Button
-        title="Reset"
-        onPress={() => {
-          lottieRef.current?.reset();
-        }}
-      />
-      <LottieView
-        ref={lottieRef}
-        resizeMode="contain"
-        style={styles.flex1}
-        source={source}
-        loop={true}
-        autoPlay={false}
-      />
-    </View>
-  );
-}
+function SkottieProgressAPI({ source }: { source: AnimationObject }) {}
 
 type ExampleType =
   | 'default'
