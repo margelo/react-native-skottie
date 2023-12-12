@@ -2,12 +2,76 @@ package com.skiaskottie;
 
 import android.util.Log;
 
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.net.URL;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipInputStream;
+
+
 public class DotLottieReader {
+  private static final String TAG = DotLottieReader.class.getSimpleName();
+
   public static String readDotLottie(String uri) throws Exception {
-    Log.d("DotLottieReader", "Hello from android!");
+    Log.i(TAG, "Reading dotLottie from " + uri);
 
-    throw new Exception("Test exception, caught in JS?");
+    // Create an input stream to the file
+    InputStream in = null;
+    try {
+      if (uri.startsWith("http")) {
+        // Handle network resource
+        URL url = new URL(uri);
+        in = url.openStream();
+      } else {
+        // Handle local file
+        File file = new File(uri);
+        in = new FileInputStream(file);
+      }
+    } catch (Exception e) {
+      Log.e(TAG, "Failed to read dotLottie from " + uri, e);
+      throw e;
+    }
 
-//    return "{\"v\":\"4.8.0\",\"meta\":{\"g\":\"LottieFiles AE 3.0.2\",\"a\":\"\",\"k\":\"\",\"d\":\"\",\"tc\":\"#FFFFFF\"},\"fr\":30,\"ip\":0,\"op\":51,\"w\":500,\"h\":500,\"nm\":\"Shape\",\"ddd\":0,\"assets\":[],\"layers\":[{\"ddd\":0,\"ind\":1,\"ty\":4,\"nm\":\"Layer 6\",\"sr\":1,\"ks\":{\"o\":{\"a\":1,\"k\":[{\"i\":{\"x\":[0.667],\"y\":[1]},\"o\":{\"x\":[0.333],\"y\":[0]},\"t\":17,\"s\":[0]},{\"t\":30,\"s\":[100]}],\"ix\":11},\"r\":{\"a\":0,\"k\":0,\"ix\":10},\"p\":{\"a\":1,\"k\":[{\"i\":{\"x\":0.667,\"y\":1},\"o\":{\"x\":0.333,\"y\":0},\"t\":17,\"s\":[250,105,0],\"to\":[0,24.833,0],\"ti\":[0,0,0]},{\"i\":{\"x\":0.667,\"y\":1},\"o\":{\"x\":0.333,\"y\":0},\"t\":30,\"s\":[250,254,0],\"to\":[0,0,0],\"ti\":[0,0,0]},{\"i\":{\"x\":0.667,\"y\":1},\"o\":{\"x\":0.333,\"y\":0},\"t\":33,\"s\":[250,255,0],\"to\":[0,0,0],\"ti\":[0,0.167,0]},{\"t\":36,\"s\":[250,254,0]}],\"ix\":2},\"a\":{\"a\":0,\"k\":[0,0,0],\"ix\":1},\"s\":{\"a\":0,\"k\":[100,100,100],\"ix\":6}},\"ao\":0,\"shapes\":[{\"ty\":\"gr\",\"it\":[{\"ind\":0,\"ty\":\"sh\",\"ix\":1,\"ks\":{\"a\":0,\"k\":{\"i\":[[-4.777,2.758],[0,0],[10.293,5.942],[0,0],[4.777,-2.758],[0,0],[-10.293,-5.942],[0,0]],\"o\":[[0,0],[10.293,-5.942],[0,0],[-4.777,-2.758],[0,0],[-10.293,5.942],[0,0],[4.777,2.758]],\"v\":[[7.719,100.861],[168.493,8.039],[168.493,-18.702],[7.719,-111.525],[-7.72,-111.525],[-168.493,-18.703],[-168.493,8.038],[-7.72,100.861]],\"c\":true},\"ix\":2},\"nm\":\"Path 1\",\"mn\":\"ADBE Vector Shape - Group\",\"hd\":false},{\"ty\":\"fl\",\"c\":{\"a\":0,\"k\":[0.694117665291,0.776470601559,0.964705884457,1],\"ix\":4},\"o\":{\"a\":0,\"k\":100,\"ix\":5},\"r\":1,\"bm\":0,\"nm\":\"Fill 1\",\"mn\":\"ADBE Vector Graphic - Fill\",\"hd\":false},{\"ty\":\"tr\",\"p\":{\"a\":0,\"k\":[0,0],\"ix\":2},\"a\":{\"a\":0,\"k\":[0,0],\"ix\":1},\"s\":{\"a\":0,\"k\":[100,100],\"ix\":3},\"r\":{\"a\":0,\"k\":0,\"ix\":6},\"o\":{\"a\":0,\"k\":100,\"ix\":7},\"sk\":{\"a\":0,\"k\":0,\"ix\":4},\"sa\":{\"a\":0,\"k\":0,\"ix\":5},\"nm\":\"Transform\"}],\"nm\":\"Group 1\",\"np\":2,\"cix\":2,\"bm\":0,\"ix\":1,\"mn\":\"ADBE Vector Group\",\"hd\":false}],\"ip\":17,\"op\":107,\"st\":17,\"bm\":0},{\"ddd\":0,\"ind\":2,\"ty\":4,\"nm\":\"Layer 5\",\"sr\":1,\"ks\":{\"o\":{\"a\":1,\"k\":[{\"i\":{\"x\":[0.667],\"y\":[1]},\"o\":{\"x\":[0.333],\"y\":[0]},\"t\":10,\"s\":[0]},{\"t\":23,\"s\":[100]}],\"ix\":11},\"r\":{\"a\":0,\"k\":0,\"ix\":10},\"p\":{\"a\":1,\"k\":[{\"i\":{\"x\":0.667,\"y\":1},\"o\":{\"x\":0.333,\"y\":0},\"t\":10,\"s\":[250,164.25,0],\"to\":[0,15,0],\"ti\":[0,0,0]},{\"i\":{\"x\":0.667,\"y\":1},\"o\":{\"x\":0.333,\"y\":0},\"t\":23,\"s\":[250,254.25,0],\"to\":[0,0,0],\"ti\":[0,0,0]},{\"i\":{\"x\":0.667,\"y\":1},\"o\":{\"x\":0.333,\"y\":0},\"t\":26,\"s\":[250,256.25,0],\"to\":[0,0,0],\"ti\":[0,0,0]},{\"t\":29,\"s\":[250,254.25,0]}],\"ix\":2},\"a\":{\"a\":0,\"k\":[0,0,0],\"ix\":1},\"s\":{\"a\":0,\"k\":[100,100,100],\"ix\":6}},\"ao\":0,\"shapes\":[{\"ty\":\"gr\",\"it\":[{\"ind\":0,\"ty\":\"sh\",\"ix\":1,\"ks\":{\"a\":0,\"k\":{\"i\":[[-4.777,2.758],[0,0],[10.293,5.942],[0,0],[4.777,-2.758],[0,0],[-10.293,-5.942],[0,0]],\"o\":[[0,0],[10.293,-5.942],[0,0],[-4.777,-2.758],[0,0],[-10.293,5.942],[0,0],[4.777,2.758]],\"v\":[[7.719,156.2],[168.493,63.378],[168.493,36.637],[7.719,-56.186],[-7.72,-56.186],[-168.493,36.637],[-168.493,63.378],[-7.72,156.2]],\"c\":true},\"ix\":2},\"nm\":\"Path 1\",\"mn\":\"ADBE Vector Shape - Group\",\"hd\":false},{\"ty\":\"fl\",\"c\":{\"a\":0,\"k\":[0.360784322023,0.529411792755,0.890196084976,1],\"ix\":4},\"o\":{\"a\":0,\"k\":100,\"ix\":5},\"r\":1,\"bm\":0,\"nm\":\"Fill 1\",\"mn\":\"ADBE Vector Graphic - Fill\",\"hd\":false},{\"ty\":\"tr\",\"p\":{\"a\":0,\"k\":[0,0],\"ix\":2},\"a\":{\"a\":0,\"k\":[0,0],\"ix\":1},\"s\":{\"a\":0,\"k\":[100,100],\"ix\":3},\"r\":{\"a\":0,\"k\":0,\"ix\":6},\"o\":{\"a\":0,\"k\":100,\"ix\":7},\"sk\":{\"a\":0,\"k\":0,\"ix\":4},\"sa\":{\"a\":0,\"k\":0,\"ix\":5},\"nm\":\"Transform\"}],\"nm\":\"Group 1\",\"np\":2,\"cix\":2,\"bm\":0,\"ix\":1,\"mn\":\"ADBE Vector Group\",\"hd\":false}],\"ip\":10,\"op\":100,\"st\":10,\"bm\":0},{\"ddd\":0,\"ind\":3,\"ty\":4,\"nm\":\"Layer 4\",\"sr\":1,\"ks\":{\"o\":{\"a\":1,\"k\":[{\"i\":{\"x\":[0.667],\"y\":[1]},\"o\":{\"x\":[0.333],\"y\":[0]},\"t\":0,\"s\":[0]},{\"t\":13,\"s\":[100]}],\"ix\":11},\"r\":{\"a\":0,\"k\":0,\"ix\":10},\"p\":{\"a\":1,\"k\":[{\"i\":{\"x\":0.667,\"y\":1},\"o\":{\"x\":0.333,\"y\":0},\"t\":0,\"s\":[249.991,163.969,0],\"to\":[0,35.156,0],\"ti\":[0,0,0]},{\"i\":{\"x\":0.667,\"y\":1},\"o\":{\"x\":0.333,\"y\":0},\"t\":13,\"s\":[249.991,374.906,0],\"to\":[0,0,0],\"ti\":[0,0,0]},{\"i\":{\"x\":0.667,\"y\":1},\"o\":{\"x\":0.333,\"y\":0},\"t\":16,\"s\":[249.991,370.969,0],\"to\":[0,0,0],\"ti\":[0,0,0]},{\"t\":19,\"s\":[249.991,375.969,0]}],\"ix\":2},\"a\":{\"a\":0,\"k\":[0,0,0],\"ix\":1},\"s\":{\"a\":0,\"k\":[100,100,100],\"ix\":6}},\"ao\":0,\"shapes\":[{\"ty\":\"gr\",\"it\":[{\"ind\":0,\"ty\":\"sh\",\"ix\":1,\"ks\":{\"a\":0,\"k\":{\"i\":[[-4.777,2.758],[0,0],[10.293,5.942],[0,0],[4.777,-2.758],[0,0],[-10.293,-5.942],[0,0]],\"o\":[[0,0],[10.293,-5.942],[0,0],[-4.777,-2.758],[0,0],[-10.293,5.942],[0,0],[4.777,2.758]],\"v\":[[7.719,211.525],[168.493,118.703],[168.493,91.962],[7.719,-0.861],[-7.72,-0.861],[-168.493,91.962],[-168.493,118.703],[-7.72,211.525]],\"c\":true},\"ix\":2},\"nm\":\"Path 1\",\"mn\":\"ADBE Vector Shape - Group\",\"hd\":false},{\"ty\":\"fl\",\"c\":{\"a\":0,\"k\":[0.180392156863,0.341176470588,0.788235294118,1],\"ix\":4},\"o\":{\"a\":0,\"k\":100,\"ix\":5},\"r\":1,\"bm\":0,\"nm\":\"Fill 1\",\"mn\":\"ADBE Vector Graphic - Fill\",\"hd\":false},{\"ty\":\"tr\",\"p\":{\"a\":0,\"k\":[0,-124.5],\"ix\":2},\"a\":{\"a\":0,\"k\":[0,0],\"ix\":1},\"s\":{\"a\":0,\"k\":[100,100],\"ix\":3},\"r\":{\"a\":0,\"k\":0,\"ix\":6},\"o\":{\"a\":0,\"k\":100,\"ix\":7},\"sk\":{\"a\":0,\"k\":0,\"ix\":4},\"sa\":{\"a\":0,\"k\":0,\"ix\":5},\"nm\":\"Transform\"}],\"nm\":\"Group 1\",\"np\":2,\"cix\":2,\"bm\":0,\"ix\":1,\"mn\":\"ADBE Vector Group\",\"hd\":false}],\"ip\":0,\"op\":90,\"st\":0,\"bm\":0}],\"markers\":[]}";
+    // Read the zip data (dotLottie is just a zip file)
+    try (ZipInputStream zipInputStream = new ZipInputStream(in)) {
+      ZipEntry entry;
+
+      while ((entry = zipInputStream.getNextEntry()) != null) {
+        String entryName = entry.getName();
+
+        // Right now we skip the manifest.json file, and only read the animations/data.json file
+        if (!entryName.equals("animations/data.json")) {
+          zipInputStream.closeEntry();
+          continue;
+        }
+
+        // Read the data.json file: Use a StringBuilder to accumulate the file contents
+        StringBuilder stringBuilder = new StringBuilder();
+        try (BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(zipInputStream))) {
+          String line;
+          while ((line = bufferedReader.readLine()) != null) {
+            stringBuilder.append(line);
+          }
+        }
+        String jsonContent = stringBuilder.toString();
+
+        Log.i(TAG, "Read dotLottie from " + uri);
+        Log.d(TAG, jsonContent);
+
+        return jsonContent;
+      }
+    } catch (IOException e) {
+      // Handle exceptions
+      Log.e(TAG, "Failed to read dotLottie from " + uri, e);
+      throw e;
+    } finally {
+      in.close();
+    }
+
+    throw new Exception("Failed to read dotLottie. We expected a animations/data.json file in the zip/dotLottie file.");
   }
 }
