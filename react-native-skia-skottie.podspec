@@ -32,8 +32,8 @@ Pod::Spec.new do |s|
   #       For integration in external projects that needs to be different!
   skiaPath2 = "node_modules/@shopify/react-native-skia"
   s.ios.vendored_frameworks = [
-    "#{skiaPath2}/libs/ios/libsksg.xcframework", 
-    "#{skiaPath2}/libs/ios/libskottie.xcframework", 
+    "#{skiaPath2}/libs/ios/libsksg.xcframework",
+    "#{skiaPath2}/libs/ios/libskottie.xcframework",
   ]
 
   s.source_files = "ios/**/*.{h,m,mm}", "cpp/**/*.{h,cpp}"
@@ -41,6 +41,7 @@ Pod::Spec.new do |s|
   s.dependency "React"
   s.dependency "React-Core"
   s.dependency "react-native-skia"
+  s.dependency "SSZipArchive"
 
   # # Don't install the dependencies when we run `pod install` in the old architecture.
   # if ENV['RCT_NEW_ARCH_ENABLED'] == '1' then

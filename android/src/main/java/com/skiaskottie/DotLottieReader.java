@@ -40,10 +40,11 @@ public class DotLottieReader {
     try (ZipInputStream zipInputStream = new ZipInputStream(in)) {
       ZipEntry entry;
 
+      // Iterate over the zip entries
       while ((entry = zipInputStream.getNextEntry()) != null) {
         String entryName = entry.getName();
 
-        // Right now we skip the manifest.json file, and only read the animations/data.json file
+        // Right now we skip any other file, and only read the animations/data.json file
         if (!entryName.equals("animations/data.json")) {
           zipInputStream.closeEntry();
           continue;

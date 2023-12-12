@@ -6,7 +6,8 @@ namespace RNSkia {
 using namespace facebook;
 
 std::function<std::string(std::string)> _readDotLottieArg;
-void RNSkModuleManager::installBindings(jsi::Runtime* jsRuntime, std::shared_ptr<RNSkPlatformContext> platformContext, std::function<std::string(std::string)> readDotLottieArg) {
+void RNSkModuleManager::installBindings(jsi::Runtime* jsRuntime, std::shared_ptr<RNSkPlatformContext> platformContext,
+                                        std::function<std::string(std::string)> readDotLottieArg) {
   // Install bindings
   auto createSkottie = JsiSkSkottie::createCtor(std::move(platformContext));
   jsRuntime->global().setProperty(
@@ -32,16 +33,16 @@ void RNSkModuleManager::installBindings(jsi::Runtime* jsRuntime, std::shared_ptr
             }
 
             try {
-                std::string dotLottieFilePath = args[0].asString(rt).utf8(rt);
-                std::string result = _readDotLottieArg(dotLottieFilePath);
+              std::string dotLottieFilePath = args[0].asString(rt).utf8(rt);
+              std::string result = _readDotLottieArg(dotLottieFilePath);
 
-                // Make SkSkottie instance from string
-                jsi::Value animString = jsi::String::createFromUtf8(rt, result);
-                std::vector<jsi::Value> arguments;
-                arguments.emplace_back(std::move(animString));
-                return createSkottie(rt, thisValue, arguments.data(), arguments.size());
+              // Make SkSkottie instance from string
+              jsi::Value animString = jsi::String::createFromUtf8(rt, result);
+              std::vector<jsi::Value> arguments;
+              arguments.emplace_back(std::move(animString));
+              return createSkottie(rt, thisValue, arguments.data(), arguments.size());
             } catch (const std::exception& e) {
-                jsi::detail::throwOrDie<jsi::JSError>(rt, e.what());
+              jsi::detail::throwOrDie<jsi::JSError>(rt, e.what());
             }
 
             return {};
