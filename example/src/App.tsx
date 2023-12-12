@@ -12,11 +12,18 @@ import {
   SkiaSkottieView,
   AnimationObject,
   type SkiaSkottieViewRef,
+  SkottieAPI,
 } from 'react-native-skottie';
 import * as Animations from './animations';
 import LottieView from 'lottie-react-native';
 import DotLottieAnimation from './animations/Hands.lottie';
-import { useMemo } from 'react';
+import { useEffect, useMemo } from 'react';
+import {
+  Easing,
+  useSharedValue,
+  withRepeat,
+  withTiming,
+} from 'react-native-reanimated';
 
 const animations = {
   ...Animations,
@@ -177,7 +184,33 @@ function SkottiePropsAPI({ source }: { source: AnimationObject }) {
   );
 }
 
-function SkottieProgressAPI({ source }: { source: AnimationObject }) {}
+function SkottieProgressAPI({ source }: { source: AnimationObject }) {
+  // Create animation manually
+  const animation = useMemo(() => SkottieAPI.createFrom(source), [source]);
+  const progress = useSharedValue(0);
+
+  useEffect(() => {
+    // Run the animation using reanimated
+    progress.value = withRepeat(
+      withTiming(1, {
+        duration: animation.duration * 1000,
+        easing: Easing.linear,
+      }),
+      -1
+    );
+  }, [animation.duration, progress]);
+
+  return (
+    <View style={styles.flex1}>
+      <Text style={styles.heading}>Progress controlled example</Text>
+      <SkiaSkottieView
+        source={animation}
+        progress={progress}
+        style={styles.flex1}
+      />
+    </View>
+  );
+}
 
 type ExampleType =
   | 'default'
@@ -245,7 +278,7 @@ export default function App() {
         case 'props-controlled':
           return <SkottiePropsAPI source={animation} />;
         case 'progress-controlled':
-          return <SkottieAnimation source={animation} />;
+          return <SkottieProgressAPI source={animation} />;
       }
     }
     if (type === 'lottie') {
@@ -260,6 +293,8 @@ export default function App() {
           return <LottieAnimation source={animation} />;
       }
     }
+
+    throw new Error('Invalid type');
   }, [animation, exampleType, type]);
 
   return (

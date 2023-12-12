@@ -11,9 +11,9 @@ import React, {
 } from 'react';
 import { SkiaViewApi } from './SkiaViewApi';
 
-import type { SkottieViewSource } from './types';
+import type { SkottieViewSource, SkSkottie } from './types';
 import { NativeSkiaSkottieView } from './NativeSkiaSkottieView';
-import { SkSkottie, SkottieAPI } from './NativeSkottieModule';
+import { SkottieAPI } from './NativeSkottieModule';
 import { SharedValue, startMapper, stopMapper } from 'react-native-reanimated';
 
 export type ResizeMode = 'cover' | 'contain' | 'stretch';
@@ -74,6 +74,11 @@ export const SkiaSkottieView = React.forwardRef<
   const nativeId = useRef(SkiaViewNativeId.current++).current;
 
   const skottieAnimation = useMemo(() => {
+    if (typeof props.source === 'object' && 'fps' in props.source) {
+      // Case: the user passed a SkSkottie instance
+      return props.source;
+    }
+
     return SkottieAPI.createFrom(props.source);
   }, [props.source]);
 

@@ -1,10 +1,5 @@
-import type {
-  SkCanvas,
-  SkJSIInstance,
-  SkRect,
-} from '@shopify/react-native-skia';
 import { Image, NativeModules, Platform } from 'react-native';
-import type { SkottieViewSource } from './types';
+import type { SkottieViewSource, SkSkottie } from './types';
 
 const LINKING_ERROR =
   `The package 'react-native-skottie' doesn't seem to be linked. Make sure: \n\n` +
@@ -40,13 +35,6 @@ if (typeof SkiaSkottie.install === 'function') {
   );
 }
 
-export interface SkSkottie extends SkJSIInstance<'Skottie'> {
-  duration: number;
-  fps: number;
-  render: (canvas: SkCanvas, rect: SkRect) => void;
-  seek: (progress: number) => void;
-}
-
 declare global {
   var SkiaApi_SkottieCtor: (jsonString: string) => SkSkottie;
   var SkiaApi_SkottieFromUri: (uri: string) => SkSkottie;
@@ -54,13 +42,15 @@ declare global {
 
 export const SkottieAPI = {
   createFrom: (source: SkottieViewSource): SkSkottie => {
+    // Turn the source either into a JSON string, or a URI string:
     let _source: string | { sourceDotLottieURI: string };
+
     if (typeof source === 'string') {
       _source = source;
     } else if (typeof source === 'object') {
-      _source = JSON.stringify(props.source);
+      _source = JSON.stringify(source);
     } else if (typeof source === 'number') {
-      const uri = Image.resolveAssetSource(props.source)?.uri;
+      const uri = Image.resolveAssetSource(source)?.uri;
       if (uri == null) {
         throw Error(
           '[react-native-skottie] Invalid src prop provided. Cant resolve asset source.'
@@ -71,10 +61,11 @@ export const SkottieAPI = {
       throw Error('[react-native-skottie] Invalid src prop provided.');
     }
 
+    // Actually create the Skottie instance:
     if (typeof _source === 'string') {
-      return global.SkiaApi_SkottieCtor(source);
+      return global.SkiaApi_SkottieCtor(_source);
     } else {
-      return global.SkiaApi_SkottieFromUri(source.sourceDotLottieURI);
+      return global.SkiaApi_SkottieFromUri(_source.sourceDotLottieURI);
     }
   },
 };

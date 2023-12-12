@@ -1,3 +1,9 @@
+import type {
+  SkCanvas,
+  SkJSIInstance,
+  SkRect,
+} from '@shopify/react-native-skia';
+
 /**
  * Serialized animation as generated from After Effects
  */
@@ -15,4 +21,11 @@ export interface AnimationObject {
   markers?: any[];
 }
 
-export type SkottieViewSource = number | string | AnimationObject;
+export interface SkSkottie extends SkJSIInstance<'Skottie'> {
+  duration: number;
+  fps: number;
+  render: (canvas: SkCanvas, rect: SkRect) => void;
+  seek: (progress: number) => void;
+}
+
+export type SkottieViewSource = number | string | AnimationObject | SkSkottie;
