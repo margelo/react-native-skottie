@@ -6,6 +6,7 @@ import {
   StyleSheet,
   SafeAreaView,
   ScrollView,
+  Switch,
 } from 'react-native';
 import {
   SkiaSkottieView,
@@ -15,6 +16,7 @@ import {
 import * as Animations from './animations';
 import LottieView from 'lottie-react-native';
 import DotLottieAnimation from './animations/Hands.lottie';
+import { useMemo } from 'react';
 
 const animations = {
   ...Animations,
@@ -79,6 +81,61 @@ function SkottieImperativeAPI({ source }: { source: AnimationObject }) {
   );
 }
 
+function SkottiePropsAPI({ source }: { source: AnimationObject }) {
+  const [loop, setLoop] = React.useState(true);
+  const [autoPlay, setAutoPlay] = React.useState(true);
+  const [speed, setSpeed] = React.useState(1);
+  const [_progress, setProgress] = React.useState(0);
+
+  return (
+    <View style={styles.flex1}>
+      <Button
+        title="Play"
+        onPress={() => {
+          setAutoPlay(true);
+        }}
+      />
+      <Button
+        title="Pause"
+        onPress={() => {
+          setAutoPlay(false);
+        }}
+      />
+      <Button
+        title="Reset"
+        onPress={() => {
+          setProgress(0);
+        }}
+      />
+      <Button
+        title="Loop"
+        onPress={() => {
+          setLoop((loop) => !loop);
+        }}
+      />
+      <Button
+        title="Speed"
+        onPress={() => {
+          setSpeed((speed) => speed + 1);
+        }}
+      />
+      <SkiaSkottieView
+        resizeMode="contain"
+        style={styles.flex1}
+        source={source}
+        loop={loop}
+        autoPlay={autoPlay}
+        speed={speed}
+        // TODO: that wouldn't work at the minute, and the imperative API should be used!
+        // progress={progress}
+        onAnimationFinish={() => {
+          console.log('onAnimationFinish');
+        }}
+      />
+    </View>
+  );
+}
+
 function LottieImperativeAPI({ source }: { source: AnimationObject }) {
   const lottieRef = React.useRef<LottieView>(null);
 
@@ -120,35 +177,100 @@ function LottieImperativeAPI({ source }: { source: AnimationObject }) {
   );
 }
 
+type ExampleType =
+  | 'default'
+  | 'imperative'
+  | 'props-controlled'
+  | 'progress-controlled';
+
+function ExampleTypeSwitches({
+  exampleType,
+  setExampleType,
+}: {
+  exampleType: ExampleType;
+  setExampleType: (type: ExampleType) => void;
+}) {
+  return (
+    <View>
+      <View style={styles.switchOption}>
+        <Switch
+          value={exampleType === 'default'}
+          onValueChange={() => setExampleType('default')}
+        />
+        <Text>None</Text>
+      </View>
+      <View style={styles.switchOption}>
+        <Switch
+          value={exampleType === 'imperative'}
+          onValueChange={() => setExampleType('imperative')}
+        />
+        <Text>Imperative API</Text>
+      </View>
+      <View style={styles.switchOption}>
+        <Switch
+          value={exampleType === 'props-controlled'}
+          onValueChange={() => setExampleType('props-controlled')}
+        />
+        <Text>Props controlled</Text>
+      </View>
+      <View style={styles.switchOption}>
+        <Switch
+          value={exampleType === 'progress-controlled'}
+          onValueChange={() => setExampleType('progress-controlled')}
+        />
+        <Text>Progress controlled</Text>
+      </View>
+    </View>
+  );
+}
+
 export default function App() {
   const [type, setType] = React.useState<'skottie' | 'lottie'>('skottie');
-  const [isImperativeAPI, setIsImperativeAPI] = React.useState(false);
+  const [exampleType, setExampleType] = React.useState<ExampleType>('default');
   const [animation, setAnimation] = React.useState<
     AnimationObject | undefined
   >();
+
+  const animationContent = useMemo(() => {
+    if (animation == null) return null;
+
+    if (type === 'skottie') {
+      switch (exampleType) {
+        case 'default':
+          return <SkottieAnimation source={animation} />;
+        case 'imperative':
+          return <SkottieImperativeAPI source={animation} />;
+        case 'props-controlled':
+          return <SkottiePropsAPI source={animation} />;
+        case 'progress-controlled':
+          return <SkottieAnimation source={animation} />;
+      }
+    }
+    if (type === 'lottie') {
+      switch (exampleType) {
+        case 'default':
+          return <LottieAnimation source={animation} />;
+        case 'imperative':
+          return <LottieImperativeAPI source={animation} />;
+        case 'props-controlled':
+          return <LottieAnimation source={animation} />;
+        case 'progress-controlled':
+          return <LottieAnimation source={animation} />;
+      }
+    }
+  }, [animation, exampleType, type]);
 
   return (
     <SafeAreaView style={styles.flex1}>
       {animation == null ? (
         <ScrollView style={styles.flex1}>
-          <Button
-            title="Skottie imperative API"
-            onPress={() => {
-              setType('skottie');
-              setAnimation(animations.Hands);
-              setIsImperativeAPI(true);
-            }}
-          />
-          <Button
-            title="Lottie imperative API"
-            onPress={() => {
-              setType('lottie');
-              setAnimation(animations.FastMoney);
-              setIsImperativeAPI(true);
-            }}
+          <Text style={styles.heading}>Example type</Text>
+          <ExampleTypeSwitches
+            exampleType={exampleType}
+            setExampleType={setExampleType}
           />
 
-          <Text>Skottie</Text>
+          <Text style={styles.heading}>Skottie</Text>
           {Object.keys(animations).map((key) => (
             <View key={`skottie-${key}`}>
               <Button
@@ -161,7 +283,7 @@ export default function App() {
               />
             </View>
           ))}
-          <Text>Lottie</Text>
+          <Text style={styles.heading}>Lottie</Text>
           {Object.keys(animations).map((key) => (
             <View key={`lottie-${key}`}>
               <Button
@@ -177,21 +299,10 @@ export default function App() {
         </ScrollView>
       ) : (
         <View style={styles.flex1}>
-          {type === 'skottie' ? (
-            isImperativeAPI ? (
-              <SkottieImperativeAPI source={animation} />
-            ) : (
-              <SkottieAnimation source={animation} />
-            )
-          ) : isImperativeAPI ? (
-            <LottieImperativeAPI source={animation} />
-          ) : (
-            <LottieAnimation source={animation} />
-          )}
+          {animationContent}
           <Button
             title="Back"
             onPress={() => {
-              setIsImperativeAPI(false);
               setAnimation(undefined);
             }}
           />
@@ -204,5 +315,15 @@ export default function App() {
 const styles = StyleSheet.create({
   flex1: {
     flex: 1,
+  },
+  heading: {
+    marginTop: 16,
+    marginBottom: 8,
+    fontSize: 24,
+    fontWeight: 'bold',
+  },
+  switchOption: {
+    flexDirection: 'row',
+    alignItems: 'center',
   },
 });
