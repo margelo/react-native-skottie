@@ -1,6 +1,6 @@
 {
   "name": "react-native-skottie",
-  "version": "0.3.0",
+  "version": "0.4.0",
   "description": "Efficient lottie animations in react native using Skia's Skottie module",
   "main": "lib/commonjs/index",
   "module": "lib/module/index",
