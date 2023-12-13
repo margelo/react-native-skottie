@@ -14,21 +14,15 @@
 - (NSString*)readDotLottie:(NSString*)uri {
 
   NSLog(@"[react-native-skottie] Reading dotLottie file from %@ …", uri);
-  NSData* data;
-  // Check if the URI is a local file or a network resource
-  if ([uri hasPrefix:@"http"]) {
-    // Handle network resource
-    NSURL* url = [NSURL URLWithString:uri];
-    data = [NSData dataWithContentsOfURL:url];
-  } else {
-    // Handle local file
-    NSURL* fileURL = [NSURL fileURLWithPath:uri];
-    data = [NSData dataWithContentsOfURL:fileURL];
-  }
+
+  NSURL* url = [NSURL URLWithString:uri];
+  NSData* data = [NSData dataWithContentsOfURL:url];
 
   if (!data) {
     NSLog(@"[react-native-skottie] Reading dotLottie file failed, no data received!");
-    @throw [NSException exceptionWithName:@"DotLottieReaderException" reason:@"Failed to read data for uri" userInfo:nil];
+    @throw [NSException exceptionWithName:@"DotLottieReaderException"
+                                   reason:[NSString stringWithFormat:@"Failed to read data for uri %@", uri]
+                                 userInfo:nil];
   }
 
   CFTimeInterval startTime = CACurrentMediaTime();
