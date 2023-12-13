@@ -14,7 +14,7 @@ import { SkiaViewApi } from './SkiaViewApi';
 import type { SkottieViewSource, SkSkottie } from './types';
 import { NativeSkiaSkottieView } from './NativeSkiaSkottieView';
 import { SkottieAPI } from './NativeSkottieModule';
-import { SharedValue, startMapper, stopMapper } from 'react-native-reanimated';
+import { SharedValue, startMapper, stopMapper } from './reanimatedWrapper';
 
 export type ResizeMode = 'cover' | 'contain' | 'stretch';
 
