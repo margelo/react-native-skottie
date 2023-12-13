@@ -20,27 +20,27 @@ public class DotLottieReader {
   private final String TAG = DotLottieReader.class.getSimpleName();
   private final OkHttpClient client = new OkHttpClient();
   private final Context context;
-  private Map<String, Integer> mResourceIdMap = new HashMap<>();
+  private Map<String, String> mDotLottieCache = new HashMap<>();
 
   public DotLottieReader(Context context) {
     this.context = context;
   }
 
   private int getResourceId(String name) {
-    if (mResourceIdMap.containsKey(name)) {
-      return mResourceIdMap.get(name);
-    }
-    int id = context.getResources().getIdentifier(
+    return context.getResources().getIdentifier(
       name,
       "raw",
       context.getPackageName()
     );
-    mResourceIdMap.put(name, id);
-    return id;
   }
 
   public String readDotLottie(String uriRaw) throws Exception {
     Log.i(TAG, "Reading dotLottie from " + uriRaw);
+
+    // Check if we already have the dotLottie in the cache
+    if (mDotLottieCache.containsKey(uriRaw)) {
+      return mDotLottieCache.get(uriRaw);
+    }
 
     // Check if need to read from the network or from the file system
     Uri uri = null;
@@ -97,6 +97,7 @@ public class DotLottieReader {
         String jsonContent = stringBuilder.toString();
 
         Log.i(TAG, "Read dotLottie in " + (System.currentTimeMillis() - startTime) + "ms");
+        mDotLottieCache.put(uriRaw, jsonContent);
 
         return jsonContent;
       }
