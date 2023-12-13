@@ -15,6 +15,17 @@ find_package(fbjni REQUIRED CONFIG)
 find_package(ReactAndroid REQUIRED CONFIG)
 find_package(shopify_react-native-skia REQUIRED CONFIG)
 
+set(JSI_LIB ReactAndroid::jsi)
+message("-- JSI     : " ${JSI_LIB})
+set(FBJNI_LIBRARY fbjni::fbjni)
+message("-- FBJNI   : " ${FBJNI_LIBRARY})
+set(REACT_LIB ReactAndroid::react_nativemodule_core)
+message("-- REACT   : " ${REACT_LIB})
+set(TURBOMODULES_LIB "ReactAndroid::turbomodulejsijni")
+message("-- TURBO   : " ${TURBOMODULES_LIB})
+set(RNSKIA_LIB shopify_react-native-skia::rnskia)
+message("-- RNSKIA  : " ${RNSKIA_LIB})
+
 add_library(${PACKAGE_NAME}
         SHARED
         ../cpp/react-native-skia-skottie.cpp
@@ -88,19 +99,7 @@ set(SKIA_MODULE_SKUNICODE_LIB "skunicode")
 add_library(skunicode STATIC IMPORTED)
 set_property(TARGET skunicode PROPERTY IMPORTED_LOCATION "${SKIA_LIBS_PATH}/libskunicode.a")
 
-# Import react native libs
-find_package(fbjni REQUIRED CONFIG)
-find_package(ReactAndroid REQUIRED CONFIG)
-set(JSI_LIB ReactAndroid::jsi)
-message("-- JSI     : " ${JSI_LIB})
-set(FBJNI_LIBRARY fbjni::fbjni)
-message("-- FBJNI   : " ${FBJNI_LIBRARY})
-set(REACT_LIB ReactAndroid::react_nativemodule_core)
-message("-- REACT   : " ${REACT_LIB})
-set(TURBOMODULES_LIB "ReactAndroid::turbomodulejsijni")
-message("-- TURBO   : " ${TURBOMODULES_LIB})
-
-# Log lib
+# Android Log lib
 find_library(
         LOG_LIB
         log
@@ -119,7 +118,7 @@ target_link_libraries(
         ${SKIA_MODULE_SKSG_LIB}
         ${SKIA_MODULE_SKUNICODE_LIB}
         ${SKIA_LIB}
-        shopify_react-native-skia::rnskia
+        ${RNSKIA_LIB}
         -ljnigraphics
         -lGLESv2
         -lEGL
