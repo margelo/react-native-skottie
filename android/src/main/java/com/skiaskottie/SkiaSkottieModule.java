@@ -8,8 +8,6 @@ import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactContextBaseJavaModule;
 import com.facebook.react.bridge.ReactMethod;
 import com.facebook.react.module.annotations.ReactModule;
-import com.shopify.reactnative.skia.PlatformContext;
-import com.shopify.reactnative.skia.RNSkiaModule;
 
 @ReactModule(name = SkiaSkottieModule.NAME)
 public class SkiaSkottieModule extends ReactContextBaseJavaModule {
@@ -25,12 +23,10 @@ public class SkiaSkottieModule extends ReactContextBaseJavaModule {
       System.loadLibrary("react-native-skottie");
       ReactApplicationContext context = getReactApplicationContext();
 
-      RNSkiaModule skiaModule = context.getNativeModule(RNSkiaModule.class);
+      DotLottieReader dotLottieReader = new DotLottieReader(context);
       initialize(
         context.getJavaScriptContextHolder().get(),
-        null
-        // TODO: right now we don't use the platform context, and sometimes its null :thinking:
-//        skiaModule.getSkiaManager().getPlatformContext()
+        dotLottieReader
       );
 
       Log.i(NAME, "Initialized skia skottie!");
@@ -47,5 +43,5 @@ public class SkiaSkottieModule extends ReactContextBaseJavaModule {
     return NAME;
   }
 
-  public static native void initialize(long jsiPtr, PlatformContext context);
+  public static native void initialize(long jsiPtr, DotLottieReader dotLottieReader);
 }

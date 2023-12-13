@@ -1,35 +1,68 @@
 package com.skiaskottie;
 
+import android.content.Context;
+import android.net.Uri;
 import android.util.Log;
 
 import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.net.URL;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
+import okhttp3.OkHttpClient;
+
 
 public class DotLottieReader {
-  private static final String TAG = DotLottieReader.class.getSimpleName();
+  private final String TAG = DotLottieReader.class.getSimpleName();
+  private final OkHttpClient client = new OkHttpClient();
+  private final Context context;
+  private Map<String, Integer> mResourceIdMap = new HashMap<>();
 
-  public static String readDotLottie(String uri) throws Exception {
-    Log.i(TAG, "Reading dotLottie from " + uri);
+  public DotLottieReader(Context context) {
+    this.context = context;
+  }
 
-    // Create an input stream to the file
-    InputStream in = null;
+  private int getResourceId(String name) {
+    if (mResourceIdMap.containsKey(name)) {
+      return mResourceIdMap.get(name);
+    }
+    int id = context.getResources().getIdentifier(
+      name,
+      "raw",
+      context.getPackageName()
+    );
+    mResourceIdMap.put(name, id);
+    return id;
+  }
+
+  public String readDotLottie(String uriRaw) throws Exception {
+    Log.i(TAG, "Reading dotLottie from " + uriRaw);
+
+    // Check if need to read from the network or from the file system
+    Uri uri = null;
+    int resourceId = 0;
     try {
-      if (uri.startsWith("http")) {
-        // Handle network resource
-        URL url = new URL(uri);
-        in = url.openStream();
+      uri = Uri.parse(uriRaw);
+    } catch (Exception e) {
+      // ignored
+    }
+    if (uri == null || uri.getScheme() == null) {
+      uri = null;
+      resourceId = getResourceId(uriRaw);
+    }
+
+    InputStream in;
+    try {
+      if (uri != null) {
+        in = client.newCall(new okhttp3.Request.Builder().url(uriRaw).build()).execute().body().byteStream();
+      } else if (resourceId > 0) {
+        in = context.getResources().openRawResource(resourceId);
       } else {
-        // Handle local file
-        File file = new File(uri);
-        in = new FileInputStream(file);
+        throw new Exception("Failed to read dotLottie. We expected a uri or a resource id.");
       }
     } catch (Exception e) {
       Log.e(TAG, "Failed to read dotLottie from " + uri, e);
