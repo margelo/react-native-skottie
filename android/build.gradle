@@ -41,8 +41,7 @@ static def findNodeModules(baseDir) {
   // Node's module resolution algorithm searches up to the root directory,
   // after which the base path will be null
   while (basePath) {
-    // TODO: remove the example/ here
-    def nodeModulesPath = Paths.get(basePath.toString(), "example/node_modules")
+    def nodeModulesPath = Paths.get(basePath.toString(), "node_modules")
     def reactNativePath = Paths.get(nodeModulesPath.toString(), "react-native")
     if (nodeModulesPath.toFile().exists() && reactNativePath.toFile().exists()) {
       return nodeModulesPath.toString()
