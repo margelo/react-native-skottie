@@ -4094,6 +4094,11 @@ rimraf@~2.6.2:
   dependencies:
     glob "^7.1.3"
 
+rive-react-native@^6.2.0:
+  version "6.2.0"
+  resolved "https://registry.yarnpkg.com/rive-react-native/-/rive-react-native-6.2.0.tgz#becd0620740eb49e695d7f6a070f664ce6ca693c"
+  integrity sha512-1ojHCMJokN56k5v7y4LxoUx3iKlcXzKCh8An9CL9fcDZF8jdazMgIy04JHxftBQocF+a8rt97yauSHNIp65bwg==
+
 safe-buffer@5.1.2, safe-buffer@~5.1.0, safe-buffer@~5.1.1:
   version "5.1.2"
   resolved "https://registry.yarnpkg.com/safe-buffer/-/safe-buffer-5.1.2.tgz#991ec69d296e0313747d59bdfd2b745c35f8828d"

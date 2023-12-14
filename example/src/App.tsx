@@ -24,6 +24,7 @@ import {
   withRepeat,
   withTiming,
 } from 'react-native-reanimated';
+import Rive from 'rive-react-native';
 
 const animations = {
   ...Animations,
@@ -255,8 +256,21 @@ function ExampleTypeSwitches({
   );
 }
 
+function RiveSimpleExample() {
+  return (
+    <Rive
+      style={styles.flex1}
+      resourceName="hands"
+      autoplay={true}
+      stateMachineName="State Machine 1"
+    />
+  );
+}
+
 export default function App() {
-  const [type, setType] = React.useState<'skottie' | 'lottie'>('skottie');
+  const [type, setType] = React.useState<'skottie' | 'lottie' | 'rive'>(
+    'skottie'
+  );
   const [exampleType, setExampleType] = React.useState<ExampleType>('default');
   const [animation, setAnimation] = React.useState<
     AnimationObject | undefined
@@ -288,6 +302,9 @@ export default function App() {
         case 'progress-controlled':
           return <LottieAnimation source={animation} />;
       }
+    }
+    if (type === 'rive') {
+      return <RiveSimpleExample />;
     }
 
     throw new Error('Invalid type');
@@ -329,6 +346,15 @@ export default function App() {
               />
             </View>
           ))}
+          <Text style={styles.heading}>Rive</Text>
+          <Button
+            title={'Simple Rive Hands example'}
+            onPress={() => {
+              setType('rive');
+              // This one doesn't really matter because rive is pulling it from the native res/raw:
+              setAnimation(Animations.Hands);
+            }}
+          />
         </ScrollView>
       ) : (
         <View style={styles.flex1}>
