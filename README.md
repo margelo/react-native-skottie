@@ -3,6 +3,17 @@
 Allows you to play lottie animations using the [Skottie module](https://skia.org/docs/user/modules/skottie/)
 for [`@shopify/react-native-skia`](https://github.com/Shopify/react-native-skia).
 
+## Highlights
+
+- ▶️ Supports Lottie files (JSON) and DotLottie files (.lottie)
+- 🤖 Especially for android it provides considerable performance gains:
+  - 📈 Uses Skia's GPU accelerated rendering
+  - 📉 Is less CPU intense than lottie-react-native
+  - 🏃 Higher frame rates that lottie-react-native
+
+![](./docs/perf_comparison.png)
+> Performance comparison from testing a complex animation on a low end (Geekbench ~350) Android device.
+
 ## Installation
 
 > [!IMPORTANT]
@@ -32,17 +43,6 @@ export default function App() {
   );
 }
 ```
-
-## Highlights
-
-- ▶️ Supports Lottie files (JSON) and DotLottie files (Zipped JSON)
-- 🤖 Especially for android it provides considerable performance gains:
-  - 📈 Uses Skia's GPU accelerated rendering
-  - 📉 Is less CPU intense than lottie-react-native
-  - 🏃 Higher frame rates that lottie-react-native
-
-![](./docs/perf_comparison.png)
-> Performance comparison from testing a complex animation on a low end (Geekbench ~350) Android device.
 
 ## Other examples
 
