@@ -19,23 +19,17 @@ yarn add react-native-skottie
 ```tsx
 import * as React from 'react';
 
-import { StyleSheet, SafeAreaView } from 'react-native';
-import { SkiaSkottieView } from 'react-native-skottie';
+import { SafeAreaView } from 'react-native';
+import { Skottie } from 'react-native-skottie';
 import HandsLottie from './Hands.json';
 
 export default function App() {
   return (
-    <SafeAreaView style={styles.flex1}>
+    <Skottie style={styles.flex1}>
       <SkiaSkottieView style={styles.flex1} source={HandsLottie} />
-    </SafeAreaView>
+    </Skottie>
   );
 }
-
-const styles = StyleSheet.create({
-  flex1: {
-    flex: 1,
-  },
-});
 ```
 
 ## Contributing

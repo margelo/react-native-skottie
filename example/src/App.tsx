@@ -9,9 +9,9 @@ import {
   Switch,
 } from 'react-native';
 import {
-  SkiaSkottieView,
+  Skottie,
   AnimationObject,
-  type SkiaSkottieViewRef,
+  type SkottieViewRef,
   SkottieAPI,
 } from 'react-native-skottie';
 import * as Animations from './animations';
@@ -32,7 +32,7 @@ const animations = {
 
 function SkottieAnimation({ source }: { source: AnimationObject }) {
   return (
-    <SkiaSkottieView
+    <Skottie
       resizeMode="contain"
       style={styles.flex1}
       source={source}
@@ -55,7 +55,7 @@ function LottieAnimation({ source }: { source: AnimationObject }) {
 }
 
 function SkottieImperativeAPI({ source }: { source: AnimationObject }) {
-  const skottieRef = React.useRef<SkiaSkottieViewRef>(null);
+  const skottieRef = React.useRef<SkottieViewRef>(null);
 
   return (
     <View style={styles.flex1}>
@@ -77,7 +77,7 @@ function SkottieImperativeAPI({ source }: { source: AnimationObject }) {
           skottieRef.current?.reset();
         }}
       />
-      <SkiaSkottieView
+      <Skottie
         ref={skottieRef}
         resizeMode="contain"
         style={styles.flex1}
@@ -167,7 +167,7 @@ function SkottiePropsAPI({ source }: { source: AnimationObject }) {
           setSpeed((p) => p + 1);
         }}
       />
-      <SkiaSkottieView
+      <Skottie
         resizeMode="contain"
         style={styles.flex1}
         source={source}
@@ -203,11 +203,7 @@ function SkottieProgressAPI({ source }: { source: AnimationObject }) {
   return (
     <View style={styles.flex1}>
       <Text style={styles.heading}>Progress controlled example</Text>
-      <SkiaSkottieView
-        source={animation}
-        progress={progress}
-        style={styles.flex1}
-      />
+      <Skottie source={animation} progress={progress} style={styles.flex1} />
     </View>
   );
 }
