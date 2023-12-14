@@ -14,6 +14,8 @@
     "lottie-react-native": "^6.4.1",
     "react": "18.2.0",
     "react-native": "0.72.7",
+    "react-native-performance": "^5.1.0",
+    "react-native-performance-stats": "^0.2.3",
     "react-native-reanimated": "3.6.1"
   },
   "devDependencies": {
