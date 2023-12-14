@@ -77,10 +77,10 @@
     "typescript": "^4.8.4"
   },
   "dependencies": {
-    "@shopify/react-native-skia": "^0.1.224"
+    "@shopify/react-native-skia": "^0.1.228"
   },
   "peerDependencies": {
-    "@shopify/react-native-skia": ">= 0.1.197",
+    "@shopify/react-native-skia": ">= 0.1.228",
     "react": "*",
     "react-native": "*",
     "react-native-reanimated": ">=2.0.0"

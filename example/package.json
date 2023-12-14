@@ -10,7 +10,7 @@
     "typescript": "tsc --noEmit"
   },
   "dependencies": {
-    "@shopify/react-native-skia": "^0.1.224",
+    "@shopify/react-native-skia": "^0.1.228",
     "lottie-react-native": "^6.4.1",
     "react": "18.2.0",
     "react-native": "0.72.7",

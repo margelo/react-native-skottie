@@ -379,12 +379,12 @@ PODS:
   - React-jsinspector (0.72.7)
   - React-logger (0.72.7):
     - glog
-  - react-native-skia (0.1.224):
+  - react-native-skia (0.1.228):
     - RCT-Folly (= 2021.07.22.00)
     - React
     - React-callinvoker
     - React-Core
-  - react-native-skia-skottie (0.3.0):
+  - react-native-skia-skottie (0.4.2):
     - React
     - React-Core
     - react-native-skia
@@ -722,8 +722,8 @@ SPEC CHECKSUMS:
   React-jsiexecutor: c49502e5d02112247ee4526bc3ccfc891ae3eb9b
   React-jsinspector: 8baadae51f01d867c3921213a25ab78ab4fbcd91
   React-logger: 8edc785c47c8686c7962199a307015e2ce9a0e4f
-  react-native-skia: 4371ab4c413a8feca859e2753f632e34111584b4
-  react-native-skia-skottie: 6f64f0efddb49fbe7be8351947b88765bad094d2
+  react-native-skia: b4bf1d37b6e34ce960f2bb3083266862e20be5ce
+  react-native-skia-skottie: 6289b83439ab6c87c2b722e3492f0383b5ff12f8
   React-NativeModulesApple: b6868ee904013a7923128892ee4a032498a1024a
   React-perflogger: 31ea61077185eb1428baf60c0db6e2886f141a5a
   React-RCTActionSheet: 392090a3abc8992eb269ef0eaa561750588fc39d
