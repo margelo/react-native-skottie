@@ -11,12 +11,8 @@ for [`@shopify/react-native-skia`](https://github.com/Shopify/react-native-skia)
   - 📉 Is less CPU intense than lottie-react-native
   - 🏃 Higher frame rates that lottie-react-native
 
-| Metric         | lottie-react-native                     | ✨ react-native-skottie ✨                     |
-|----------------|-----------------------------------------|----------------------------------------------|
-| Ø FPS          | 34                                      | 55 <span style="color:green">(+55%)</span>   |
-| Ø CPU usage    | 179%                                    | 147% <span style="color:green">(-18%)</span> |
-| High CPU usage | <span style="color:red">3.5s</span>/10s | None ✅                                       |
-| Ø Memory usage | 395 MB                                  | 449 MB <span style="color:red">(+14%)</span> |
+![](./docs/perf_comparison.png)
+> Performance comparison from testing a complex animation on a low end (Geekbench ~350) Android device.
 
 ## Installation
 
