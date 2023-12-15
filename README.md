@@ -9,7 +9,7 @@ for [`@shopify/react-native-skia`](https://github.com/Shopify/react-native-skia)
 - 🤖 Especially for android it provides considerable performance gains:
   - 📈 Uses Skia's GPU accelerated rendering
   - 📉 Is less CPU intense than lottie-react-native
-  - 🏃 Higher frame rates that lottie-react-native
+  - 🏃 Higher frame rates than lottie-react-native
 
 ![](./docs/perf_comparison_2.png)
 > The tests were conducted on a low end (Geekbench ~350) Android device running a release app 10 times showing a complex
