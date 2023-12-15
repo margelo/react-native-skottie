@@ -1,4 +1,10 @@
-# ▶️🌠 react-native-skottie
+<a href="https://margelo.io">
+  <picture>
+    <source media="(prefers-color-scheme: dark)" srcset="./docs/bg-dark.png" />
+    <source media="(prefers-color-scheme: light)" srcset="./docs/bg-light.png" />
+    <img alt="ReactNativeSkottie" src="./docs/bg-light.png" />
+  </picture>
+</a>
 
 Allows you to play lottie animations using the [Skottie module](https://skia.org/docs/user/modules/skottie/)
 for [`@shopify/react-native-skia`](https://github.com/Shopify/react-native-skia).
