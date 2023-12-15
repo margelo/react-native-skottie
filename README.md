@@ -40,7 +40,11 @@ import LottieAnimationFile from './animation.json';
 
 export default function App() {
   return (
-    <Skottie style={styles.flex1} source={LottieAnimationFile} />
+    <Skottie
+      style={styles.flex1}
+      source={LottieAnimationFile}
+      autoPlay={true}
+    />
   );
 }
 ```
@@ -122,6 +126,7 @@ export default function App() {
 <details>
   <summary>Controlled by reanimated</summary>
 
+<br />
 Note: React Natives Animated API is not supported yet.
 
 ```tsx
@@ -172,15 +177,15 @@ also a PR 🤝):
 
 ### Props
 
-| Prop name  | Type                                          | Default | Description                                                                                                                                                                   |
-|------------|-----------------------------------------------|---------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| source     | `number \| string \| JSONObject \| SkSkottie` | -       | The source of the animation. Can be a JSON file or a DotLottie file. Playing from web URLs is not supported yet. You can also pass a SkSkottie instance on your own, see API. |
-| autoPlay   | `boolean`                                     | `false` | If true, the animation will start playing as soon as it is ready.                                                                                                             |
-| loop       | `boolean`                                     | `true`  | If true, the animation will loop.                                                                                                                                             |
-| progress   | `number`                                      | `0`     | A value from 0 to 1 that controls the progress of the animation.                                                                                                              |
-| speed      | `number`                                      | `1`     | A value that controls the speed of the animation.                                                                                                                             |
-| style      | `ViewStyle`                                   | -       | The style of the animation.                                                                                                                                                   |
-| resizeMode | `ResizeMode`                                  | `cover` | The resize mode of the animation.                                                                                                                                             |
+| Prop name  | Type                                          | Default | Description                                                                                                                                                                                                         |
+|------------|-----------------------------------------------|---------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| source     | `number \| string \| JSONObject \| SkSkottie` | -       | The source of the animation. Can be a JSON file or a DotLottie file. Playing from web URLs is not supported yet. You can also pass a SkSkottie instance on your own, see API.                                       |
+| autoPlay   | `boolean`                                     | `false` | If true, the animation will start playing as soon as it is ready.                                                                                                                                                   |
+| loop       | `boolean`                                     | `true`  | If true, the animation will loop.                                                                                                                                                                                   |
+| progress   | `SharedValue<number>`                         | -       | A reanimated shared value from 0 to 1 that controls the progress of the animation. Note: if this is used neither the prop or imperative API will work, but you are responsible for controlling the animation state. |
+| speed      | `number`                                      | `1`     | A value that controls the speed of the animation.                                                                                                                                                                   |
+| style      | `ViewStyle`                                   | -       | The style of the animation.                                                                                                                                                                                         |
+| resizeMode | `ResizeMode`                                  | `cover` | The resize mode of the animation.                                                                                                                                                                                   |
 
 ### Ref
 
