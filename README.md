@@ -185,7 +185,7 @@ also a PR 🤝):
 | progress   | `SharedValue<number>`                         | -       | A reanimated shared value from 0 to 1 that controls the progress of the animation. Note: if this is used neither the prop or imperative API will work, but you are responsible for controlling the animation state. |
 | speed      | `number`                                      | `1`     | A value that controls the speed of the animation.                                                                                                                                                                   |
 | style      | `ViewStyle`                                   | -       | The style of the animation.                                                                                                                                                                                         |
-| resizeMode | `ResizeMode`                                  | `cover` | The resize mode of the animation.                                                                                                                                                                                   |
+| resizeMode | `ResizeMode` `(cover, contain, fill)`         | `cover` | The resize mode of the animation.                                                                                                                                                                                   |
 
 ### Ref
 
