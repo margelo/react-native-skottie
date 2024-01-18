@@ -50,9 +50,9 @@ jobs:
     strategy:
       matrix:
         path:
-          - "cpp"
-          - "android/cpp"
-          - "ios"
+          - "package/cpp"
+          - "package/android/cpp"
+          - "package/ios"
     steps:
       - uses: actions/checkout@v4
       - name: Run clang-format style check
