@@ -11,7 +11,6 @@
 [Skottie](https://skia.org/docs/user/modules/skottie/) is a high performance library for running [Lottie](https://airbnb.design/lottie/) animations in [Skia](https://skia.org).
 
 - 📄 Supports Lottie files (JSON) and DotLottie files (.lottie)
-- 🧵 Renders on a separate Thread to free up the UI Thread
 - 📈 Uses Skia's GPU-acceleration
 - 📉 Lower CPU usage
 - 🏃 Higher frame rates
