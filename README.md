@@ -6,20 +6,22 @@
   </picture>
 </a>
 
-Allows you to play lottie animations using the [Skottie module](https://skia.org/docs/user/modules/skottie/)
-for [`@shopify/react-native-skia`](https://github.com/Shopify/react-native-skia).
+### Features
 
-## Highlights
+[Skottie](https://skia.org/docs/user/modules/skottie/) is a high performance library for running [Lottie](https://airbnb.design/lottie/) animations in [Skia](https://skia.org).
 
-- ▶️ Supports Lottie files (JSON) and DotLottie files (.lottie)
-- 🤖 Especially for android it provides considerable performance gains:
-  - 📈 Uses Skia's GPU accelerated rendering
-  - 📉 Is less CPU intense than lottie-react-native
-  - 🏃 Higher frame rates than lottie-react-native
+- 📄 Supports Lottie files (JSON) and DotLottie files (.lottie)
+- 🧵 Renders on a separate Thread to free up the UI Thread
+- 📈 Uses Skia's GPU-acceleration
+- 📉 Lower CPU usage
+- 🏃 Higher frame rates
+- 🔗 Based on [`@shopify/react-native-skia`](https://github.com/Shopify/react-native-skia)
 
-![](./docs/perf_comparison_2.png)
-> The tests were conducted on a low end (Geekbench ~350) Android device running a release app 10 times showing a complex
-> animation on app start.
+## Benchmark
+
+We benchmarked react-native-skottie against [lottie-react-native](https://github.com/lottie-react-native/lottie-react-native) on a low-end Android device running a complex animation and saw a +63% improvement in frame rates.
+
+![Screenshot of a Performance Comparison with lottie](./docs/perf_comparison_2.png)
 
 ## Installation
 
@@ -214,18 +216,12 @@ played. The API is of type `SkottieAPI` and provides the following methods:
 |-----------------------|----------------------------------------------------------------------|
 | SkottieAPI.createFrom | Creates a Skottie instance from a source (string, json, file import) |
 
-## Considerations
 
-- Skottie has a higher memory usage than lottie-react-native or rive (but therefor might gives you better frames
-  performance on low end devices.)
-- Skottie depends on react-native-skia, which will increase your app size by a couple of megabytes (check their docs).
-  However, in our test cases it didn't had a impact on app start time when using hermes.
-- While skottie matches the UI frames performance on iOS it might uses more CPU than other alternatives. However, on
-  Android it uses less CPU than lottie-react-native and gives you better frames performance.
-- On iOS the react-native performance monitor or the XCode debugger may show a high memory usage. **This is
-  a bug in the measurement of memory usage.** We are still investigating why it happens.
-  <br />If you use XCode's memory profiler you will see that the memory usage is actually much lower than reported, same
-  when testing with `mach_task_basic_info_data_t taskInfo`.
+### Adopting at scale
+
+This library is provided _as is_.
+
+If you stumble upon bugs or need help implementing react-native-skottie, reach out to us at https://margelo.io!
 
 ## Contributing
 
