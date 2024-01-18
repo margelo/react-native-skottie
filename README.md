@@ -17,29 +17,22 @@
 - 🏃 Higher frame rates
 - 🔗 Based on [`@shopify/react-native-skia`](https://github.com/Shopify/react-native-skia)
 
-## Benchmark
+### Benchmark
 
 We benchmarked react-native-skottie against [lottie-react-native](https://github.com/lottie-react-native/lottie-react-native) on a low-end Android device running a complex animation and saw a +63% improvement in frame rates.
 
 ![Screenshot of a Performance Comparison with lottie](./docs/perf_comparison_2.png)
 
-## Installation
+### Installation
 
 > [!IMPORTANT]
-> `react-native-skottie` depends on `@shopify/react-native-skia`, so make sure you install it first! (minimum required
-> version: 0.1.228)
-
-```sh
-npm install react-native-skottie
-```
-
-or
+> `react-native-skottie` depends on `@shopify/react-native-skia`, so make sure you install it first! (minimum required version: 0.1.228)
 
 ```sh
 yarn add react-native-skottie
 ```
 
-## Simple usage example
+### Usage
 
 ```tsx
 import { Skottie } from 'react-native-skottie';
@@ -57,7 +50,7 @@ export default function App() {
 }
 ```
 
-## Other examples
+### Advanced usage
 
 <details>
   <summary>Imperative ref API</summary>
