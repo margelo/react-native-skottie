@@ -499,10 +499,6 @@ PODS:
     - React-jsi (= 0.72.7)
     - React-logger (= 0.72.7)
     - React-perflogger (= 0.72.7)
-  - rive-react-native (6.2.0):
-    - React-Core
-    - RiveRuntime (= 5.5.1)
-  - RiveRuntime (5.5.1)
   - RNReanimated (3.6.1):
     - RCT-Folly (= 2021.07.22.00)
     - React-Core
@@ -579,7 +575,6 @@ DEPENDENCIES:
   - React-runtimescheduler (from `../node_modules/react-native/ReactCommon/react/renderer/runtimescheduler`)
   - React-utils (from `../node_modules/react-native/ReactCommon/react/utils`)
   - ReactCommon/turbomodule/core (from `../node_modules/react-native/ReactCommon`)
-  - rive-react-native (from `../node_modules/rive-react-native`)
   - RNReanimated (from `../node_modules/react-native-reanimated`)
   - Yoga (from `../node_modules/react-native/ReactCommon/yoga`)
 
@@ -598,7 +593,6 @@ SPEC REPOS:
     - libevent
     - lottie-ios
     - OpenSSL-Universal
-    - RiveRuntime
     - SocketRocket
     - SSZipArchive
     - YogaKit
@@ -687,8 +681,6 @@ EXTERNAL SOURCES:
     :path: "../node_modules/react-native/ReactCommon/react/utils"
   ReactCommon:
     :path: "../node_modules/react-native/ReactCommon"
-  rive-react-native:
-    :path: "../node_modules/rive-react-native"
   RNReanimated:
     :path: "../node_modules/react-native-reanimated"
   Yoga:
@@ -731,7 +723,7 @@ SPEC CHECKSUMS:
   React-jsinspector: 8baadae51f01d867c3921213a25ab78ab4fbcd91
   React-logger: 8edc785c47c8686c7962199a307015e2ce9a0e4f
   react-native-skia: b4bf1d37b6e34ce960f2bb3083266862e20be5ce
-  react-native-skia-skottie: 5fe0692bc16829b51ab0acde38894fb57ce12c82
+  react-native-skia-skottie: 9ae8ce45416f1c300a34586a6dd27e41241864cb
   React-NativeModulesApple: b6868ee904013a7923128892ee4a032498a1024a
   React-perflogger: 31ea61077185eb1428baf60c0db6e2886f141a5a
   React-RCTActionSheet: 392090a3abc8992eb269ef0eaa561750588fc39d
@@ -749,8 +741,6 @@ SPEC CHECKSUMS:
   React-runtimescheduler: 7649c3b46c8dee1853691ecf60146a16ae59253c
   React-utils: 56838edeaaf651220d1e53cd0b8934fb8ce68415
   ReactCommon: 5f704096ccf7733b390f59043b6fa9cc180ee4f6
-  rive-react-native: 82eb809ebec7ab5059982dc1a2b6097c74d722ea
-  RiveRuntime: b57830ff73f406f3b4022f457b16690535ca4d05
   RNReanimated: fdbaa9c964bbab7fac50c90862b6cc5f041679b9
   SocketRocket: f32cd54efbe0f095c4d7594881e52619cfe80b17
   SSZipArchive: fe6a26b2a54d5a0890f2567b5cc6de5caa600aef
@@ -759,4 +749,4 @@ SPEC CHECKSUMS:
 
 PODFILE CHECKSUM: 4a2b76cef28439172b20806673f2a3efa2685a8b
 
-COCOAPODS: 1.14.3
+COCOAPODS: 1.12.1
