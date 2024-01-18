@@ -127,7 +127,7 @@ export default function App() {
   <summary>Controlled by reanimated</summary>
 
 <br />
-Note: React Natives Animated API is not supported yet.
+Note: React Native Animated API is not supported yet.
 
 ```tsx
 import { Skottie, SkottieAPI } from 'react-native-skottie';
