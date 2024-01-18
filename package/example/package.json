@@ -14,8 +14,7 @@
     "lottie-react-native": "^6.4.1",
     "react": "18.2.0",
     "react-native": "0.72.7",
-    "react-native-reanimated": "3.6.1",
-    "rive-react-native": "^6.2.0"
+    "react-native-reanimated": "3.6.1"
   },
   "devDependencies": {
     "@babel/core": "^7.20.0",
