@@ -10,6 +10,9 @@ on:
 jobs:
   lint:
     runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ./package
     steps:
       - name: Checkout
         uses: actions/checkout@v3
@@ -25,6 +28,9 @@ jobs:
 
   test:
     runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ./package
     steps:
       - name: Checkout
         uses: actions/checkout@v3
@@ -37,24 +43,30 @@ jobs:
 
   check-clang:
     name: Check clang-format
+    defaults:
+      run:
+        working-directory: ./package
     runs-on: ubuntu-latest
     strategy:
       matrix:
         path:
-          - 'cpp'
-          - 'android/cpp'
-          - 'ios'
+          - "cpp"
+          - "android/cpp"
+          - "ios"
     steps:
       - uses: actions/checkout@v4
       - name: Run clang-format style check
         uses: mrousavy/clang-format-action@v1
         with:
-          clang-format-version: '16'
+          clang-format-version: "16"
           check-path: ${{ matrix.path }}
           clang-format-style-path: cpp/.clang-format
 
   build:
     runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ./package
     steps:
       - name: Checkout
         uses: actions/checkout@v3
