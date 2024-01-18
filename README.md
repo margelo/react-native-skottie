@@ -209,6 +209,9 @@ played. The API is of type `SkottieAPI` and provides the following methods:
 |-----------------------|----------------------------------------------------------------------|
 | SkottieAPI.createFrom | Creates a Skottie instance from a source (string, json, file import) |
 
+### Community Discord
+
+[Join the Margelo Community Discord](https://discord.gg/6CSHz2qAvA) to chat about react-native-fast-tflite or other Margelo libraries.
 
 ### Adopting at scale
 
