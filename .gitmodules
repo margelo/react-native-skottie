@@ -1,4 +1,4 @@
 [submodule "externals/skia"]
-	path = externals/skia
+	path = package/externals/skia
 	url = https://chromium.googlesource.com/skia/
 	branch = chrome/m119
