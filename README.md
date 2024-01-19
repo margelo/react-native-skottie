@@ -210,7 +210,7 @@ played. The API is of type `SkottieAPI` and provides the following methods:
 
 ### Community Discord
 
-[Join the Margelo Community Discord](https://discord.gg/6CSHz2qAvA) to chat about react-native-fast-tflite or other Margelo libraries.
+[Join the Margelo Community Discord](https://discord.gg/6CSHz2qAvA) to chat about react-native-skottie or other Margelo libraries.
 
 ### Adopting at scale
 
