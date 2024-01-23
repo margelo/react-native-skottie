@@ -145,8 +145,6 @@ dependencies {
   implementation(project(":shopify_react-native-skia")) {
     exclude group: "com.facebook.react", module: "react-native"
   }
-  // TODO: not sure if this is still needed, now that we have the task dependency at the bottom?
-  implementation(project(":react-native-reanimated"))
 }
 
 // Resolves "LOCAL_SRC_FILES points to a missing file, Check that libfb.so exists or that its path is correct".

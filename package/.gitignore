@@ -71,3 +71,7 @@ lib/
 
 # Skia headers
 cpp/skia
+
+# Expo example
+exampleExpo
+exampleExpo2
