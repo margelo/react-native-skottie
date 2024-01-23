@@ -1,6 +1,6 @@
 import '@shopify/react-native-skia'; // Important: register skia module
 import type { NativeSkiaViewProps } from '@shopify/react-native-skia/lib/typescript/src';
-import { SkiaViewNativeId } from '@shopify/react-native-skia';
+import { SkiaViewNativeId } from '@shopify/react-native-skia/src/views/SkiaViewNativeId';
 import React, {
   useCallback,
   useEffect,
@@ -213,7 +213,6 @@ const assertSkiaViewApi = () => {
     SkiaViewApi === null ||
     SkiaViewApi.setJsiProperty === null ||
     SkiaViewApi.callJsiMethod === null ||
-    SkiaViewApi.registerValuesInView === null ||
     SkiaViewApi.requestRedraw === null ||
     SkiaViewApi.makeImageSnapshot === null
   ) {

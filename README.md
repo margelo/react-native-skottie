@@ -25,7 +25,7 @@ We benchmarked react-native-skottie against [lottie-react-native](https://github
 ### Installation
 
 > [!IMPORTANT]
-> `react-native-skottie` depends on `@shopify/react-native-skia`, so make sure you install it first! (minimum required version: 0.1.228)
+> `react-native-skottie` depends on `@shopify/react-native-skia`, so make sure you install it first! (minimum required version: 0.1.230)
 
 ```sh
 yarn add react-native-skottie

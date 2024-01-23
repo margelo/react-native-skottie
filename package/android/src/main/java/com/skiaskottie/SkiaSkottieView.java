@@ -14,7 +14,7 @@ public class SkiaSkottieView extends SkiaBaseView {
     private HybridData mHybridData;
 
     public SkiaSkottieView(Context context) {
-        super(context, true);
+        super(context);
         RNSkiaModule skiaModule = ((ReactContext) context).getNativeModule(RNSkiaModule.class);
         mHybridData = initHybrid(skiaModule.getSkiaManager());
     }
