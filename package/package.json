@@ -36,7 +36,7 @@
     "example": "yarn --cwd example",
     "bootstrap": "yarn example && yarn install && yarn example pods",
     "clean": "del-cli android/build example/android/build example/android/app/build example/ios/build",
-    "dev:module-copy-skia-headers": "yarn rimraf ./cpp/skia/modules/ && mkdir -p ./cpp/skia/modules/skottie/include && mkdir -p ./cpp/skia/modules/skottie/src/text && cp -a ./externals/skia/modules/skottie/include/. ./cpp/skia/modules/skottie/include && cp ./externals/skia/modules/skottie/src/text/SkottieShaper.h ./cpp/skia/modules/skottie/src/text/SkottieShaper.h",
+    "dev:module-copy-skia-headers": "yarn rimraf ./cpp/skia/modules/ && mkdir -p ./cpp/skia/modules/skottie/include && mkdir -p ./cpp/skia/modules/skottie/src/text && cp -a ./externals/skia/modules/skottie/include/. ./cpp/skia/modules/skottie/include && cp ./externals/skia/modules/skottie/src/text/SkottieShaper.h ./cpp/skia/modules/skottie/src/text/SkottieShaper.h && cp ./externals/skia/modules/skottie/src/SkottieValue.h ./cpp/skia/modules/skottie/src/SkottieValue.h",
     "check-cpp": "scripts/clang-format.sh"
   },
   "keywords": [
