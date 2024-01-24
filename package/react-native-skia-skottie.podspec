@@ -27,13 +27,11 @@ Pod::Spec.new do |s|
     "HEADER_SEARCH_PATHS" => "\"$(PODS_TARGET_SRCROOT)/cpp/\"/** \"#{skiaPath}/cpp/**\" "
   }
 
-  # TODO: This path needs to be relative. Right now, its looking from the perspective
-  #       of the podpsec file that is inside the libaries project root filder.
-  #       For integration in external projects that needs to be different!
-  skiaPath2 = "node_modules/@shopify/react-native-skia"
+  pwd = Pathname.new(Dir.pwd)
+  relative_skia_path = Pathname.new(skiaPath).relative_path_from(pwd).to_s
   s.ios.vendored_frameworks = [
-    "#{skiaPath2}/libs/ios/libsksg.xcframework",
-    "#{skiaPath2}/libs/ios/libskottie.xcframework",
+    "#{relative_skia_path}/libs/ios/libsksg.xcframework",
+    "#{relative_skia_path}/libs/ios/libskottie.xcframework",
   ]
 
   s.source_files = "ios/**/*.{h,m,mm}", "cpp/**/*.{h,cpp}"
