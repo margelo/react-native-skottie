@@ -18,20 +18,25 @@ Pod::Spec.new do |s|
   s.platforms    = { :ios => "12.4" }
   s.source       = { :git => "https://github.com/margelo/react-native-skia-skottie.git", :tag => "#{s.version}" }
 
-  # TODO: what does that do, why do we need it?
-  s.requires_arc = true
-
   s.pod_target_xcconfig = {
     "GCC_PREPROCESSOR_DEFINITIONS" => "$(inherited) SK_METAL=1 SK_GANESH=1", # TODO: do i need this?
     "CLANG_CXX_LANGUAGE_STANDARD" => "c++17",
     "HEADER_SEARCH_PATHS" => "\"$(PODS_TARGET_SRCROOT)/cpp/\"/** \"#{skiaPath}/cpp/**\" "
   }
 
-  pwd = Pathname.new(Dir.pwd)
-  relative_skia_path = Pathname.new(skiaPath).relative_path_from(pwd).to_s
+  # Unfortunately vendored_frameworks doesn't support relative parent paths, or absolute paths.
+  # So we have to copy the frameworks to a path on the same level as the podspec.
+  s.prepare_command = <<-CMD
+    mkdir -p libs/
+    rm -rf libs/ios
+    mkdir -p libs/ios
+    cp -r "#{skiaPath}/libs/ios/libsksg.xcframework" libs/ios/
+    cp -r "#{skiaPath}/libs/ios/libskottie.xcframework" libs/ios/
+  CMD
+
   s.ios.vendored_frameworks = [
-    "#{relative_skia_path}/libs/ios/libsksg.xcframework",
-    "#{relative_skia_path}/libs/ios/libskottie.xcframework",
+    "libs/ios/libsksg.xcframework",
+    "libs/ios/libskottie.xcframework"
   ]
 
   s.source_files = "ios/**/*.{h,m,mm}", "cpp/**/*.{h,cpp}"
