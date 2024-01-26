@@ -25,3 +25,8 @@ runs:
         yarn install --cwd ./package/example --frozen-lockfile
         yarn install --cwd ./package --frozen-lockfile
       shell: bash
+
+    - name: Setup library
+      run: |
+        yarn --cwd ./package dev:module-copy-skia-headers
+      shell: bash
