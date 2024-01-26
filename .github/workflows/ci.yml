@@ -147,7 +147,7 @@ jobs:
           working-directory: ./package/example
 
       - name: Pod install
-        run: cd example && bundle exec pod install
+        run: pwd && cd example && bundle exec pod install
 
       - name: Build iOS
         run: cd example && npx react-native build-ios --configuration Debug
