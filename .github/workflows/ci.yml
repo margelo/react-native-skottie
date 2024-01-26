@@ -130,7 +130,9 @@ jobs:
           working-directory: ./package/example
 
       - name: Pod install
-        run: pwd && cd example && bundle exec pod install
+        run: pwd && bundle exec pod install
+        working-directory: ./package/example/ios
 
       - name: Build iOS
-        run: cd example && npx react-native build-ios --configuration Debug
+        run: yes | npx react-native build-ios --configuration Debug
+        working-directory: ./package/example
