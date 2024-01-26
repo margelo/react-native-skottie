@@ -76,3 +76,63 @@ jobs:
 
       - name: Build package
         run: yarn prepack
+
+  android-debug:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ./package
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Setup
+        uses: ./.github/actions/setup
+
+      - name: Build Android
+        run: cd example && npx react-native build-android --mode=debug
+
+  android-release:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ./package
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Setup
+        uses: ./.github/actions/setup
+
+      - name: Build Android
+        run: cd example && npx react-native build-android --mode=release
+
+        # - name: Setup Java
+        # uses: actions/setup-java@v3
+        # with:
+        #   distribution: "oracle"
+        #   java-version: "17"
+
+  ios-debug:
+    runs-on: macos-latest
+    defaults:
+      run:
+        working-directory: ./package
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Setup
+        uses: ./.github/actions/setup
+
+      - uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: "2.7"
+          bundler-cache: true
+          working-directory: ./package/example
+
+      - name: Pod install
+        run: cd example && bundle exec pod install
+
+      - name: Build iOS
+        run: cd example && npx react-native build-ios --configuration Debug
