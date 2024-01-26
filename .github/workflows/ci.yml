@@ -16,6 +16,8 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v3
+        with:
+          submodules: true
 
       - name: Setup
         uses: ./.github/actions/setup
@@ -34,6 +36,8 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v3
+        with:
+          submodules: true
 
       - name: Setup
         uses: ./.github/actions/setup
@@ -55,6 +59,9 @@ jobs:
           - "package/ios"
     steps:
       - uses: actions/checkout@v4
+        with:
+          submodules: true
+
       - name: Run clang-format style check
         uses: mrousavy/clang-format-action@v1
         with:
@@ -70,6 +77,8 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v3
+        with:
+          submodules: true
 
       - name: Setup
         uses: ./.github/actions/setup
@@ -85,6 +94,8 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v3
+        with:
+          submodules: true
 
       - name: Setup
         uses: ./.github/actions/setup
@@ -100,6 +111,8 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v3
+        with:
+          submodules: true
 
       - name: Setup
         uses: ./.github/actions/setup
@@ -121,6 +134,8 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v3
+        with:
+          submodules: true
 
       - name: Setup
         uses: ./.github/actions/setup
