@@ -71,7 +71,7 @@ lib/
 libs/
 
 # Skia headers
-cpp/skia
+cpp/modules
 
 # Expo example
 exampleExpo
