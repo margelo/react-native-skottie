@@ -41,8 +41,8 @@ function SkottieAnimation({ source }: { source: AnimationObject }) {
         source={source}
         autoPlay={true}
         loop={loop}
-        onAnimationFinish={() => {
-          console.log('onAnimationFinish');
+        onAnimationFinish={(isCancelled) => {
+          console.log('onAnimationFinish', { isCancelled });
         }}
       />
       <View style={styles.switchOption}>

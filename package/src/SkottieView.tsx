@@ -58,7 +58,7 @@ export type SkottieViewProps = NativeSkiaViewProps & {
    * Called when the animation is finished playing.
    * Note: this will be called multiple times if the animation is looping.
    */
-  onAnimationFinish?: () => void;
+  onAnimationFinish?: (isCancelled?: boolean) => void;
 };
 
 export type SkottieViewRef = {
@@ -109,7 +109,7 @@ export const Skottie = React.forwardRef<SkottieViewRef, SkottieViewProps>(
 
     //#region Callbacks / Imperative API
     const start = useCallback(
-      (onAnimationFinish?: () => void) => {
+      (onAnimationFinish?: (isCancelled?: boolean) => void) => {
         assertSkiaViewApi();
         SkiaViewApi.setJsiProperty(nativeId, 'start', {
           onAnimationFinish,

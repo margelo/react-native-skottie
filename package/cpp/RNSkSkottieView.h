@@ -106,6 +106,10 @@ public:
     _onFinishAnimation = onFinishAnimation;
   }
 
+  std::shared_ptr<jsi::Function> getOnFinishAnimation() {
+    return _onFinishAnimation;
+  }
+
 private:
   bool performDraw(std::shared_ptr<RNSkCanvasProvider> canvasProvider) {
     canvasProvider->renderToCanvas([=](SkCanvas* canvas) {
@@ -159,7 +163,10 @@ private:
         _totalPausedDuration = 0.0;
 
         if (_onFinishAnimation != nullptr) {
-          _onFinishAnimation->call(*_platformContext->getJsRuntime(), jsi::Value::undefined(), 0);
+          jsi::Runtime* jsRuntime = _platformContext->getJsRuntime();
+          if (jsRuntime != nullptr) {
+            _onFinishAnimation->call(*jsRuntime, jsi::Value(false));
+          }
         }
       }
 
@@ -187,6 +194,20 @@ public:
   RNSkSkottieView(std::shared_ptr<RNSkPlatformContext> context, std::shared_ptr<RNSkCanvasProvider> canvasProvider)
       : RNSkView(context, canvasProvider,
                  std::make_shared<RNSkSkottieRenderer>(std::bind(&RNSkSkottieView::requestRedraw, this), context)) {}
+
+  ~RNSkSkottieView() {
+    auto jsRuntime = getPlatformContext()->getJsRuntime();
+    // Call the onAnimationFinish callback
+    if (getRenderer() == nullptr || jsRuntime == nullptr) {
+      return;
+    }
+    auto onFinishAnimation = std::static_pointer_cast<RNSkSkottieRenderer>(getRenderer())->getOnFinishAnimation();
+    if (onFinishAnimation == nullptr) {
+      return;
+    }
+
+    onFinishAnimation->call(*jsRuntime, jsi::Value(true));
+  }
 
   void setJsiProperties(std::unordered_map<std::string, RNJsi::JsiValueWrapper>& props) override {
 
