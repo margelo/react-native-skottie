@@ -24,6 +24,7 @@ import {
   withRepeat,
   withTiming,
 } from 'react-native-reanimated';
+import { useFont } from '@shopify/react-native-skia';
 
 const animations = {
   ...Animations,
@@ -31,6 +32,8 @@ const animations = {
 };
 
 function SkottieAnimation({ source }: { source: AnimationObject }) {
+  const font = useFont(require('./sable.ttf'));
+
   return (
     <Skottie
       resizeMode="contain"
