@@ -102,9 +102,9 @@ public:
     _animation->getObject()->seekFrame(0);
   }
 
-    void setOnFinishAnimation(std::function<void()> onFinishAnimation) {
-        _onFinishAnimation = onFinishAnimation;
-    }
+  void setOnFinishAnimation(std::function<void()> onFinishAnimation) {
+    _onFinishAnimation = onFinishAnimation;
+  }
 
 private:
   bool performDraw(std::shared_ptr<RNSkCanvasProvider> canvasProvider) {
@@ -159,7 +159,7 @@ private:
         _totalPausedDuration = 0.0;
 
         if (_onFinishAnimation != nullptr) {
-            _onFinishAnimation();
+          _onFinishAnimation();
         }
       }
 
@@ -171,7 +171,7 @@ private:
 
   std::shared_ptr<RNSkPlatformContext> _platformContext;
   std::shared_ptr<JsiSkSkottie> _animation;
-    std::function<void()> _onFinishAnimation;
+  std::function<void()> _onFinishAnimation;
   SkRect _srcR;
   std::string _resizeMode = "contain";
   double _startTime = -1.0;
@@ -181,9 +181,9 @@ private:
 
 class RNSkSkottieView : public RNSkView {
 private:
-    std::shared_ptr<jsi::Function> onAnimationFinishPtr = nullptr;
-    bool isLooping = true;
-    
+  std::shared_ptr<jsi::Function> onAnimationFinishPtr = nullptr;
+  bool isLooping = true;
+
 public:
   /**
    * Constructor
@@ -192,22 +192,22 @@ public:
       : RNSkView(context, canvasProvider,
                  std::make_shared<RNSkSkottieRenderer>(std::bind(&RNSkSkottieView::requestRedraw, this), context)) {
 
-          // Set the onFinish callback
-          std::static_pointer_cast<RNSkSkottieRenderer>(getRenderer())->setOnFinishAnimation([this](){
-              if (onAnimationFinishPtr != nullptr) {
-                  auto runtime = getPlatformContext()->getJsRuntime();
-                  onAnimationFinishPtr->call(*runtime, jsi::Value(false));
-              }
-              
-              if (!isLooping) {
-                  resetAnimation();
-              }
-          });
+    // Set the onFinish callback
+    std::static_pointer_cast<RNSkSkottieRenderer>(getRenderer())->setOnFinishAnimation([this]() {
+      if (onAnimationFinishPtr != nullptr) {
+        auto runtime = getPlatformContext()->getJsRuntime();
+        onAnimationFinishPtr->call(*runtime, jsi::Value(false));
       }
-    
+
+      if (!isLooping) {
+        resetAnimation();
+      }
+    });
+  }
+
   void resetAnimation() {
-      std::static_pointer_cast<RNSkSkottieRenderer>(getRenderer())->resetPlayback();
-      setDrawingMode(RNSkDrawingMode::Default);
+    std::static_pointer_cast<RNSkSkottieRenderer>(getRenderer())->resetPlayback();
+    setDrawingMode(RNSkDrawingMode::Default);
   }
 
   ~RNSkSkottieView() {
@@ -234,7 +234,6 @@ public:
       std::sort(sortedProps.begin(), sortedProps.end(),
                 [](const auto& a, const auto& b) { return !(a.first == "start") && (b.first == "start" || a.first < b.first); });
     }
-      
 
     for (auto& prop : sortedProps) {
       if (prop.first == "src" && prop.second.getType() == RNJsi::JsiWrapperValueType::HostObject) {
@@ -257,7 +256,7 @@ public:
           // Use a shared pointer to manage the lifecycle of the JSI function
           onAnimationFinishPtr = std::make_shared<jsi::Function>(std::move(onAnimationFinish));
         } else {
-            onAnimationFinishPtr = nullptr;
+          onAnimationFinishPtr = nullptr;
         }
 
         std::static_pointer_cast<RNSkSkottieRenderer>(getRenderer())->setStartTime(RNSkTime::GetSecs());
@@ -273,7 +272,7 @@ public:
         std::static_pointer_cast<RNSkSkottieRenderer>(getRenderer())->resetPlayback();
         setDrawingMode(RNSkDrawingMode::Default); // This will also trigger a requestRedraw
       } else if (prop.first == "loop") {
-          isLooping = prop.second.getAsBool();
+        isLooping = prop.second.getAsBool();
       }
     }
   }
