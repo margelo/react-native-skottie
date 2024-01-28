@@ -192,7 +192,6 @@ export const Skottie = React.forwardRef<SkottieViewRef, SkottieViewProps>(
       }
     }, [shouldPause, pause]);
 
-    // TODO: loop mode isn't supported yet, it will always loop right now
     // Toggle loop mode
     useEffect(() => {
       assertSkiaViewApi();
