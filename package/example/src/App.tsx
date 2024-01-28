@@ -17,7 +17,7 @@ import {
 import * as Animations from './animations';
 import LottieView from 'lottie-react-native';
 import DotLottieAnimation from './animations/Hands.lottie';
-import { useEffect, useMemo } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import {
   Easing,
   useSharedValue,
@@ -31,14 +31,25 @@ const animations = {
 };
 
 function SkottieAnimation({ source }: { source: AnimationObject }) {
+  const [loop, setIsLoop] = useState(true);
+
   return (
-    <Skottie
-      resizeMode="contain"
-      style={styles.flex1}
-      source={source}
-      autoPlay={true}
-      loop={true}
-    />
+    <View style={styles.flex1}>
+      <Skottie
+        resizeMode="contain"
+        style={styles.flex1}
+        source={source}
+        autoPlay={true}
+        loop={loop}
+        onAnimationFinish={() => {
+          console.log('onAnimationFinish');
+        }}
+      />
+      <View style={styles.switchOption}>
+        <Switch value={loop} onValueChange={() => setIsLoop((p) => !p)} />
+        <Text>Looping</Text>
+      </View>
+    </View>
   );
 }
 

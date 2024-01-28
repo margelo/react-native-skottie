@@ -108,10 +108,15 @@ export const Skottie = React.forwardRef<SkottieViewRef, SkottieViewProps>(
     }, [nativeId, progress, props.debug]);
 
     //#region Callbacks / Imperative API
-    const start = useCallback(() => {
-      assertSkiaViewApi();
-      SkiaViewApi.setJsiProperty(nativeId, 'start', null);
-    }, [nativeId]);
+    const start = useCallback(
+      (onAnimationFinish?: () => void) => {
+        assertSkiaViewApi();
+        SkiaViewApi.setJsiProperty(nativeId, 'start', {
+          onAnimationFinish,
+        });
+      },
+      [nativeId]
+    );
 
     const pause = useCallback(() => {
       assertSkiaViewApi();
@@ -162,14 +167,15 @@ export const Skottie = React.forwardRef<SkottieViewRef, SkottieViewProps>(
     const initialShouldPlayRef = useRef(shouldPlay);
     useEffect(() => {
       if (shouldPlay) {
-        start();
+        start(props.loop ? undefined : props.onAnimationFinish);
       }
 
+      // TODO: support speed prop
       // const speed = props.speed ?? 1;
       // const duration = (skottieAnimation.duration * 1000) / speed;
-      // const doneCallback = props.onAnimationFinish;
     }, [
       progress,
+      props.loop,
       props.autoPlay,
       props.onAnimationFinish,
       props.speed,

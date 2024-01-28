@@ -102,6 +102,10 @@ public:
     _animation->getObject()->seekFrame(0);
   }
 
+  void setOnFinishAnimation(std::shared_ptr<jsi::Function> onFinishAnimation) {
+    _onFinishAnimation = onFinishAnimation;
+  }
+
 private:
   bool performDraw(std::shared_ptr<RNSkCanvasProvider> canvasProvider) {
     canvasProvider->renderToCanvas([=](SkCanvas* canvas) {
@@ -153,6 +157,10 @@ private:
         // Reset paused values for cleanup
         _lastPauseTime = 0.0;
         _totalPausedDuration = 0.0;
+
+        if (_onFinishAnimation != nullptr) {
+          _onFinishAnimation->call(*_platformContext->getJsRuntime(), jsi::Value::undefined(), 0);
+        }
       }
 
       _animation->getObject()->seekFrameTime(timePassed);
@@ -163,6 +171,7 @@ private:
 
   std::shared_ptr<RNSkPlatformContext> _platformContext;
   std::shared_ptr<JsiSkSkottie> _animation;
+  std::shared_ptr<jsi::Function> _onFinishAnimation;
   SkRect _srcR;
   std::string _resizeMode = "contain";
   double _startTime = -1.0;
@@ -206,6 +215,19 @@ public:
         std::static_pointer_cast<RNSkSkottieRenderer>(getRenderer())->setProgress(progressValue);
         requestRedraw();
       } else if (prop.first == "start") {
+        // The prop.second can be an object with a onAnimationFinish function
+        auto options = prop.second.getAsObject();
+        auto runtime = getPlatformContext()->getJsRuntime();
+        auto function = options->getProperty(*runtime, "onAnimationFinish");
+        if (!function.isUndefined()) {
+          auto onAnimationFinish = options->getPropertyAsFunction(*runtime, "onAnimationFinish");
+          // Use a shared pointer to manage the lifecycle of the JSI function
+          auto onAnimationFinishPtr = std::make_shared<jsi::Function>(std::move(onAnimationFinish));
+          std::static_pointer_cast<RNSkSkottieRenderer>(getRenderer())->setOnFinishAnimation(onAnimationFinishPtr);
+        } else {
+          std::static_pointer_cast<RNSkSkottieRenderer>(getRenderer())->setOnFinishAnimation(nullptr);
+        }
+
         std::static_pointer_cast<RNSkSkottieRenderer>(getRenderer())->setStartTime(RNSkTime::GetSecs());
         setDrawingMode(RNSkDrawingMode::Continuous);
       } else if (prop.first == "pause") {
