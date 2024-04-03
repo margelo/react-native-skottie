@@ -359,6 +359,7 @@ export default function App() {
 const styles = StyleSheet.create({
   flex1: {
     flex: 1,
+    backgroundColor: 'white',
   },
   heading: {
     marginTop: 16,
