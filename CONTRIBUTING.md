@@ -6,11 +6,21 @@ We want this community to be friendly and respectful to each other. Please follo
 
 ## Development workflow
 
-To get started with the project, run `yarn` in the root directory to install the required dependencies for each package:
+To get started with the project, run `yarn` in the `package` directory to install the required dependencies for each package:
 
 ```sh
 yarn
 ```
+
+## Install external headers
+
+Make sure `skia` submodule headers are copied in the `example` directory
+
+```sh
+yarn dev:module-copy-skia-headers
+```
+
+## 
 
 > While it's possible to use [`npm`](https://github.com/npm/cli), the tooling is built around [`yarn`](https://classic.yarnpkg.com/), so you'll have an easier time if you use `yarn` for development.
 
