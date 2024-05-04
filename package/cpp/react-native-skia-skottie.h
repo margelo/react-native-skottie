@@ -1,7 +1,7 @@
 #pragma once
 
-#include <jsi/jsi.h>
 #include "RNSkPlatformContext.h"
+#include <jsi/jsi.h>
 
 namespace RNSkia {
 using namespace facebook;

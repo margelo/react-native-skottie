@@ -5,9 +5,9 @@
 #include "RNSkPlatformContext.h"
 #include "RNSkSkottieView.h"
 
+#include "RNSkiaModule.h"
 #include "SkiaManager.h"
 #include "SkiaUIView.h"
-#include "RNSkiaModule.h"
 
 @implementation SkiaSkottieViewManager
 
