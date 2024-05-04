@@ -10,21 +10,9 @@ set(build_DIR ${CMAKE_SOURCE_DIR}/build)
 
 file(GLOB libfbjni_include_DIRS "${build_DIR}/fbjni-*-headers.jar/")
 
-# Consume shared libraries and headers from prefabs
+# We need to find packages since from RN 0.71 binaries are prebuilt
 find_package(fbjni REQUIRED CONFIG)
 find_package(ReactAndroid REQUIRED CONFIG)
-find_package(shopify_react-native-skia REQUIRED CONFIG)
-
-set(JSI_LIB ReactAndroid::jsi)
-message("-- JSI     : " ${JSI_LIB})
-set(FBJNI_LIBRARY fbjni::fbjni)
-message("-- FBJNI   : " ${FBJNI_LIBRARY})
-set(REACT_LIB ReactAndroid::react_nativemodule_core)
-message("-- REACT   : " ${REACT_LIB})
-set(TURBOMODULES_LIB "ReactAndroid::turbomodulejsijni")
-message("-- TURBO   : " ${TURBOMODULES_LIB})
-set(RNSKIA_LIB shopify_react-native-skia::rnskia)
-message("-- RNSKIA  : " ${RNSKIA_LIB})
 
 add_library(${PACKAGE_NAME}
         SHARED
@@ -51,53 +39,8 @@ include_directories(
         "${NODE_MODULES_DIR}/react-native/ReactCommon/react/nativemodule/core"
         "${NODE_MODULES_DIR}/react-native/ReactAndroid/src/main/java/com/facebook/react/turbomodule/core/jni"
 
-        # include skia headers
-        "${NODE_MODULES_DIR}/@shopify/react-native-skia/cpp/rnskia"
-        "${NODE_MODULES_DIR}/@shopify/react-native-skia/cpp/skia/include/config/"
-        "${NODE_MODULES_DIR}/@shopify/react-native-skia/cpp/skia/include/core/"
-        "${NODE_MODULES_DIR}/@shopify/react-native-skia/cpp/skia/include/effects/"
-        "${NODE_MODULES_DIR}/@shopify/react-native-skia/cpp/skia/include/utils/"
-        "${NODE_MODULES_DIR}/@shopify/react-native-skia/cpp/skia/include/pathops/"
-        "${NODE_MODULES_DIR}/@shopify/react-native-skia/cpp/skia/modules/"
-        "${NODE_MODULES_DIR}/@shopify/react-native-skia/cpp/skia/modules/skparagraph/include/"
-        "${NODE_MODULES_DIR}/@shopify/react-native-skia/cpp/skia/include/"
-        "${NODE_MODULES_DIR}/@shopify/react-native-skia/cpp/skia"
-
-        "${NODE_MODULES_DIR}/@shopify/react-native-skia/cpp/api"
-        "${NODE_MODULES_DIR}/@shopify/react-native-skia/cpp/jsi"
-        "${NODE_MODULES_DIR}/@shopify/react-native-skia/cpp/rnskia"
-        "${NODE_MODULES_DIR}/@shopify/react-native-skia/cpp/rnskia/values"
-        "${NODE_MODULES_DIR}/@shopify/react-native-skia/cpp/rnskia/dom"
-        "${NODE_MODULES_DIR}/@shopify/react-native-skia/cpp/rnskia/dom/base"
-        "${NODE_MODULES_DIR}/@shopify/react-native-skia/cpp/rnskia/dom/nodes"
-        "${NODE_MODULES_DIR}/@shopify/react-native-skia/cpp/rnskia/dom/props"
-        "${NODE_MODULES_DIR}/@shopify/react-native-skia/cpp/utils"
-
         ${libfbjni_include_DIRS}
 )
-
-# Import prebuilt skia skottie library
-set(SKIA_LIBS_PATH "${NODE_MODULES_DIR}/@shopify/react-native-skia/libs/android/${ANDROID_ABI}")
-
-set(SKIA_LIB "skia")
-add_library(skia STATIC IMPORTED)
-set_property(TARGET skia PROPERTY IMPORTED_LOCATION "${SKIA_LIBS_PATH}/libskia.a")
-
-set(SKIA_MODULE_SKOTTIE_LIB "skottie")
-add_library(skottie STATIC IMPORTED)
-set_property(TARGET skottie PROPERTY IMPORTED_LOCATION "${SKIA_LIBS_PATH}/libskottie.a")
-
-set(SKIA_SKSHAPER_LIB "skshaper")
-add_library(skshaper STATIC IMPORTED)
-set_property(TARGET skshaper PROPERTY IMPORTED_LOCATION "${SKIA_LIBS_PATH}/libskshaper.a")
-
-set(SKIA_MODULE_SKSG_LIB "sksg")
-add_library(sksg STATIC IMPORTED)
-set_property(TARGET sksg PROPERTY IMPORTED_LOCATION "${SKIA_LIBS_PATH}/libsksg.a")
-
-set(SKIA_MODULE_SKUNICODE_LIB "skunicode")
-add_library(skunicode STATIC IMPORTED)
-set_property(TARGET skunicode PROPERTY IMPORTED_LOCATION "${SKIA_LIBS_PATH}/libskunicode.a")
 
 # Android Log lib
 find_library(
@@ -108,19 +51,39 @@ find_library(
 # Link
 target_link_libraries(
         ${PACKAGE_NAME}
-        ${LOG_LIB}
-        ${FBJNI_LIBRARY}
-        ${REACT_LIB}
-        ${JSI_LIB}
-        ${TURBOMODULES_LIB}
-        ${SKIA_MODULE_SKOTTIE_LIB}
-        ${SKIA_SKSHAPER_LIB}
-        ${SKIA_MODULE_SKSG_LIB}
-        ${SKIA_MODULE_SKUNICODE_LIB}
-        ${SKIA_LIB}
-        ${RNSKIA_LIB}
+        ${LOG_LIB}                          # <-- Logcat logger
+        android                             # <-- Android JNI core
+        fbjni::fbjni                        # <-- fbjni
+        ReactAndroid::react_nativemodule_core # <-- RN: Native module core
+        ReactAndroid::jsi                   # <-- RN: JSI
+        ReactAndroid::reactnativejni        # <-- RN: React Native JNI bindings
+        ReactAndroid::runtimeexecutor       # <-- RN: Runtime executor
+        ReactAndroid::turbomodulejsijni     # <-- RN: TurboModule JSI JNI bindings
         -ljnigraphics
         -lGLESv2
         -lEGL
         -landroid
 )
+
+# 1. Link react-native-skia
+message("react-native-skottie: Linking react-native-skia...")
+find_package(shopify_react-native-skia REQUIRED CONFIG)
+target_link_libraries(
+        ${PACKAGE_NAME}
+        shopify_react-native-skia::rnskia
+)
+
+# 2. Add react-native-skia to path so it itself can find it's relative imports
+get_target_property(RN_SKIA_INCLUDE_DIR shopify_react-native-skia::rnskia INTERFACE_INCLUDE_DIRECTORIES)
+message("react-native-skottie: react-native-skia include directory: ${RN_SKIA_INCLUDE_DIR}")
+include_directories("${RN_SKIA_INCLUDE_DIR}/react-native-skia")
+
+# 3. Link skia itself
+set(RN_SKIA_DIR "${NODE_MODULES_DIR}/@shopify/react-native-skia")
+message("react-native-skottie: react-native-skia directory: ${RN_SKIA_DIR}")
+file(GLOB skiaLibraries "${RN_SKIA_DIR}/libs/android/${ANDROID_ABI}/*.a")
+foreach(skiaLibrary ${skiaLibraries})
+  message("react-native-skottie: Linking ${skiaLibrary}...")
+  target_link_libraries(${PACKAGE_NAME} "${skiaLibrary}")
+endforeach()
+

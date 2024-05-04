@@ -24,9 +24,9 @@
 #pragma clang diagnostic ignored "-Wdocumentation"
 
 #include "JsiSkSkottie.h"
-#include "SkBBHFactory.h"
-#include "SkCanvas.h"
-#include "SkPictureRecorder.h"
+#include <include/core/SkBBHFactory.h>
+#include <include/core/SkCanvas.h>
+#include <include/core/SkPictureRecorder.h>
 #include <algorithm>
 #include <modules/skottie/include/Skottie.h>
 #include <vector>

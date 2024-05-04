@@ -116,12 +116,20 @@ android {
     excludes = [
       "META-INF",
       "META-INF/**",
-//      "**/libc++_shared.so",
-//      "**/libfbjni.so",
-      "**/librnskia.so",
+      "**/libc++_shared.so",
+      "**/libfbjni.so",
       "**/libjsi.so",
-      "**/libreact_nativemodule_core.so",
+      "**/libfolly_json.so",
+      "**/libfolly_runtime.so",
+      "**/libglog.so",
+      "**/libhermes.so",
+      "**/libhermes-executor-debug.so",
+      "**/libhermes_executor.so",
+      "**/libreactnativejni.so",
       "**/libturbomodulejsijni.so",
+      "**/libreact_nativemodule_core.so",
+      "**/libjscexecutor.so",
+      "**/libruntimeexecutor.so"
     ]
     sourceSets {
       main {
