@@ -1,6 +1,6 @@
 #pragma once
 
-#include <RNSkPlatformContext.h>
+#include <react-native-skia/RNSkPlatformContext.h>
 #include <jsi/jsi.h>
 
 namespace RNSkia {
