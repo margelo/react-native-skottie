@@ -76,3 +76,11 @@ cpp/modules
 # Expo example
 exampleExpo
 exampleExpo2
+
+# Yarn
+.yarn/*
+!.yarn/patches
+!.yarn/plugins
+!.yarn/releases
+!.yarn/sdks
+!.yarn/versions
