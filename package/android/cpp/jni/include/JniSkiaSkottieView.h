@@ -7,14 +7,15 @@
 #include <jni.h>
 #include <jsi/jsi.h>
 
-#include <JniSkiaBaseView.h>
-#include <JniSkiaManager.h>
-#include <RNSkAndroidView.h>
-#include <RNSkSkottieView.h>
+#include <react-native-skia/JniSkiaBaseView.h>
+#include <react-native-skia/JniSkiaManager.h>
+#include <react-native-skia/RNSkAndroidView.h>
 
 #include <android/native_window.h>
 #include <android/native_window_jni.h>
 #include <fbjni/detail/Hybrid.h>
+
+#include "RNSkSkottieView.h"
 
 namespace RNSkia {
 namespace jsi = facebook::jsi;
