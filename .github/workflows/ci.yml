@@ -83,6 +83,13 @@ jobs:
       - name: Setup
         uses: ./.github/actions/setup
 
+      # Use java 17:
+      - name: Setup Java
+        uses: actions/setup-java@v3
+        with:
+          distribution: "adopt"
+          java-version: "17"
+
       - name: Build Android
         run: cd example && npx react-native build-android --mode=debug
 
@@ -100,14 +107,15 @@ jobs:
       - name: Setup
         uses: ./.github/actions/setup
 
+      # Use java 17:
+      - name: Setup Java
+        uses: actions/setup-java@v3
+        with:
+          distribution: "adopt"
+          java-version: "17"
+
       - name: Build Android
         run: cd example && npx react-native build-android --mode=release
-
-        # - name: Setup Java
-        # uses: actions/setup-java@v3
-        # with:
-        #   distribution: "oracle"
-        #   java-version: "17"
 
   ios-debug:
     runs-on: macos-latest
@@ -134,5 +142,5 @@ jobs:
         working-directory: ./package/example/ios
 
       - name: Build iOS
-        run: yes | npx react-native build-ios --configuration Debug
+        run: yes | npx react-native build-ios --mode Debug
         working-directory: ./package/example
