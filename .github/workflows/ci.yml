@@ -142,5 +142,5 @@ jobs:
         working-directory: ./package/example/ios
 
       - name: Build iOS
-        run: yes | npx react-native build-ios --configuration Debug
+        run: yes | npx react-native build-ios --mode Debug
         working-directory: ./package/example
