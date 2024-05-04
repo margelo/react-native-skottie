@@ -1,7 +1,7 @@
 #pragma once
 
 #include <jsi/jsi.h>
-#include <react-native-skia/RNSkPlatformContext.h>
+#include "RNSkPlatformContext.h"
 
 namespace RNSkia {
 using namespace facebook;

@@ -10,12 +10,12 @@
 
 #include <jsi/jsi.h>
 
-#include <react-native-skia/JsiSkPicture.h>
-#include <react-native-skia/JsiValueWrapper.h>
-#include <react-native-skia/RNSkInfoParameter.h>
-#include <react-native-skia/RNSkLog.h>
-#include <react-native-skia/RNSkPlatformContext.h>
-#include <react-native-skia/RNSkView.h>
+#include "JsiSkPicture.h"
+#include "JsiValueWrapper.h"
+#include "RNSkInfoParameter.h"
+#include "RNSkLog.h"
+#include "RNSkPlatformContext.h"
+#include "RNSkView.h"
 
 #include "JsiSkSkottie.h"
 #include "RNSkTime.h"

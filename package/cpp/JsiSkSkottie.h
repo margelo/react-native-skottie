@@ -2,8 +2,8 @@
 
 #include <jsi/jsi.h>
 
-#include <react-native-skia/JsiSkCanvas.h>
-#include <react-native-skia/JsiSkHostObjects.h>
+#include "JsiSkCanvas.h"
+#include "JsiSkHostObjects.h"
 
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wdocumentation"
