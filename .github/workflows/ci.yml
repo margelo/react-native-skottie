@@ -83,6 +83,13 @@ jobs:
       - name: Setup
         uses: ./.github/actions/setup
 
+      # Use java 17:
+      - name: Setup Java
+        uses: actions/setup-java@v3
+        with:
+          distribution: "adopt"
+          java-version: "17"
+
       - name: Build Android
         run: cd example && npx react-native build-android --mode=debug
 
