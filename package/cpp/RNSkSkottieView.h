@@ -10,24 +10,24 @@
 
 #include <jsi/jsi.h>
 
-#include <react-native-skia/JsiValueWrapper.h>
-#include <react-native-skia/RNSkView.h>
 #include <react-native-skia/JsiSkPicture.h>
+#include <react-native-skia/JsiValueWrapper.h>
 #include <react-native-skia/RNSkInfoParameter.h>
 #include <react-native-skia/RNSkLog.h>
 #include <react-native-skia/RNSkPlatformContext.h>
+#include <react-native-skia/RNSkView.h>
 
+#include "JsiSkSkottie.h"
 #include "RNSkTime.h"
 #include "RNSkTimingInfo.h"
-#include "JsiSkSkottie.h"
 
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wdocumentation"
 
+#include <algorithm>
 #include <include/core/SkBBHFactory.h>
 #include <include/core/SkCanvas.h>
 #include <include/core/SkPictureRecorder.h>
-#include <algorithm>
 #include <modules/skottie/include/Skottie.h>
 #include <vector>
 
