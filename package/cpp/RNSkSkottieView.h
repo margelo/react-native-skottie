@@ -105,10 +105,10 @@ public:
   void setOnFinishAnimation(std::function<void()> onFinishAnimation) {
     _onFinishAnimation = onFinishAnimation;
   }
-    
-    bool isAnimationFinished() {
-        return _timePassed == 0.0;
-    }
+
+  bool isAnimationFinished() {
+    return _timePassed == 0.0;
+  }
 
 private:
   bool performDraw(std::shared_ptr<RNSkCanvasProvider> canvasProvider) {
@@ -181,8 +181,8 @@ private:
   double _startTime = -1.0;
   double _lastPauseTime = 0.0;
   double _totalPausedDuration = 0.0;
-    // The amount of time the animation has played so far.
-    double _timePassed = 0.0;
+  // The amount of time the animation has played so far.
+  double _timePassed = 0.0;
 };
 
 class RNSkSkottieView : public RNSkView {
@@ -227,13 +227,13 @@ public:
     if (getRenderer() == nullptr || jsRuntime == nullptr || onAnimationFinishPtr == nullptr) {
       return;
     }
-      
-      std::shared_ptr<RNSkSkottieRenderer> renderer = std::static_pointer_cast<RNSkSkottieRenderer>(getRenderer());
-      if (renderer->isAnimationFinished()) {
-          return;
-      }
 
-      // The animation wasn't finished, notify that it got cancelled:
+    std::shared_ptr<RNSkSkottieRenderer> renderer = std::static_pointer_cast<RNSkSkottieRenderer>(getRenderer());
+    if (renderer->isAnimationFinished()) {
+      return;
+    }
+
+    // The animation wasn't finished, notify that it got cancelled:
     if (platformContext->isOnJavascriptThread()) {
       onAnimationFinishPtr->call(*jsRuntime, jsi::Value(true));
     } else {
@@ -257,17 +257,17 @@ public:
                 [](const auto& a, const auto& b) { return !(a.first == "start") && (b.first == "start" || a.first < b.first); });
     }
 
-      std::shared_ptr<RNSkSkottieRenderer> renderer = std::static_pointer_cast<RNSkSkottieRenderer>(getRenderer());
+    std::shared_ptr<RNSkSkottieRenderer> renderer = std::static_pointer_cast<RNSkSkottieRenderer>(getRenderer());
     for (auto& prop : sortedProps) {
       if (prop.first == "src" && prop.second.getType() == RNJsi::JsiWrapperValueType::HostObject) {
-          renderer->setSrc(prop.second.getAsHostObject());
+        renderer->setSrc(prop.second.getAsHostObject());
         renderImmediate(); // Draw the first frame
       } else if (prop.first == "scaleType") {
-          renderer->setResizeMode(prop.second.getAsString());
+        renderer->setResizeMode(prop.second.getAsString());
       } else if (prop.first == "setProgress") {
         // Get first argument as number as it contains the updated value
         auto progressValue = prop.second.getAsNumber();
-          renderer->setProgress(progressValue);
+        renderer->setProgress(progressValue);
         requestRedraw();
       } else if (prop.first == "start") {
         // The prop.second can be an object with a onAnimationFinish function
@@ -308,19 +308,19 @@ public:
           //       or we find a way to call the _callInvoker sync
           platformContext->runOnJavascriptThread(installOnAnimationFinishCallback);
         }
-          
-          // Actually start the rendering:
-          renderer->setStartTime(RNSkTime::GetSecs());
-          setDrawingMode(RNSkDrawingMode::Continuous);
+
+        // Actually start the rendering:
+        renderer->setStartTime(RNSkTime::GetSecs());
+        setDrawingMode(RNSkDrawingMode::Continuous);
       } else if (prop.first == "pause") {
-          if (renderer->isPaused()) {
+        if (renderer->isPaused()) {
           continue;
         }
 
         setDrawingMode(RNSkDrawingMode::Default);
-          renderer->pause();
+        renderer->pause();
       } else if (prop.first == "reset") {
-          renderer->resetPlayback();
+        renderer->resetPlayback();
         setDrawingMode(RNSkDrawingMode::Default); // This will also trigger a requestRedraw
       } else if (prop.first == "loop") {
         isLooping = prop.second.getAsBool();
