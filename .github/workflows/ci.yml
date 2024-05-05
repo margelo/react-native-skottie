@@ -141,6 +141,19 @@ jobs:
         run: pwd && bundle exec pod install
         working-directory: ./package/example/ios
 
-      - name: Build iOS
-        run: yes | npx react-native build-ios --mode Debug
+      - name: Install xcpretty
+        run: gem install xcpretty
         working-directory: ./package/example
+
+      - name: Build iOS
+        working-directory: ./package/example
+        run: "set -o pipefail && xcodebuild \
+          CC=clang CPLUSPLUS=clang++ LD=clang LDPLUSPLUS=clang++ \
+          -derivedDataPath build -UseModernBuildSystem=YES \
+          -workspace SkiaSkottieExample.xcworkspace \
+          -scheme SkiaSkottieExample \
+          -sdk iphonesimulator \
+          -configuration Debug \
+          -destination 'platform=iOS Simulator,name=iPhone 11 Pro' \
+          build \
+          CODE_SIGNING_ALLOWED=NO | xcpretty"
