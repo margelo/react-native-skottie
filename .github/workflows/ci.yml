@@ -137,6 +137,14 @@ jobs:
           bundler-cache: true
           working-directory: ./package/example
 
+      - name: Restore Pods cache
+        uses: actions/cache@v4
+        with:
+          path: ./package/example/ios/Pods
+          key: ${{ runner.os }}-pods-${{ hashFiles('**/Podfile.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-pods-
+
       - name: Pod install
         run: pwd && bundle exec pod install
         working-directory: ./package/example/ios
