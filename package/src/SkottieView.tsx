@@ -41,6 +41,7 @@ export type SkottieViewProps = NativeSkiaViewProps & {
 
   /**
    * A boolean flag indicating whether or not the animation should loop.
+   * @default false
    */
   loop?: boolean;
 
@@ -195,7 +196,7 @@ export const Skottie = React.forwardRef<SkottieViewRef, SkottieViewProps>(
     // Toggle loop mode
     useEffect(() => {
       assertSkiaViewApi();
-      SkiaViewApi.setJsiProperty(nativeId, 'loop', props.loop);
+      SkiaViewApi.setJsiProperty(nativeId, 'loop', Boolean(props.loop));
     }, [nativeId, props.loop]);
     //#endregion
 
