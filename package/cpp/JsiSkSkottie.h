@@ -8,7 +8,7 @@
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wdocumentation"
 
-#include <modules/skottie/include/Skottie.h>
+#include "modules/skottie/include/Skottie.h"
 
 #pragma clang diagnostic pop
 

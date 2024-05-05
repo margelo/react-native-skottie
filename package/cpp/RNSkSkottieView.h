@@ -184,6 +184,10 @@ private:
   std::shared_ptr<jsi::Function> onAnimationFinishPtr = nullptr;
   bool isLooping = true;
 
+  std::shared_ptr<RNSkSkottieView> shared() {
+    return std::dynamic_pointer_cast<RNSkSkottieView>(RNSkView::shared_from_this());
+  }
+
 public:
   /**
    * Constructor
@@ -211,13 +215,19 @@ public:
   }
 
   ~RNSkSkottieView() {
-    auto jsRuntime = getPlatformContext()->getJsRuntime();
+    std::shared_ptr<RNSkPlatformContext> platformContext = getPlatformContext();
+    auto jsRuntime = platformContext->getJsRuntime();
     // Call the onAnimationFinish callback
     if (getRenderer() == nullptr || jsRuntime == nullptr || onAnimationFinishPtr == nullptr) {
       return;
     }
 
-    onAnimationFinishPtr->call(*jsRuntime, jsi::Value(true));
+    if (platformContext->isOnJavascriptThread()) {
+      onAnimationFinishPtr->call(*jsRuntime, jsi::Value(true));
+    } else {
+      std::shared_ptr<jsi::Function> onAnimationFinish = onAnimationFinishPtr;
+      platformContext->runOnJavascriptThread([jsRuntime, onAnimationFinish]() { onAnimationFinish->call(*jsRuntime, jsi::Value(true)); });
+    }
   }
 
   void setJsiProperties(std::unordered_map<std::string, RNJsi::JsiValueWrapper>& props) override {
@@ -247,20 +257,47 @@ public:
         std::static_pointer_cast<RNSkSkottieRenderer>(getRenderer())->setProgress(progressValue);
         requestRedraw();
       } else if (prop.first == "start") {
-        // The prop.second can be an object with a onAnimationFinish function
-        auto options = prop.second.getAsObject();
-        auto runtime = getPlatformContext()->getJsRuntime();
-        auto function = options->getProperty(*runtime, "onAnimationFinish");
-        if (!function.isUndefined()) {
-          auto onAnimationFinish = options->getPropertyAsFunction(*runtime, "onAnimationFinish");
-          // Use a shared pointer to manage the lifecycle of the JSI function
-          onAnimationFinishPtr = std::make_shared<jsi::Function>(std::move(onAnimationFinish));
-        } else {
-          onAnimationFinishPtr = nullptr;
-        }
-
         std::static_pointer_cast<RNSkSkottieRenderer>(getRenderer())->setStartTime(RNSkTime::GetSecs());
         setDrawingMode(RNSkDrawingMode::Continuous);
+
+        // The prop.second can be an object with a onAnimationFinish function
+        auto options = prop.second.getAsObject();
+        std::shared_ptr<RNSkPlatformContext> platformContext = getPlatformContext();
+
+        if (platformContext == nullptr) {
+          throw new std::runtime_error("Platform context is null");
+        }
+
+        // Create a lambda that sets the onAnimationFinish callback
+        std::weak_ptr<RNSkSkottieView> weakSelf = shared();
+        auto installOnAnimationFinishCallback = [=]() {
+          std::shared_ptr<RNSkSkottieView> strongSelf = weakSelf.lock();
+          if (!strongSelf) {
+            RNSkLogger::logToConsole(
+                "Failed to obtain strongSelf in installOnAnimationFinishCallback. Can't install onAnimationFinish callback.");
+            return;
+          }
+
+          auto runtime = platformContext->getJsRuntime();
+          auto function = options->getProperty(*runtime, "onAnimationFinish");
+          if (!function.isUndefined()) {
+            auto onAnimationFinish = options->getPropertyAsFunction(*runtime, "onAnimationFinish");
+            // Use a shared pointer to manage the lifecycle of the JSI function
+            strongSelf->onAnimationFinishPtr = std::make_shared<jsi::Function>(std::move(onAnimationFinish));
+          } else {
+            strongSelf->onAnimationFinishPtr = nullptr;
+          }
+        };
+
+        // We can only call the runtime on the JS thread.
+        // And we might be called from the UI thread here.
+        if (platformContext->isOnJavascriptThread()) {
+          installOnAnimationFinishCallback();
+        } else {
+          // TODO: note, this is async and potentially requires us to use a lock
+          //       or we find a way to call the _callInvoker sync
+          platformContext->runOnJavascriptThread(installOnAnimationFinishCallback);
+        }
       } else if (prop.first == "pause") {
         if (std::static_pointer_cast<RNSkSkottieRenderer>(getRenderer())->isPaused()) {
           continue;
