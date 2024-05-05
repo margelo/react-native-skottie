@@ -146,7 +146,7 @@ jobs:
         working-directory: ./package/example
 
       - name: Build iOS
-        working-directory: ./package/example
+        working-directory: ./package/example/ios
         run: "set -o pipefail && xcodebuild \
           CC=clang CPLUSPLUS=clang++ LD=clang LDPLUSPLUS=clang++ \
           -derivedDataPath build -UseModernBuildSystem=YES \
