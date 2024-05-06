@@ -41,7 +41,7 @@ export type SkottieViewProps = NativeSkiaViewProps & {
 
   /**
    * A boolean flag indicating whether or not the animation should loop.
-   * @default false
+   * @default true
    */
   loop?: boolean;
 
@@ -71,6 +71,7 @@ export type SkottieViewRef = {
 export const Skottie = React.forwardRef<SkottieViewRef, SkottieViewProps>(
   (props, ref) => {
     const nativeId = useRef(SkiaViewNativeId.current++).current;
+    const loop = props.loop ?? true;
 
     const skottieAnimation = useMemo(() => {
       if (typeof props.source === 'object' && 'fps' in props.source) {
@@ -168,22 +169,13 @@ export const Skottie = React.forwardRef<SkottieViewRef, SkottieViewProps>(
     const initialShouldPlayRef = useRef(shouldPlay);
     useEffect(() => {
       if (shouldPlay) {
-        start(props.loop ? undefined : props.onAnimationFinish);
+        start(loop ? undefined : props.onAnimationFinish);
       }
 
       // TODO: support speed prop
       // const speed = props.speed ?? 1;
       // const duration = (skottieAnimation.duration * 1000) / speed;
-    }, [
-      progress,
-      props.loop,
-      props.autoPlay,
-      props.onAnimationFinish,
-      props.speed,
-      shouldPlay,
-      skottieAnimation.duration,
-      start,
-    ]);
+    }, [loop, props.onAnimationFinish, shouldPlay, start]);
 
     // Pause the animation
     const shouldPause = progress == null && !props.autoPlay;
@@ -196,8 +188,8 @@ export const Skottie = React.forwardRef<SkottieViewRef, SkottieViewProps>(
     // Toggle loop mode
     useEffect(() => {
       assertSkiaViewApi();
-      SkiaViewApi.setJsiProperty(nativeId, 'loop', Boolean(props.loop));
-    }, [nativeId, props.loop]);
+      SkiaViewApi.setJsiProperty(nativeId, 'loop', loop);
+    }, [nativeId, loop]);
     //#endregion
 
     const { debug = false, ...viewProps } = props;
