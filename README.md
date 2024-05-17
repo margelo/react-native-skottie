@@ -208,6 +208,20 @@ played. The API is of type `SkottieAPI` and provides the following methods:
 |-----------------------|----------------------------------------------------------------------|
 | SkottieAPI.createFrom | Creates a Skottie instance from a source (string, json, file import) |
 
+### Android
+
+#### Proguard
+
+If you're using Proguard, make sure to add the following rule at `proguard-rules.pro`
+
+```
+# for skia, if you haven't add it
+-keep class com.shopify.reactnative.skia.** { *; }
+
+# for skottie
+-keep class com.skiaskottie.** { *; }
+```
+
 ### Community Discord
 
 [Join the Margelo Community Discord](https://discord.gg/6CSHz2qAvA) to chat about react-native-skottie or other Margelo libraries.
