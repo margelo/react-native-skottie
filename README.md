@@ -31,7 +31,7 @@ We benchmarked react-native-skottie against [lottie-react-native](https://github
 yarn add react-native-skottie
 ```
 
-For Android release build, check out the [note below.](#android)
+For Android release build, check out the [note.](#android)
 
 ### Usage
 
