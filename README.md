@@ -31,19 +31,7 @@ We benchmarked react-native-skottie against [lottie-react-native](https://github
 yarn add react-native-skottie
 ```
 
-### Android
-
-#### Proguard
-
-If you're using Proguard, make sure to add the following rule at `proguard-rules.pro`
-
-```
-# for skia, if you haven't add it
--keep class com.shopify.reactnative.skia.** { *; }
-
-# for skottie
--keep class com.skiaskottie.** { *; }
-```
+For Android release build, check out the [note below.](#android)
 
 ### Usage
 
@@ -221,6 +209,20 @@ played. The API is of type `SkottieAPI` and provides the following methods:
 | Method name           | Description                                                          |
 |-----------------------|----------------------------------------------------------------------|
 | SkottieAPI.createFrom | Creates a Skottie instance from a source (string, json, file import) |
+
+### Android
+
+#### Proguard
+
+If you're using Proguard, make sure to add the following rule at `proguard-rules.pro`
+
+```
+# for skia, if you haven't add it
+-keep class com.shopify.reactnative.skia.** { *; }
+
+# for skottie
+-keep class com.skiaskottie.** { *; }
+```
 
 ### Community Discord
 
