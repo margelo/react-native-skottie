@@ -214,7 +214,7 @@ played. The API is of type `SkottieAPI` and provides the following methods:
 
 #### Proguard
 
-If you're using Proguard, make sure to add the following rule in `proguard-rules.pro`
+If you're using Proguard, make sure to add the following rule in `proguard-rules.pro`:
 
 ```
 # for skia, if you haven't add it
