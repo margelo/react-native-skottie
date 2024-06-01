@@ -149,7 +149,7 @@ export default function App() {
   useEffect(() => {
     // Will play the animation once …
     progress.value = withTiming(1, {
-      duration: duration,
+      duration: duration * 1000,
       easing: Easing.linear,
     });
     // … if you want to loop you could use withRepeat
