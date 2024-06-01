@@ -63,7 +63,7 @@ export type SkottieViewProps = NativeSkiaViewProps & {
 };
 
 export type SkottieViewRef = {
-  play: () => void;
+  play: (onAnimationFinish?: (isCancelled?: boolean) => void) => void;
   pause: () => void;
   reset: () => void;
 };
