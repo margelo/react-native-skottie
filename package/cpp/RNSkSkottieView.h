@@ -12,7 +12,6 @@
 
 #include "JsiSkPicture.h"
 #include "JsiValueWrapper.h"
-#include "RNSkInfoParameter.h"
 #include "RNSkLog.h"
 #include "RNSkPlatformContext.h"
 #include "RNSkView.h"
