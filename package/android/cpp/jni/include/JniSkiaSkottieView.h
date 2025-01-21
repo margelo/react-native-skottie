@@ -35,32 +35,25 @@ public:
                     makeNativeMethod("surfaceAvailable", JniSkiaSkottieView::surfaceAvailable),
                     makeNativeMethod("surfaceDestroyed", JniSkiaSkottieView::surfaceDestroyed),
                     makeNativeMethod("surfaceSizeChanged", JniSkiaSkottieView::surfaceSizeChanged),
-                    makeNativeMethod("setMode", JniSkiaSkottieView::setMode),
                     makeNativeMethod("setDebugMode", JniSkiaSkottieView::setDebugMode),
-                    makeNativeMethod("updateTouchPoints", JniSkiaSkottieView::updateTouchPoints),
                     makeNativeMethod("registerView", JniSkiaSkottieView::registerView),
                     makeNativeMethod("unregisterView", JniSkiaSkottieView::unregisterView)});
   }
 
 protected:
-  void updateTouchPoints(jni::JArrayDouble touches) override {
-    JniSkiaBaseView::updateTouchPoints(touches);
-  }
 
-  void surfaceAvailable(jobject surface, int width, int height) override {
-    JniSkiaBaseView::surfaceAvailable(surface, width, height);
-  }
+    void surfaceAvailable(jobject surface, int width, int height,
+                          bool opaque) override {
+        JniSkiaBaseView::surfaceAvailable(surface, width, height, opaque);
+    }
 
-  void surfaceSizeChanged(int width, int height) override {
-    JniSkiaBaseView::surfaceSizeChanged(width, height);
-  }
+    void surfaceSizeChanged(jobject surface, int width, int height,
+                            bool opaque) override {
+        JniSkiaBaseView::surfaceSizeChanged(surface, width, height, opaque);
+    }
 
   void surfaceDestroyed() override {
     JniSkiaBaseView::surfaceDestroyed();
-  }
-
-  void setMode(std::string mode) override {
-    JniSkiaBaseView::setMode(mode);
   }
 
   void setDebugMode(bool show) override {
