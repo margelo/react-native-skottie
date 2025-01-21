@@ -11,7 +11,7 @@
 #include <jsi/jsi.h>
 
 #include "JsiSkPicture.h"
-#include "JsiValueWrapper.h"
+#include "JsiValue.h"
 #include "RNSkLog.h"
 #include "RNSkPlatformContext.h"
 #include "RNSkView.h"
@@ -41,9 +41,9 @@ public:
   RNSkSkottieRenderer(std::function<void()> requestRedraw, std::shared_ptr<RNSkPlatformContext> context)
       : RNSkRenderer(requestRedraw), _platformContext(context) {}
 
-  bool tryRender(std::shared_ptr<RNSkCanvasProvider> canvasProvider) override {
-    return performDraw(canvasProvider);
-  }
+//  bool tryRender(std::shared_ptr<RNSkCanvasProvider> canvasProvider) override {
+//    return performDraw(canvasProvider);
+//  }
 
   void renderImmediate(std::shared_ptr<RNSkCanvasProvider> canvasProvider) override {
     performDraw(canvasProvider);
@@ -216,14 +216,13 @@ public:
 
   void resetAnimation() {
     std::static_pointer_cast<RNSkSkottieRenderer>(getRenderer())->resetPlayback();
-    setDrawingMode(RNSkDrawingMode::Default);
+//    setDrawingMode(RNSkDrawingMode::Default);
   }
 
   ~RNSkSkottieView() {
     std::shared_ptr<RNSkPlatformContext> platformContext = getPlatformContext();
-    auto jsRuntime = platformContext->getJsRuntime();
     // Call the onAnimationFinish callback
-    if (getRenderer() == nullptr || jsRuntime == nullptr || onAnimationFinishPtr == nullptr) {
+    if (getRenderer() == nullptr || onAnimationFinishPtr == nullptr) {
       return;
     }
 
@@ -233,15 +232,11 @@ public:
     }
 
     // The animation wasn't finished, notify that it got cancelled:
-    if (platformContext->isOnJavascriptThread()) {
-      onAnimationFinishPtr->call(*jsRuntime, jsi::Value(true));
-    } else {
       std::shared_ptr<jsi::Function> onAnimationFinish = onAnimationFinishPtr;
       platformContext->runOnJavascriptThread([=]() { onAnimationFinish->call(*jsRuntime, jsi::Value(true)); });
-    }
   }
 
-  void setJsiProperties(std::unordered_map<std::string, RNJsi::JsiValueWrapper>& props) override {
+  void setJsiProperties(std::unordered_map<std::string, RNJsi::ViewProperty>& props) override {
 
     RNSkView::setJsiProperties(props);
 
@@ -249,7 +244,7 @@ public:
     // It might happen that setJsiProperties gets called multiple times before the view is actually ready.
     // In this case all our "props" will be stored, and then once its ready setJsiProperties gets called
     // with all the props at once. Then .start has to be called last, otherwise the animation will not play.
-    std::vector<std::pair<std::string, RNJsi::JsiValueWrapper>> sortedProps(props.begin(), props.end());
+    std::vector<std::pair<std::string, RNJsi::ViewProperty>> sortedProps(props.begin(), props.end());
     if (sortedProps.size() > 1) {
       // Custom sort function to place 'start' at the end
       std::sort(sortedProps.begin(), sortedProps.end(),
@@ -258,7 +253,7 @@ public:
 
     std::shared_ptr<RNSkSkottieRenderer> renderer = std::static_pointer_cast<RNSkSkottieRenderer>(getRenderer());
     for (auto& prop : sortedProps) {
-      if (prop.first == "src" && prop.second.getType() == RNJsi::JsiWrapperValueType::HostObject) {
+      if (prop.first == "src" && prop.second.getType() == RNJsi::JsiValue::HostObject) {
         renderer->setSrc(prop.second.getAsHostObject());
         renderImmediate(); // Draw the first frame
       } else if (prop.first == "scaleType") {
@@ -300,27 +295,23 @@ public:
 
         // We can only call the runtime on the JS thread.
         // And we might be called from the UI thread here.
-        if (platformContext->isOnJavascriptThread()) {
-          installOnAnimationFinishCallback();
-        } else {
           // TODO: note, this is async and potentially requires us to use a lock
           //       or we find a way to call the _callInvoker sync
           platformContext->runOnJavascriptThread(installOnAnimationFinishCallback);
-        }
 
         // Actually start the rendering:
         renderer->setStartTime(RNSkTime::GetSecs());
-        setDrawingMode(RNSkDrawingMode::Continuous);
+//        setDrawingMode(RNSkDrawingMode::Continuous);
       } else if (prop.first == "pause") {
         if (renderer->isPaused()) {
           continue;
         }
 
-        setDrawingMode(RNSkDrawingMode::Default);
+//        setDrawingMode(RNSkDrawingMode::Default);
         renderer->pause();
       } else if (prop.first == "reset") {
         renderer->resetPlayback();
-        setDrawingMode(RNSkDrawingMode::Default); // This will also trigger a requestRedraw
+//        setDrawingMode(RNSkDrawingMode::Default); // This will also trigger a requestRedraw
       } else if (prop.first == "loop") {
         isLooping = prop.second.getAsBool();
       }

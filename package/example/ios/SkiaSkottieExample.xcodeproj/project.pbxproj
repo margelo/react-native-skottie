@@ -14,7 +14,6 @@
 		636BDB20ACBD5B04CE2F4236 /* libPods-SkiaSkottieExample.a in Frameworks */ = {isa = PBXBuildFile; fileRef = D8E7A6E38922BDCF9DF66424 /* libPods-SkiaSkottieExample.a */; };
 		6AF902BEC9C0D526D0F0FEAC /* PrivacyInfo.xcprivacy in Resources */ = {isa = PBXBuildFile; fileRef = 8597BB3647B41582B7EE2B95 /* PrivacyInfo.xcprivacy */; };
 		81AB9BB82411601600AC10FF /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 81AB9BB72411601600AC10FF /* LaunchScreen.storyboard */; };
-		9CE03E7C5464CBF413F4281F /* libPods-SkiaSkottieExample-SkiaSkottieExampleTests.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 4A649F30FE1B90109D355CCC /* libPods-SkiaSkottieExample-SkiaSkottieExampleTests.a */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -31,17 +30,14 @@
 		00E356EE1AD99517003FC87E /* SkiaSkottieExampleTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = SkiaSkottieExampleTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		00E356F11AD99517003FC87E /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		00E356F21AD99517003FC87E /* SkiaSkottieExampleTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SkiaSkottieExampleTests.m; sourceTree = "<group>"; };
-		07F86A6695C16710B5AF2E40 /* Pods-SkiaSkottieExample-SkiaSkottieExampleTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SkiaSkottieExample-SkiaSkottieExampleTests.release.xcconfig"; path = "Target Support Files/Pods-SkiaSkottieExample-SkiaSkottieExampleTests/Pods-SkiaSkottieExample-SkiaSkottieExampleTests.release.xcconfig"; sourceTree = "<group>"; };
 		13B07F961A680F5B00A75B9A /* SkiaSkottieExample.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = SkiaSkottieExample.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		13B07FAF1A68108700A75B9A /* AppDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = AppDelegate.h; path = SkiaSkottieExample/AppDelegate.h; sourceTree = "<group>"; };
 		13B07FB01A68108700A75B9A /* AppDelegate.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; name = AppDelegate.mm; path = SkiaSkottieExample/AppDelegate.mm; sourceTree = "<group>"; };
 		13B07FB51A68108700A75B9A /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; name = Images.xcassets; path = SkiaSkottieExample/Images.xcassets; sourceTree = "<group>"; };
 		13B07FB61A68108700A75B9A /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = Info.plist; path = SkiaSkottieExample/Info.plist; sourceTree = "<group>"; };
 		13B07FB71A68108700A75B9A /* main.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = main.m; path = SkiaSkottieExample/main.m; sourceTree = "<group>"; };
-		4A649F30FE1B90109D355CCC /* libPods-SkiaSkottieExample-SkiaSkottieExampleTests.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-SkiaSkottieExample-SkiaSkottieExampleTests.a"; sourceTree = BUILT_PRODUCTS_DIR; };
-		6FC810A6FF54600A42A171F2 /* Pods-SkiaSkottieExample-SkiaSkottieExampleTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SkiaSkottieExample-SkiaSkottieExampleTests.debug.xcconfig"; path = "Target Support Files/Pods-SkiaSkottieExample-SkiaSkottieExampleTests/Pods-SkiaSkottieExample-SkiaSkottieExampleTests.debug.xcconfig"; sourceTree = "<group>"; };
 		81AB9BB72411601600AC10FF /* LaunchScreen.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; name = LaunchScreen.storyboard; path = SkiaSkottieExample/LaunchScreen.storyboard; sourceTree = "<group>"; };
-		8597BB3647B41582B7EE2B95 /* PrivacyInfo.xcprivacy */ = {isa = PBXFileReference; includeInIndex = 1; name = PrivacyInfo.xcprivacy; path = SkiaSkottieExample/PrivacyInfo.xcprivacy; sourceTree = "<group>"; };
+		8597BB3647B41582B7EE2B95 /* PrivacyInfo.xcprivacy */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xml; name = PrivacyInfo.xcprivacy; path = SkiaSkottieExample/PrivacyInfo.xcprivacy; sourceTree = "<group>"; };
 		AB8D8DE14F8E215D2F0F440D /* Pods-SkiaSkottieExample.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SkiaSkottieExample.debug.xcconfig"; path = "Target Support Files/Pods-SkiaSkottieExample/Pods-SkiaSkottieExample.debug.xcconfig"; sourceTree = "<group>"; };
 		D8E7A6E38922BDCF9DF66424 /* libPods-SkiaSkottieExample.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-SkiaSkottieExample.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		DFB707D8DFDB91273C7F271D /* Pods-SkiaSkottieExample.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SkiaSkottieExample.release.xcconfig"; path = "Target Support Files/Pods-SkiaSkottieExample/Pods-SkiaSkottieExample.release.xcconfig"; sourceTree = "<group>"; };
@@ -53,7 +49,6 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				9CE03E7C5464CBF413F4281F /* libPods-SkiaSkottieExample-SkiaSkottieExampleTests.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -104,7 +99,6 @@
 			children = (
 				ED297162215061F000B7C4FE /* JavaScriptCore.framework */,
 				D8E7A6E38922BDCF9DF66424 /* libPods-SkiaSkottieExample.a */,
-				4A649F30FE1B90109D355CCC /* libPods-SkiaSkottieExample-SkiaSkottieExampleTests.a */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
@@ -145,8 +139,6 @@
 			children = (
 				AB8D8DE14F8E215D2F0F440D /* Pods-SkiaSkottieExample.debug.xcconfig */,
 				DFB707D8DFDB91273C7F271D /* Pods-SkiaSkottieExample.release.xcconfig */,
-				6FC810A6FF54600A42A171F2 /* Pods-SkiaSkottieExample-SkiaSkottieExampleTests.debug.xcconfig */,
-				07F86A6695C16710B5AF2E40 /* Pods-SkiaSkottieExample-SkiaSkottieExampleTests.release.xcconfig */,
 			);
 			path = Pods;
 			sourceTree = "<group>";
@@ -158,12 +150,9 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = 00E357021AD99517003FC87E /* Build configuration list for PBXNativeTarget "SkiaSkottieExampleTests" */;
 			buildPhases = (
-				03EEF4B57B4949944009FFA5 /* [CP] Check Pods Manifest.lock */,
 				00E356EA1AD99517003FC87E /* Sources */,
 				00E356EB1AD99517003FC87E /* Frameworks */,
 				00E356EC1AD99517003FC87E /* Resources */,
-				3843590B912AC9C8614D97DC /* [CP] Embed Pods Frameworks */,
-				60B43BB1F3C3E0EA0C185056 /* [CP] Copy Pods Resources */,
 			);
 			buildRules = (
 			);
@@ -270,28 +259,6 @@
 			shellPath = /bin/sh;
 			shellScript = "set -e\n\nWITH_ENVIRONMENT=\"../node_modules/react-native/scripts/xcode/with-environment.sh\"\nREACT_NATIVE_XCODE=\"../node_modules/react-native/scripts/react-native-xcode.sh\"\n\n/bin/sh -c \"$WITH_ENVIRONMENT $REACT_NATIVE_XCODE\"\n";
 		};
-		03EEF4B57B4949944009FFA5 /* [CP] Check Pods Manifest.lock */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputFileListPaths = (
-			);
-			inputPaths = (
-				"${PODS_PODFILE_DIR_PATH}/Podfile.lock",
-				"${PODS_ROOT}/Manifest.lock",
-			);
-			name = "[CP] Check Pods Manifest.lock";
-			outputFileListPaths = (
-			);
-			outputPaths = (
-				"$(DERIVED_FILE_DIR)/Pods-SkiaSkottieExample-SkiaSkottieExampleTests-checkManifestLockResult.txt",
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
-			showEnvVarsInLog = 0;
-		};
 		045EC885ED9D5BA89799ABBE /* [CP] Copy Pods Resources */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
@@ -326,23 +293,6 @@
 			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-SkiaSkottieExample/Pods-SkiaSkottieExample-frameworks.sh\"\n";
 			showEnvVarsInLog = 0;
 		};
-		3843590B912AC9C8614D97DC /* [CP] Embed Pods Frameworks */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputFileListPaths = (
-				"${PODS_ROOT}/Target Support Files/Pods-SkiaSkottieExample-SkiaSkottieExampleTests/Pods-SkiaSkottieExample-SkiaSkottieExampleTests-frameworks-${CONFIGURATION}-input-files.xcfilelist",
-			);
-			name = "[CP] Embed Pods Frameworks";
-			outputFileListPaths = (
-				"${PODS_ROOT}/Target Support Files/Pods-SkiaSkottieExample-SkiaSkottieExampleTests/Pods-SkiaSkottieExample-SkiaSkottieExampleTests-frameworks-${CONFIGURATION}-output-files.xcfilelist",
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-SkiaSkottieExample-SkiaSkottieExampleTests/Pods-SkiaSkottieExample-SkiaSkottieExampleTests-frameworks.sh\"\n";
-			showEnvVarsInLog = 0;
-		};
 		514ED04A19AB0A22D8F477B0 /* [CP] Check Pods Manifest.lock */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
@@ -363,23 +313,6 @@
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
 			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
-			showEnvVarsInLog = 0;
-		};
-		60B43BB1F3C3E0EA0C185056 /* [CP] Copy Pods Resources */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputFileListPaths = (
-				"${PODS_ROOT}/Target Support Files/Pods-SkiaSkottieExample-SkiaSkottieExampleTests/Pods-SkiaSkottieExample-SkiaSkottieExampleTests-resources-${CONFIGURATION}-input-files.xcfilelist",
-			);
-			name = "[CP] Copy Pods Resources";
-			outputFileListPaths = (
-				"${PODS_ROOT}/Target Support Files/Pods-SkiaSkottieExample-SkiaSkottieExampleTests/Pods-SkiaSkottieExample-SkiaSkottieExampleTests-resources-${CONFIGURATION}-output-files.xcfilelist",
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-SkiaSkottieExample-SkiaSkottieExampleTests/Pods-SkiaSkottieExample-SkiaSkottieExampleTests-resources.sh\"\n";
 			showEnvVarsInLog = 0;
 		};
 		FD10A7F022414F080027D42C /* Start Packager */ = {
@@ -434,7 +367,6 @@
 /* Begin XCBuildConfiguration section */
 		00E356F61AD99517003FC87E /* Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 6FC810A6FF54600A42A171F2 /* Pods-SkiaSkottieExample-SkiaSkottieExampleTests.debug.xcconfig */;
 			buildSettings = {
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				GCC_PREPROCESSOR_DEFINITIONS = (
@@ -461,7 +393,6 @@
 		};
 		00E356F71AD99517003FC87E /* Release */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 07F86A6695C16710B5AF2E40 /* Pods-SkiaSkottieExample-SkiaSkottieExampleTests.release.xcconfig */;
 			buildSettings = {
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				COPY_PHASE_STRIP = NO;
@@ -492,6 +423,7 @@
 				CURRENT_PROJECT_VERSION = 1;
 				ENABLE_BITCODE = NO;
 				INFOPLIST_FILE = SkiaSkottieExample/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 16.6;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -518,6 +450,7 @@
 				CLANG_ENABLE_MODULES = YES;
 				CURRENT_PROJECT_VERSION = 1;
 				INFOPLIST_FILE = SkiaSkottieExample/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 16.6;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -622,6 +555,7 @@
 				OTHER_LDFLAGS = "$(inherited)";
 				REACT_NATIVE_PATH = "${PODS_ROOT}/../../node_modules/react-native";
 				SDKROOT = iphoneos;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) DEBUG";
 				USE_HERMES = true;
 			};
 			name = Debug;

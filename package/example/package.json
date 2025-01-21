@@ -6,22 +6,27 @@
     "android": "react-native run-android",
     "ios": "react-native run-ios",
     "start": "react-native start",
-    "pods": "pod-install --quiet",
+    "pods": "bundle exec pod install --project-directory=ios",
     "typescript": "tsc --noEmit"
   },
   "dependencies": {
-    "@shopify/react-native-skia": "^1.2.3",
-    "lottie-react-native": "^6.7.2",
-    "react": "18.2.0",
-    "react-native": "^0.74.0",
-    "react-native-reanimated": "^3.10.0"
+    "@shopify/react-native-skia": "^1.10.2",
+    "lottie-react-native": "^7.2.2",
+    "react": "18.3.1",
+    "react-native": "0.76.6",
+    "react-native-reanimated": "^3.16.7"
   },
   "devDependencies": {
-    "@babel/core": "^7.20.0",
-    "@babel/preset-env": "^7.20.0",
-    "@babel/runtime": "^7.20.0",
-    "@react-native/babel-preset": "0.74.83",
-    "@react-native/metro-config": "0.74.83",
+    "@babel/core": "^7.25.2",
+    "@babel/preset-env": "^7.25.3",
+    "@babel/runtime": "^7.25.0",
+    "@react-native-community/cli": "15.0.1",
+    "@react-native-community/cli-platform-android": "15.0.1",
+    "@react-native-community/cli-platform-ios": "15.0.1",
+    "@react-native/babel-preset": "0.77.0",
+    "@react-native/eslint-config": "0.77.0",
+    "@react-native/metro-config": "0.77.0",
+    "@react-native/typescript-config": "0.77.0",
     "babel-plugin-module-resolver": "^4.1.0",
     "pod-install": "^0.1.39"
   },

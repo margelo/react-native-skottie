@@ -54,16 +54,29 @@ target_link_libraries(
         ${LOG_LIB}                          # <-- Logcat logger
         android                             # <-- Android JNI core
         fbjni::fbjni                        # <-- fbjni
-        ReactAndroid::react_nativemodule_core # <-- RN: Native module core
         ReactAndroid::jsi                   # <-- RN: JSI
-        ReactAndroid::reactnativejni        # <-- RN: React Native JNI bindings
-        ReactAndroid::runtimeexecutor       # <-- RN: Runtime executor
-        ReactAndroid::turbomodulejsijni     # <-- RN: TurboModule JSI JNI bindings
         -ljnigraphics
         -lGLESv2
         -lEGL
         -landroid
 )
+
+# This if-then-else can be removed once this library does not support version below 0.76
+if(ReactAndroid_VERSION_MINOR GREATER_EQUAL 76)
+    message("RN Filament: Using React Native merged SO...")
+    target_link_libraries(
+        ${PACKAGE_NAME}
+        ReactAndroid::reactnative
+    )
+else()
+    target_link_libraries(
+        ${PACKAGE_NAME}
+        ReactAndroid::react_nativemodule_core   # <-- RN: Native module core
+        ReactAndroid::reactnativejni            # <-- RN: React Native JNI bindings
+        ReactAndroid::runtimeexecutor           # <-- RN: Runtime executor
+        ReactAndroid::turbomodulejsijni         # <-- RN: TurboModule JSI JNI bindings
+    )
+endif()
 
 # 1. Link react-native-skia
 message("react-native-skottie: Linking react-native-skia...")

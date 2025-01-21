@@ -19,7 +19,7 @@ public class SkiaSkottieView extends SkiaBaseView {
         mHybridData = initHybrid(skiaModule.getSkiaManager());
     }
 
-    @Override
+  @Override
     protected void finalize() throws Throwable {
         super.finalize();
         mHybridData.resetNative();
@@ -27,19 +27,15 @@ public class SkiaSkottieView extends SkiaBaseView {
 
     private native HybridData initHybrid(SkiaManager skiaManager);
 
-    protected native void surfaceAvailable(Object surface, int width, int height);
+    protected native void surfaceAvailable(Object surface, int width, int height, boolean opaque);
 
-    protected native void surfaceSizeChanged(int width, int height);
+    protected native void surfaceSizeChanged(Object surface, int width, int height, boolean opaque);
 
     protected native void surfaceDestroyed();
 
     protected native void setBgColor(int color);
 
-    protected native void setMode(String mode);
-
     protected native void setDebugMode(boolean show);
-
-    protected native void updateTouchPoints(double[] points);
 
     protected native void registerView(int nativeId);
 
