@@ -6,14 +6,14 @@
     "android": "react-native run-android",
     "ios": "react-native run-ios",
     "start": "react-native start",
-    "pods": "bundle exec pod install",
+    "pods": "bundle exec pod install --project-directory=ios",
     "typescript": "tsc --noEmit"
   },
   "dependencies": {
-    "@shopify/react-native-skia": "^1.2.3",
-    "lottie-react-native": "^6.7.2",
+    "@shopify/react-native-skia": "^1.10.2",
+    "lottie-react-native": "^7.2.2",
     "react": "18.3.1",
-    "react-native": "0.77.0",
+    "react-native": "0.76.6",
     "react-native-reanimated": "^3.16.7"
   },
   "devDependencies": {
